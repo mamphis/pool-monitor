@@ -34,7 +34,7 @@ export class Display {
 
         this.lcd.on('ready', async () => {
             console.log(`Display is ready to show something.`);
-            await promisify(this.lcd.clear)()
+            await promisify(this.lcd.clear.bind(this.lcd))()
             this.printable = true;
         });
     }
@@ -45,9 +45,9 @@ export class Display {
         }
 
         const lines = text.split('\n');
-        await promisify(this.lcd.setCursor)(0, 0);
-        await promisify(this.lcd.print)((lines[0] || '').substr(0, this.cols));
-        await promisify(this.lcd.setCursor)(0, 1);
-        await promisify(this.lcd.print)((lines[1] || '').substr(0, this.cols));
+        await promisify(this.lcd.setCursor.bind(this.lcd))(0, 0);
+        await promisify(this.lcd.print.bind(this.lcd))((lines[0] || '').substr(0, this.cols));
+        await promisify(this.lcd.setCursor.bind(this.lcd))(0, 1);
+        await promisify(this.lcd.print.bind(this.lcd))((lines[1] || '').substr(0, this.cols));
     }
 }
