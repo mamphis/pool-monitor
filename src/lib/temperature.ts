@@ -19,6 +19,14 @@ class TemperatureSensor {
 
         return millidegrees / 1000;
     }
+
+    async getTemperatureFormatted(temp?: number): Promise<string> {
+        if (!temp) {
+            temp = await this.getTemperature();
+        }
+        
+        return `${temp.toFixed(3)} °C`;
+    }
 }
 
 export class TemperatureSensorManager {
