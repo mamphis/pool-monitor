@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <%- include('includes/favicon.ejs') -%> 
+    <%- include('includes/favicon.ejs') -%>
 </head>
+
 <body>
-    <h1>Hallo Welt</h1>
+    <h1>This ist the Pool Monitor.</h1>
+    <div>
+        <%= message %>
+    </div>
+    <div>
+        <form action="/setText" method="post">
+            <label>Set custom Text on the Display:</label>
+            <textarea rows="2" cols="16" name="customText"></textarea>
+
+            <button type="submit">Send</button>
+        </form>
+    </div>
 </body>
+
 </html>
