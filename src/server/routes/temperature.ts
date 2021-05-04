@@ -17,7 +17,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
         returnObj.currentSensor = { id: req.params.id, temperature: temp, formatted: await sensor.getTemperatureFormatted(temp) };
     }
 
-    Display.it.setText(`${returnObj.currentSensor?.id}\n${returnObj.currentSensor?.temperature}`);
+    Display.it.setText(`${returnObj.currentSensor?.id}\n${returnObj.currentSensor?.formatted}`);
     return res.render('temperature', returnObj);
 });
 
