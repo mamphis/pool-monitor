@@ -1,6 +1,4 @@
-import { promisify } from 'util';
-// import Lcd from 'lcd';
-const Lcd = require('lcd');
+import Lcd from 'lcd';
 
 export class Display {
     private static instance: Display;
