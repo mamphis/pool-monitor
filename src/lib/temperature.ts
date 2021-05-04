@@ -27,6 +27,7 @@ export class TemperatureSensorManager {
     static get it(): TemperatureSensorManager {
         if (!this.instance) {
             this.instance = new TemperatureSensorManager();
+            this.instance.init();
         }
 
         return this.instance;
@@ -46,10 +47,11 @@ export class TemperatureSensorManager {
         }
 
         const devices = await readdir(this.devicePath);
-        const sensors = devices.filter(d => /\d{2}-\d{12}/.test(d));
+        const sensors = devices.filter(d => /\d{2}-[\da-f]{12}/.test(d));
 
         this._sensors = sensors.map(s => new TemperatureSensor(this, s));
         this._sensors.forEach(s => this.sensor[s.id] = s);
+        this.ready = true;
     }
 
     get sensors(): string[] {
