@@ -6,7 +6,6 @@ import { TemperatureSensorManager } from "../../lib/temperature";
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-
     return res.render('temperature', { sensors: TemperatureSensorManager.it.sensors });
 });
 

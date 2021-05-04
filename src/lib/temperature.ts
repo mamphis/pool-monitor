@@ -53,7 +53,7 @@ export class TemperatureSensorManager {
     }
 
     get sensors(): string[] {
-        return this._sensors.map(s => s.id);
+        return [...this._sensors.map(s => s.id)];
     }
 
     sensor: { [id: string]: TemperatureSensor | undefined } = {};

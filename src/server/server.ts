@@ -1,7 +1,8 @@
-import express, { Application, json, NextFunction, Request, Response, static as staticImport } from "express";
+import express, { Application, json, NextFunction, Request, Response, static as staticImport, urlencoded } from "express";
 import cors from 'cors';
 import moment from 'moment';
 import { indexRouter } from "./routes";
+import { temperatureRouter } from "./routes/temperature";
 
 export class Server {
     private app: Application;
@@ -11,7 +12,7 @@ export class Server {
     }
 
     async config() {
-        this.app.use(json({ limit: '5mb' }));
+        this.app.use(urlencoded({ inflate: true }));
         this.app.use(cors());
 
         this.app.use('/static', staticImport('./static'));
@@ -26,6 +27,7 @@ export class Server {
         });
 
         this.app.use('/', indexRouter);
+        this.app.use('/temperature', temperatureRouter);
     }
 
     async start() {
