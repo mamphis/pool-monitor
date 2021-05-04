@@ -11,7 +11,7 @@ declare module 'lcd' {
         constructor(config: LcdConfig);
         clear(cb?: (err?: Error) => void);
         close(cb?: (err?: Error) => void);
-        setCursor(col: number, row: number, cb?: (err?: Error) => void);
+        setCursor(col: number, row: number);
         print(text: string, cb?: (err?: Error) => void);
 
         on(ev: 'ready', listener: () => void);
