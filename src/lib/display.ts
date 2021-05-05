@@ -42,18 +42,20 @@ export class Display {
 
                 lcd.setCursor(0, 0);
                 const sensors = TemperatureSensorManager.it.sensors;
-                const sensorIndex = cnt++ % sensors.length;
+                const sensorIndex = cnt % sensors.length;
                 const sensor = TemperatureSensorManager.it.sensor[sensors[sensorIndex]];
                 
                 const sensorText = `S${sensorIndex + 1} ${(await sensor?.getTemperature())?.toFixed(2)}C`;
 
-                lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}  ${sensorText}`, async function () {
+                lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}   ${sensorText}`, async function () {
                     lcd.setCursor(0, 1);
                     lcd.print(`F: ${Context.it.filterState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
                 });
 
                 setTimeout(refreshDisplay, 500);
             };
+            
+            setInterval(() => cnt++, 10000);
 
             this.lcd.clear()
             refreshDisplay();
