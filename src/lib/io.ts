@@ -1,4 +1,4 @@
-import EventEmitter from "node:events";
+import EventEmitter from "events";
 import { Gpio } from "onoff";
 import CONST from './consts';
 import { Context } from "./context";
