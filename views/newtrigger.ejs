@@ -71,6 +71,7 @@
                     <div class="control">
                         <div class="select">
                             <select name="action" id="action">
+                                <option value="">---</option>
                                 <option value="DeviceStateAction">Gerätestatus</option>
                             </select>
                         </div>
@@ -115,6 +116,7 @@
                     <div class="control">
                         <div class="select">
                             <select name="condition" id="condition">
+                                <option value="">---</option>
                                 <option value="DeviceStateCondition">Gerätestatus</option>
                             </select>
                         </div>
@@ -150,7 +152,7 @@
                                     Aus
                                 </label>
                             </div>
-                            <p class="help">Der zu setzende Status</p>
+                            <p class="help">Der zu prüfende Status</p>
                         </div>
                     </div>
                 </div>
@@ -197,13 +199,17 @@
 
         const getConditions = () => {
             const condition = conditionSelect.val();
+            if (condition === '') {
+                return [];
+            }
+
             let conditionObj = {};
             conditionObj.name = condition;
 
             switch (condition) {
                 case 'DeviceStateCondition':
                     conditionObj.device = $('#conditionDeviceStateConditionDevice').val();
-                    conditionObj.state = new Boolean($('#conditionDeviceStateConditionState').val()).valueOf();
+                    conditionObj.state = $(`input:radio[name='conditionDeviceStateConditionState']:checked`).val() === 'true';
                     break;
 
                 default:
@@ -215,13 +221,17 @@
 
         const getActions = () => {
             const action = actionSelect.val();
+            if (action === '') {
+                return [];
+            }
+
             let actionObj = {};
             actionObj.name = action;
 
             switch (action) {
                 case 'DeviceStateAction':
                     actionObj.device = $('#actionDeviceStateActionDevice').val();
-                    actionObj.state = new Boolean($('#actionDeviceStateActionState').val()).valueOf();
+                    actionObj.state = $(`input:radio[name='actionDeviceStateActionState']:checked`).val() === 'true';
                     break;
 
                 default:
