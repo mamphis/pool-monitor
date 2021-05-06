@@ -64,6 +64,7 @@ export class Trigger {
             this._triggers[name] = triggerDef;
 
             await t.register(name);
+            await this.saveConfig();
             return true;
         } catch (e) {
             return false;
@@ -79,5 +80,6 @@ export class Trigger {
     async delete(name: string) {
         delete this._triggers[name];
         scheduledJobs['trigger' + name].cancel();
+        await this.saveConfig();
     }
 }
