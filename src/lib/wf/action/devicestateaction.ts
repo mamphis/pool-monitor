@@ -20,11 +20,11 @@ export class DeviceStateAction extends IAction {
     private getDeviceName(): string {
         switch (this.device) {
             case 'filter':
-                return 'Filter';
+                return 'des Filters';
             case 'pump':
-                return 'Pumpe';
+                return 'der Pumpe';
             default:
-                return '<unbekannt>';
+                return 'von <unbekannt>';
         }
     }
     private getState(): string {
@@ -32,6 +32,6 @@ export class DeviceStateAction extends IAction {
     }
 
     getDescription(): string {
-        return `Setze den Status der ${this.getDeviceName()} auf "${this.getState()}"`
+        return `Setze den Status ${this.getDeviceName()} auf "${this.getState()}"`
     }
 }
