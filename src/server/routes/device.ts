@@ -1,23 +1,17 @@
 import { NextFunction, Request, Response, Router } from "express";
 import moment from "moment";
+import { Context } from "../../lib/context";
 import { Display } from "../../lib/display";
 import { TemperatureSensorManager } from "../../lib/temperature";
 
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    return res.render('device', { sensors: TemperatureSensorManager.it.sensors });
+    return res.render('device', { state: Context.it.lastIOStates });
 });
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-    const sensor = TemperatureSensorManager.it.sensor[req.params.id];
-    let returnObj: { sensors: string[], currentSensor?: { id: string, temperature: number, formatted: string } } = { sensors: TemperatureSensorManager.it.sensors, currentSensor: undefined };
-    if (sensor) {
-        const temp = await sensor.getTemperature();
-        returnObj.currentSensor = { id: req.params.id, temperature: temp, formatted: await sensor.getTemperatureFormatted(temp) };
-    }
-
-    return res.render('device', returnObj);
+router.get('state', async (req: Request, res: Response, next: NextFunction) => {
+    return res.json(Context.it.lastIOStates.temperatures);
 });
 
 export { router as temperatureRouter };

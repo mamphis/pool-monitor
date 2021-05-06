@@ -1,24 +1,56 @@
 <%- include('includes/head.ejs') -%>
-
-    <h1>This ist the Pool Monitor Temperature Unit.</h1>
-    <div>
-        Connected Temperature Sensors: <%= sensors.length %>
-    </div>
-    <% if (typeof currentSensor !=='undefined' ) { %>
-        <div>
-            Got a temperature from: <%= currentSensor.id %><br />
-                <%= currentSensor.formatted %>
-        </div>
-        <% } %>
-            <div>
-                <% sensors.forEach(s=> { %>
-                    <div>
-                        <a href="/device/<%= s %>">
-                            <button>
-                                <%= s %>
-                            </button>
-                        </a>
+    <div class="panel">
+        <div class="panel-heading">Geräte Manager</div>
+        <div class="panel-block is-active">
+            <div class="control">
+                <div class="field">
+                    <label for="" class="label is-large">Temperatur Sensoren</label>
+                    <div class="control is-expanded">
+                        <% state.temperatures.forEach(sensor=> { %>
+                            <div class="columns is-fullwidth">
+                                <span>
+                                    <%= sensor.sensor %>
+                                </span>
+                                <span class="tag">
+                                    <%= sensor.temperature.toFixed(2) %> °C
+                                </span>
+                            </div>
+                            <%});%>
                     </div>
-                    <% }); %>
+                </div>
             </div>
-            <%- include('includes/foot.ejs') -%>
+        </div>
+
+        <div class="panel-block">
+            <div class="content">
+                <div class="field">
+                    <label for="" class="label is-large">Angeschlossende Geräte</label>
+                    <div class="control is-expanded">
+                        <div class="columns is-fullwidth">
+                            <span>
+                                Pumpe
+                            </span>
+                            <span class="tag">
+                                ---
+                            </span>
+                        </div>
+                        <div class="columns is-fullwidth">
+                            <span>
+                                Filter
+                            </span>
+                            <span class="tag">
+                                ---
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-block">
+            <button class="button is-outlined is-fullwidth">
+                Neu Laden
+            </button>
+        </div>
+    </div>
+    <%- include('includes/foot.ejs') -%>
