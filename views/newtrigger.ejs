@@ -1,0 +1,205 @@
+<%- include('includes/head.ejs') -%>
+    <div class="panel">
+        <div class="panel-heading">Neuer Trigger</div>
+        <!-- <div class="panel-tabs"><a href="#" class="is-active">Trigger</a><a href="#">Bedingungen</a><a href="#">Aktionen</a></div> -->
+        <div class="panel-block is-active">
+            <section class="control">
+                <div class="field">
+                    <label for="" class="label is-large">Trigger</label>
+                    <div class="control is-expanded">
+                        <div class="select">
+                            <select name="trigger" id="trigger">
+                                <option value="IntervalTrigger">Interval</option>
+                                <option value="RecurrentTrigger">Wiederholen</option>
+                                <option value="TimestampTrigger">Datum</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control">
+                    <div class="trigger config" id="triggerIntervalTrigger">
+                        <div class="field">
+                            <label for="triggerIntervalTriggerInterval" class="label">Interval</label>
+                            <div class="control">
+                                <input id="triggerIntervalTriggerInterval" name="triggerIntervalTriggerInterval"
+                                    type="number" class="input" value="1000">
+                            </div>
+                            <p class="help">Interval in Millisekunden</p>
+                        </div>
+                    </div>
+                    <div class="trigger config" id="triggerRecurrentTrigger">
+                        <div class="field">
+                            <label for="triggerRecurrentTriggerHour" class="label">Stunde</label>
+                            <div class="control">
+                                <input type="number" id="triggerRecurrentTriggerHour" min="0" max="23"
+                                    name="triggerRecurrentTriggerHour" class="input" value="17">
+                            </div>
+                            <p class="help">Stunde, zu der die Aktion täglich ausgeführt werden soll.</p>
+                        </div>
+                        <div class="field">
+                            <label for="triggerRecurrentTriggerMinute" class="label">Minute</label>
+                            <div class="control">
+                                <input type="number" id="triggerRecurrentTriggerMinute" min="0" max="59"
+                                    name="triggerRecurrentTriggerMinute" class="input" value="0">
+                            </div>
+                            <p class="help">Minute, zu der die Aktion täglich ausgeführt werden soll.</p>
+                        </div>
+                    </div>
+                    <div class="trigger config" id="triggerTimestampTrigger">
+                        <div class="field">
+                            <label for="triggerTimestampTriggerDate" class="label">Datum</label>
+                            <div class="control">
+                                <input id="triggerTimestampTriggerDate" name="triggerTimestampTriggerDate" type="date"
+                                    class="input">
+                            </div>
+                            <p class="help">Datum der Ausführung</p>
+                        </div>
+                        <div class="field">
+                            <label for="triggerTimestampTriggerTime" class="label">Uhrzeit</label>
+                            <div class="control">
+                                <input id="triggerTimestampTriggerTime" name="triggerTimestampTriggerTime" type="time"
+                                    class="input">
+                            </div>
+                            <p class="help">Uhrzeit der Ausführung</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="" class="label is-large">Aktion</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="action" id="action">
+                                <option value="DeviceStateAction">Gerätestatus</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control">
+                    <div class="action config" id="actionDeviceStateAction">
+                        <div class="field">
+                            <label for="actionDeviceStateActionDevice" class="label">Gerät</label>
+                            <div class="control select">
+                                <select name="actionDeviceStateActionDevice" id="actionDeviceStateActionDevice">
+                                    <option value="pump">Pumpe</option>
+                                    <option value="filter">Filter</option>
+                                </select>
+                            </div>
+                            <p class="help">Das Gerät</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="actionDeviceStateActionState" class="label">Status</label>
+
+                            <div class="control">
+                                <label class="radio">
+                                    <input id="actionDeviceStateActionStateOn" type="radio"
+                                        name="actionDeviceStateActionState" value="true" checked="checked">
+                                    An
+                                </label>
+                                <label class="radio">
+                                    <input id="actionDeviceStateActionStateOff" type="radio"
+                                        name="actionDeviceStateActionState" value="false">
+                                    Aus
+                                </label>
+                            </div>
+                            <p class="help">Der zu setzende Status</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="" class="label is-large">Bedingung</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="condition" id="condition">
+                                <option value="DeviceStateCondition">Gerätestatus</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control">
+                    <div class="condition config" id="conditionDeviceStateCondition">
+                        <div class="field">
+                            <label for="conditionDeviceStateConditionDevice" class="label">Gerät</label>
+                            <div class="control select">
+                                <select name="conditionDeviceStateConditionDevice"
+                                    id="conditionDeviceStateConditionDevice">
+                                    <option value="pump">Pumpe</option>
+                                    <option value="filter">Filter</option>
+                                </select>
+                            </div>
+                            <p class="help">Das Gerät</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="conditionDeviceStateConditionState" class="label">Status</label>
+
+                            <div class="control">
+                                <label class="radio">
+                                    <input id="conditionDeviceStateConditionStateOn" type="radio"
+                                        name="conditionDeviceStateConditionState" value="true" checked="checked">
+                                    An
+                                </label>
+                                <label class="radio">
+                                    <input id="conditionDeviceStateConditionStateOff" type="radio"
+                                        name="conditionDeviceStateConditionState" value="false">
+                                    Aus
+                                </label>
+                            </div>
+                            <p class="help">Der zu setzende Status</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="panel-block">
+            <div class="control">
+                <div class="buttons is-right">
+                    <button class="button">
+                        Trigger hinzufügen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const triggerSelect = $('#trigger');
+        const showTriggerSelect = () => {
+            $('.trigger.config').hide();
+            $('#trigger' + triggerSelect.val()).show();
+        };
+
+        triggerSelect.change(showTriggerSelect);
+        showTriggerSelect();
+
+        const actionSelect = $('#action');
+        const showActionSelect = () => {
+            $('.action.config').hide();
+            $('#action' + actionSelect.val()).show();
+        };
+
+        actionSelect.change(showActionSelect);
+        showActionSelect();
+
+        const conditionSelect = $('#condition');
+        const showConditionSelect = () => {
+            $('.condition.config').hide();
+            $('#condition' + conditionSelect.val()).show();
+        };
+
+        conditionSelect.change(showConditionSelect);
+        showConditionSelect();
+    </script>
+
+    <style>
+        .config {
+            margin-left: 5%;
+        }
+    </style>
+
+    <%- include('includes/foot.ejs') -%>
