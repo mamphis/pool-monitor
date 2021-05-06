@@ -261,7 +261,7 @@
                 case 'TimestampTrigger':
                     const date = $('#triggerTimestampTriggerDate').val();
                     const time = $('#triggerTimestampTriggerTime').val()
-                    trigger.time = new Date(date + 'T' + time).getTime() / 1000;
+                    triggerObj.time = new Date(date + 'T' + time).getTime() / 1000;
                     break;
             }
 
