@@ -19,8 +19,8 @@ export class IO extends EventEmitter {
     private constructor() {
         super();
 
-        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising');
-        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising');
+        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising', { activeLow: false });
+        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { activeLow: false });
 
         this.rlsFilter = new Gpio(CONST.PIN_RELAIS_FILTER, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
@@ -33,35 +33,36 @@ export class IO extends EventEmitter {
     private rlsFilter: Gpio;
 
     private async init() {
-        this.btnPump.watch((err, value) => {
+        this.btnPump.watch(async (err, value) => {
             console.log("btnPump Pressed:  " + value)
             if (err) {
                 return console.warn(err);
             }
 
             if (value == 1) {
-                this.togglePumpState();
+                await this.togglePumpState();
             }
         });
 
         this.btnFilter.watch(async (err, value) => {
+            console.log("btnFilter Pressed:  " + value)
             if (err) {
                 return console.warn(err);
             }
 
             if (value == 1) {
-                this.toggleFilterState();
+                await this.toggleFilterState();
             }
         });
     }
 
     async setPumpState(state: boolean) {
-        this.rlsPump.write(Context.it.pumpState ? 1 : 0);
+        await this.rlsPump.write(Context.it.pumpState ? 1 : 0);
         Context.it.pumpState = state;
     }
 
     async togglePumpState() {
-        this.setPumpState(!Context.it.pumpState);
+        await this.setPumpState(!Context.it.pumpState);
     }
 
     async setFilterState(state: boolean) {
@@ -80,6 +81,6 @@ export class IO extends EventEmitter {
     }
 
     async toggleFilterState() {
-        this.setFilterState(!Context.it.filterState);
+        await this.setFilterState(!Context.it.filterState);
     }
 }
