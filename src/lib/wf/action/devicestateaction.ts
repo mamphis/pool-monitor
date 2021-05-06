@@ -9,7 +9,12 @@ export class DeviceStateAction extends IAction {
     }
 
     async execute(): Promise<void> {
-        // throw new Error("Method not implemented.");
+        switch (this.device) {
+            case 'filter':
+                await IO.it.setFilterState(this.state);
+            case 'pump':
+                await IO.it.setPumpState(this.state);
+        }
     }
 
     private getDeviceName(): string {
