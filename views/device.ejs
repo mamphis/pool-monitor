@@ -70,7 +70,7 @@
             });
 
             const result = await response.json();
-            $(`#${which}`).val(result.state);
+            $(`#${which}`).text(result.state);
         }
     </script>
     <%- include('includes/foot.ejs') -%>
