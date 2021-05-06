@@ -6,7 +6,7 @@ import { TemperatureSensorManager } from "../../lib/temperature";
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    return res.render('temperature', { sensors: TemperatureSensorManager.it.sensors });
+    return res.render('device', { sensors: TemperatureSensorManager.it.sensors });
 });
 
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
         returnObj.currentSensor = { id: req.params.id, temperature: temp, formatted: await sensor.getTemperatureFormatted(temp) };
     }
 
-    return res.render('temperature', returnObj);
+    return res.render('device', returnObj);
 });
 
 export { router as temperatureRouter };
