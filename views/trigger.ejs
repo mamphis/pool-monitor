@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% trigger.forEach(t=> { %>
+                    <% trigger.forEach((t, i)=> { %>
                         <tr>
                             <td>
                                 <%= t.trigger %>
@@ -30,7 +30,9 @@
                                 ---
                             </td>
                             <td>
-                                <i class="fa fa-trash"></i>
+                                <a href="#" class="button is-white" onclick="del(<%= i %>);">
+                                    <i class="fa fa-trash"></i>
+                                </a>
                             </td>
                         </tr>
                         <% }); %>
@@ -38,4 +40,18 @@
             </table>
         </div>
     </div>
+
+    <script>
+        const del = async (index)  => {
+            const url = new URL(window.location.href);
+
+            const response = await fetch(`${url.origin}${url.pathname}/${index}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        }
+    </script>
     <%- include('includes/foot.ejs') -%>
