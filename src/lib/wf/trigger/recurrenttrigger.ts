@@ -18,6 +18,6 @@ export class RecurrentTrigger extends ITrigger {
     }
 
     getDescription(): string {
-        return `Täglich um ${this.rule.hour}:${this.rule.minute}`;
+        return `Täglich um ${this.rule.hour.toString().padStart(2, '0')}:${this.rule.minute.toString().padStart(2, '0')}`;
     }
 }
