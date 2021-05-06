@@ -18,6 +18,6 @@ export class TimestampTrigger extends ITrigger {
     }
 
     getDescription(): string {
-        return `Am ${this.time.format('de')}`;
+        return `Am ${this.time.format('DD.MM.YYYY HH:mm')}`;
     }
 }
