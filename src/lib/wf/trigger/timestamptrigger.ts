@@ -11,8 +11,8 @@ export class TimestampTrigger extends ITrigger {
         }
     }
 
-    async register(): Promise<void> {
-        schedule.scheduleJob(this.time.toDate(), async () => {
+    async register(name: string): Promise<void> {
+        schedule.scheduleJob(`trigger${name}`, this.time.toDate(), async () => {
             await this.execute();
         });
     }
