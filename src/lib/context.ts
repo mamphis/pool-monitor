@@ -36,7 +36,7 @@ export class Context {
         }
 
         await this.loadConfig();
-        setTimeout(async () => {
+        setInterval(async () => {
             this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
                 const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
                 return { sensor: s, temperature: t ?? 0};
