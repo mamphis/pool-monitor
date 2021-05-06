@@ -3,7 +3,7 @@
         <div class="panel-heading">Neuer Trigger</div>
         <!-- <div class="panel-tabs"><a href="#" class="is-active">Trigger</a><a href="#">Bedingungen</a><a href="#">Aktionen</a></div> -->
         <div class="panel-block is-active">
-            <section class="control">
+            <form method="post" class="control">
                 <div class="field">
                     <label for="" class="label is-large">Trigger</label>
                     <div class="control is-expanded">
@@ -154,13 +154,13 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </form>
         </div>
 
         <div class="panel-block">
             <div class="control">
                 <div class="buttons is-right">
-                    <button class="button">
+                    <button class="button" id="submitForm">
                         Trigger hinzufügen
                     </button>
                 </div>
@@ -194,6 +194,90 @@
 
         conditionSelect.change(showConditionSelect);
         showConditionSelect();
+
+        const getConditions = () => {
+            const condition = conditionSelect.val();
+            let conditionObj = {};
+            conditionObj.name = condition;
+
+            switch (condition) {
+                case 'DeviceStateCondition':
+                    conditionObj.device = $('#conditionDeviceStateConditionDevice').val();
+                    conditionObj.state = new Boolean($('#conditionDeviceStateConditionState').val()).valueOf();
+                    break;
+
+                default:
+                    break;
+            }
+
+            return [conditionObj];
+        }
+
+        const getActions = () => {
+            const action = actionSelect.val();
+            let actionObj = {};
+            actionObj.name = action;
+
+            switch (action) {
+                case 'DeviceStateAction':
+                    actionObj.device = $('#actionDeviceStateActionDevice').val();
+                    actionObj.state = new Boolean($('#actionDeviceStateActionState').val()).valueOf();
+                    break;
+
+                default:
+                    break;
+            }
+
+            actionObj.conditions = getConditions();
+
+            return [actionObj];
+        }
+
+        const getTriggerObj = () => {
+            const trigger = triggerSelect.val();
+            let triggerObj = {};
+            triggerObj.name = trigger;
+
+            switch (trigger) {
+                case 'RecurrentTrigger':
+                    triggerObj.hour = parseInt($('#triggerRecurrentTriggerHour').val());
+                    triggerObj.minute = parseInt($('#triggerRecurrentTriggerMinute').val());
+                    break;
+
+                case 'IntervalTrigger':
+                    triggerObj.interval = parseInt($('#triggerIntervalTriggerInterval').val());
+                    break;
+
+                case 'TimestampTrigger':
+                    const date = $('#triggerTimestampTriggerDate').val();
+                    const time = $('#triggerTimestampTriggerTime').val()
+                    trigger.time = new Date(date + 'T' + time).getTime() / 1000;
+                    break;
+            }
+
+            triggerObj.actions = getActions();
+
+            return triggerObj;
+        }
+
+
+        $('#submitForm').click(async () => {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: JSON.stringify(getTriggerObj()),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                window.location.replace(window.location.origin + '/trigger');
+            } else {
+                alert("Something went wrong.")
+            }
+        });
+
+
     </script>
 
     <style>

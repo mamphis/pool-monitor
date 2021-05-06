@@ -11,12 +11,30 @@
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Trigger</th>
                         <th>Aktion</th>
                         <th>Nächste Ausführung</th>
                         <th></th>
                     </tr>
                 </thead>
+                <tbody>
+                    <% trigger.forEach(t=> { %>
+                        <tr>
+                            <td>
+                                <%= t.trigger %>
+                            </td>
+                            <td>
+                                <%= t.action %>
+                            </td>
+                            <td>
+                                ---
+                            </td>
+                            <td>
+                                <i class="fa fa-trash"></i>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
             </table>
         </div>
     </div>
