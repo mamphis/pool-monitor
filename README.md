@@ -9,7 +9,7 @@
 - [x] Create a WebServer which can talk to the application
 - [ ] Login into the webserver
 - [ ] View State of Sensors and Conencted Devices
-- [ ] Create Flow on WebSite
+- [x] Create Flow on WebSite
     - At 21:00
         - If Pump = 'off'
             - Pump := 'on'
