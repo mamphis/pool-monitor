@@ -6,4 +6,5 @@ export abstract class IAction {
     }
     
     abstract execute(): Promise<void>;
+    abstract getDescription(): string;
 }

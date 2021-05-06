@@ -13,4 +13,8 @@ export class TimestampTrigger extends ITrigger {
             await this.execute();
         });
     }
+
+    getDescription(): string {
+        return `Am ${this.time.format('de')}`;
+    }
 }
