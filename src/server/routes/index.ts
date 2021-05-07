@@ -10,13 +10,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
 
 
 router.get('/tempLog', (req: Request, res: Response, next: NextFunction) => {
-    const timeseriesData = Context.it.log.filter(d => d.device == 'temp').reduce((prev: {
-        [name: string]: LogEntry[]
-    }, curr) => {
-        prev[curr.deviceName] = prev[curr.deviceName] || [];
-        prev[curr.deviceName].push(curr);
-        return prev;
-    }, {});
+    const timeseriesData = Context.it.temperatures;
 
     res.json(Object.keys(timeseriesData).map(name => {
         return {
