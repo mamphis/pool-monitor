@@ -8,7 +8,7 @@
 
     <script>
         const options = {};
-        options.series = JSON.parse("<%= JSON.stringify(temperatures) %>");
+        options.series = JSON.parse(`<%- JSON.stringify(temperatures) %>`);
         option.xaxis = {
             type: 'datetime'
         };
