@@ -2,6 +2,8 @@ import { Moment } from "moment";
 import { IAction } from "../action/iaction";
 import { ITrigger } from "./itrigger";
 import schedule from 'node-schedule';
+import { TriggerJob } from "../triggerjob";
+import moment from "moment";
 
 export class TimestampTrigger extends ITrigger {
     constructor(public readonly time: Moment, actions: IAction[]) {
@@ -11,10 +13,15 @@ export class TimestampTrigger extends ITrigger {
         }
     }
 
-    async register(name: string): Promise<void> {
-        schedule.scheduleJob(`trigger${name}`, this.time.toDate(), async () => {
+    async register(name: string): Promise<TriggerJob> {
+        const job = schedule.scheduleJob(`trigger${name}`, this.time.toDate(), async () => {
             await this.execute();
         });
+
+        return {
+            cancel: job.cancel,
+            nextInvocation: () => (job && job.nextInvocation()) ? moment(job.nextInvocation().toISOString()) : undefined
+        }
     }
 
     getDescription(): string {

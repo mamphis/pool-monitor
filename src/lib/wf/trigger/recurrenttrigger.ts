@@ -1,6 +1,8 @@
 import { IAction } from "../action/iaction";
 import { ITrigger } from "./itrigger";
 import schedule, { RecurrenceRule } from 'node-schedule';
+import { TriggerJob } from "../triggerjob";
+import moment from "moment";
 
 export class RecurrentTrigger extends ITrigger {
     public readonly rule: RecurrenceRule;
@@ -11,10 +13,15 @@ export class RecurrentTrigger extends ITrigger {
         this.rule.minute = minute;
     }
 
-    async register(name: string): Promise<void> {
+    async register(name: string): Promise<TriggerJob> {
         const job = schedule.scheduleJob(`trigger${name}`, this.rule, async () => {
             await this.execute();
         });
+
+        return {
+            cancel: job.cancel,
+            nextInvocation: () => (job && job.nextInvocation()) ? moment(job.nextInvocation().toISOString()) : undefined
+        }
     }
 
     getDescription(): string {
