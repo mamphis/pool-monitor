@@ -1,0 +1,57 @@
+<%- include('includes/head.ejs') -%>
+    <div class="columns is-multiline is-mobile">
+        <div class="column is-full ">
+            <div class="columns">
+                <div class="column is-one-fifth">
+                    <a href="/trigger/new" class="button is-fullwidth">Neuer Trigger</a>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Trigger</th>
+                        <th>Aktion</th>
+                        <th>Nächste Ausführung</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% trigger.forEach((t, i)=> { %>
+                        <tr>
+                            <td>
+                                <%= t.trigger %>
+                            </td>
+                            <td>
+                                <%= t.action %>
+                            </td>
+                            <td>
+                                <%= t.nextInvocation %>
+                            </td>
+                            <td>
+                                <a href="#" class="button is-white" onclick="del(<%= i %>);">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const del = async (index)  => {
+            const url = new URL(window.location.href);
+
+            const response = await fetch(`${url.origin}${url.pathname}/${index}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        }
+    </script>
+    <%- include('includes/foot.ejs') -%>
