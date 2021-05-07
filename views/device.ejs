@@ -16,6 +16,17 @@
                                         <%= sensor.temperature.toFixed(2) %> °C
                                     </span>
                                 </td>
+                                <td>
+                                    <div class="field has-addons">
+                                        <div class="control is-small">
+                                            <input type="number" class="input" id="update-interval"
+                                                value="<%= state.interval %>">
+                                        </div>
+                                        <div class="control is-small">
+                                            <button class="button" onclick="updateInterval();">Update</button>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
 
                             <%});%>
@@ -70,7 +81,20 @@
             });
 
             const result = await response.json();
+<<<<<<< Updated upstream
             $(`#${which}`).text(result.state);
+=======
+            $(`#${which}`).text(result.state).removeClass(result.state == 'An' ? 'is-danger' : 'is-success').addClass(result.state == 'An' ? 'is-success': 'is-danger');
+        }
+
+        async function updateInterval() {
+            const response = await fetch(`${location.href}/interval/${$('#update-interval').val()}`, {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+            $(`#update-interval`).val(interval);
+>>>>>>> Stashed changes
         }
     </script>
     <%- include('includes/foot.ejs') -%>
