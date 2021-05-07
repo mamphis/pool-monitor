@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Trigger } from "../../lib/trigger";
-import { PersistanceManager } from "../../lib/wf/persistancemanager";
 
 const router = Router();
 

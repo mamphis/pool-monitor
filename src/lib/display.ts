@@ -1,5 +1,4 @@
 import Lcd from 'lcd';
-import { TemperatureSensorManager } from './temperature';
 import CONST from './consts';
 import { Context } from './context';
 
