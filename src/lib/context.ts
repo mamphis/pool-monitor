@@ -39,8 +39,10 @@ export class Context {
         setInterval(async () => {
             this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
                 const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-                return { sensor: s, temperature: t ?? 0};
-            }));            
+                this._log.push({ device: 'temp', deviceName: s, value: t ?? 0 });
+                this.saveConfig();
+                return { sensor: s, temperature: t ?? 0 };
+            }));
         }, 2000);
     }
 
@@ -49,6 +51,7 @@ export class Context {
             _users: this._users,
             _filterState: this._filterState,
             _pumpState: this._pumpState,
+            _log: this._log,
         }));
     }
 
@@ -61,6 +64,7 @@ export class Context {
     private _filterState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<{ sensor: string, temperature: number }> = [];
+    private _log: Array<{ device: 'temp' | 'filter' | 'pump', deviceName: string, value: number }> = [];
 
     get users() {
         return this._users;
@@ -77,14 +81,17 @@ export class Context {
 
     set filterState(state) {
         this._filterState = state;
+        this._log.push({ device: 'filter', deviceName: '', value: state ? 1 : 0 });
         this.saveConfig();
     }
+
     get pumpState() {
         return this._pumpState;
     }
 
     set pumpState(state) {
         this._pumpState = state;
+        this._log.push({ device: 'pump', deviceName: '', value: state ? 1 : 0 });
         this.saveConfig();
     }
 
@@ -94,5 +101,9 @@ export class Context {
             pump: this._pumpState,
             temperatures: this._sensors,
         }
+    }
+
+    get log(): Array<{ device: 'temp' | 'filter' | 'pump', deviceName: string, value: number }> {
+        return this._log;
     }
 }
