@@ -1,6 +1,8 @@
 import Lcd from 'lcd';
 import CONST from './consts';
 import { Context } from './context';
+import { IO } from './io';
+import { sleep } from './utils';
 
 export class Display {
     private static instance?: Display;
@@ -61,6 +63,12 @@ export class Display {
             this.lcd.clear()
             refreshDisplay();
         });
+
+        IO.it.on('buttonPressed', async () => {
+            this.illuminateDisplay();
+            await sleep(10000);
+            this.darkenDisplay();
+        });
     }
 
     killDisplay() {
@@ -106,5 +114,13 @@ export class Display {
                 console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)
             });
         });
+    }
+
+    illuminateDisplay() {
+        IO.it.setDisplayLightState(true);
+    }
+
+    darkenDisplay() {
+        IO.it.setDisplayLightState(false);
     }
 }

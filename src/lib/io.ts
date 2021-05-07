@@ -4,6 +4,9 @@ import CONST from './consts';
 import { Context } from "./context";
 import { sleep } from "./utils";
 
+export interface IO {
+    on(event: 'buttonPressed', listener: (which: 'filter' | 'pump', newState: boolean) => void): this;
+}
 
 export class IO extends EventEmitter {
     private static instance?: IO;
@@ -25,6 +28,7 @@ export class IO extends EventEmitter {
 
         this.rlsFilter = new Gpio(CONST.PIN_RELAIS_FILTER, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
+        this.pinDisplayLight = new Gpio(CONST.PIN_DISPLAY_LIGHT, 'low');
     }
 
     private btnPump: Gpio;
@@ -32,6 +36,7 @@ export class IO extends EventEmitter {
 
     private rlsPump: Gpio;
     private rlsFilter: Gpio;
+    private pinDisplayLight: Gpio;
 
     private async init() {
         this.btnPump.watch(async (err, value) => {
@@ -77,5 +82,9 @@ export class IO extends EventEmitter {
 
     async toggleFilterState() {
         await this.setFilterState(!Context.it.filterState);
+    }
+
+    async setDisplayLightState(state: boolean) {
+        await this.pinDisplayLight.write(state ? 1 : 0);
     }
 }
