@@ -2,6 +2,8 @@ import EventEmitter from "events";
 import { Gpio } from "onoff";
 import CONST from './consts';
 import { Context } from "./context";
+import { sleep } from "./utils";
+
 
 export class IO extends EventEmitter {
     private static instance?: IO;
@@ -61,8 +63,6 @@ export class IO extends EventEmitter {
     }
 
     async setFilterState(state: boolean) {
-        const timer = (ms: number) => new Promise(res => setTimeout(res, ms));
-
         if (Context.it.filterState === state) {
             // State is already set to the correct state :^)
             return;
@@ -70,7 +70,7 @@ export class IO extends EventEmitter {
 
         // Immitade "Swiping Switch"
         await this.rlsFilter.write(1);
-        await timer(500);
+        await sleep(500);
         await this.rlsFilter.write(0);
         Context.it.filterState = state;
     }
