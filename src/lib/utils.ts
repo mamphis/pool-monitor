@@ -1,6 +1,6 @@
 export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
-import { Cipher } from 'node:crypto';
 import os from 'os';
+
 export const systemData = () => {
     const ifs = os.networkInterfaces();
 
