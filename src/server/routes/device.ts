@@ -4,11 +4,12 @@ import { Context } from "../../lib/context";
 import { Display } from "../../lib/display";
 import { IO } from "../../lib/io";
 import { TemperatureSensorManager } from "../../lib/temperature";
+import { systemData } from "../../lib/utils";
 
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    return res.render('device', { state: Context.it.lastIOStates });
+    return res.render('device', { state: Context.it.lastIOStates, system: JSON.stringify(systemData()) });
 });
 
 router.get('state', async (req: Request, res: Response, next: NextFunction) => {
