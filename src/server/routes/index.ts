@@ -1,10 +1,21 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Context, LogEntry } from "../../lib/context";
+import { Trigger } from "../../lib/trigger";
 
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
     return res.render('index', {
+        trigger: Trigger.it.all.map(t => {
+            const action = t.trigger.actions[0];
+            const condition = action?.conditions[0];
+
+            return {
+                trigger: t.trigger.getDescription(),
+                action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
+            }
+        }),
+        state: Context.it.lastIOStates,
     });
 });
 
