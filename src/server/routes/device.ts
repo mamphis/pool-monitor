@@ -30,6 +30,16 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
     res.end();
 });
 
+router.post('/rename/:sensor', async (req: Request, res: Response, next: NextFunction) => {
+    const sensor = req.params.sensors;
+    if (!TemperatureSensorManager.it.sensors.includes(sensor)) {
+        return res.status(404).json({message: `Temperatursensor "${sensor}" existiert nicht.`});
+    }
+
+    await Context.it.setTempName(sensor, req.body.name);
+    return res.json({name: Context.it.getTempName(sensor)});
+});
+
 router.post('/interval/:value', async (req: Request, res: Response, next: NextFunction) => {
     const newUpdateInterval = parseInt(req.params.value);
     if (isNaN(newUpdateInterval)) {
