@@ -54,6 +54,10 @@ export class TemperatureSensorManager {
             return;
         }
 
+        if (process.platform === 'win32') {
+            return;
+        }
+
         const devices = await readdir(this.devicePath);
         const sensors = devices.filter(d => /\d{2}-[\da-f]{12}/.test(d));
 

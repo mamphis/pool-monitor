@@ -23,6 +23,10 @@ export class IO extends EventEmitter {
     private constructor() {
         super();
 
+        if (process.platform === 'win32') {
+            return;
+        }
+
         this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'falling', { debounceTimeout: 10 });
         this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'falling', { debounceTimeout: 10 });
 
@@ -31,15 +35,15 @@ export class IO extends EventEmitter {
         this.pinDisplayLight = new Gpio(CONST.PIN_DISPLAY_LIGHT, 'low');
     }
 
-    private btnPump: Gpio;
-    private btnFilter: Gpio;
+    private btnPump?: Gpio;
+    private btnFilter?: Gpio;
 
-    private rlsPump: Gpio;
-    private rlsFilter: Gpio;
-    private pinDisplayLight: Gpio;
+    private rlsPump?: Gpio;
+    private rlsFilter?: Gpio;
+    private pinDisplayLight?: Gpio;
 
     private async init() {
-        this.btnPump.watch(async (err, value) => {
+        this.btnPump?.watch(async (err, value) => {
             if (err) {
                 return console.warn(err);
             }
@@ -48,7 +52,7 @@ export class IO extends EventEmitter {
             this.emit('buttonPressed', 'pump', Context.it.pumpState);
         });
 
-        this.btnFilter.watch(async (err, value) => {
+        this.btnFilter?.watch(async (err, value) => {
             if (err) {
                 return console.warn(err);
             }
@@ -59,7 +63,7 @@ export class IO extends EventEmitter {
     }
 
     async setPumpState(state: boolean) {
-        await this.rlsPump.write(state ? 1 : 0);
+        await this.rlsPump?.write(state ? 1 : 0);
         Context.it.pumpState = state;
     }
 
@@ -74,9 +78,9 @@ export class IO extends EventEmitter {
         }
 
         // Immitade "Swiping Switch"
-        await this.rlsFilter.write(1);
+        await this.rlsFilter?.write(1);
         await sleep(500);
-        await this.rlsFilter.write(0);
+        await this.rlsFilter?.write(0);
         Context.it.filterState = state;
     }
 
@@ -85,6 +89,6 @@ export class IO extends EventEmitter {
     }
 
     async setDisplayLightState(state: boolean) {
-        await this.pinDisplayLight.write(state ? 1 : 0);
+        await this.pinDisplayLight?.write(state ? 1 : 0);
     }
 }
