@@ -31,7 +31,7 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
 });
 
 router.post('/rename/:sensor', async (req: Request, res: Response, next: NextFunction) => {
-    const sensor = req.params.sensors;
+    const sensor = req.params.sensor;
     if (!TemperatureSensorManager.it.sensors.includes(sensor)) {
         return res.status(404).json({message: `Temperatursensor "${sensor}" existiert nicht.`});
     }
