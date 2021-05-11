@@ -272,7 +272,7 @@
 
 
         $('#submitForm').click(async () => {
-            const response = await fetch(window.location.origin + location.path, {
+            const response = await fetch(window.location.origin + location.pathname, {
                 method: 'POST',
                 body: JSON.stringify(getTriggerObj()),
                 headers: {
