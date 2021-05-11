@@ -22,7 +22,7 @@ export async function start() {
 
     setTimeout(() => {
         console.log(`Setting states to match config.`);
-        IO.it.setFilterState(Context.it.filterState);
+        IO.it.setSaltState(Context.it.saltState);
         IO.it.setPumpState(Context.it.pumpState);
     }, 10000);
 }

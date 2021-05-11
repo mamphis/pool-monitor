@@ -79,13 +79,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width: 50%;"> Filter </td>
+                            <td style="width: 50%;"> Salzanlage </td>
                             <td>
                                 <div class="content is-flex is-justify-content-space-between" style="width: 100%;">
-                                    <span class="tag is-<%= state.filter ? 'success' : 'danger' %>" id="filter">
-                                        <%= state.filter ? 'An' : 'Aus' %>
+                                    <span class="tag is-<%= state.salt ? 'success' : 'danger' %>" id="salt">
+                                        <%= state.salt ? 'An' : 'Aus' %>
                                     </span>
-                                    <button class="button is-small" onclick="toggleState('filter')">Umschalten</button>
+                                    <button class="button is-small" onclick="toggleState('salt')">Umschalten</button>
                                 </div>
                             </td>
                         </tr>
