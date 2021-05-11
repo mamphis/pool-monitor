@@ -131,7 +131,7 @@
         updateSeries();
 
         async function toggleState(which) {
-            const response = await fetch(`${location.href}device/toggle/${which}`, {
+            const response = await fetch(`${location.origin + location.path}device/toggle/${which}`, {
                 method: 'POST'
             });
 
