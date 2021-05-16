@@ -1,8 +1,8 @@
-import { Context } from "../lib/context";
+import { Context } from "../lib/system/context";
 import { Display } from "../lib/peripherals/display";
 import { IO } from "../lib/peripherals/io";
 import { TemperatureSensorManager } from "../lib/peripherals/temperature";
-import { Trigger } from "../lib/trigger";
+import { Trigger } from "../lib/system/trigger";
 import { Server } from "./server";
 
 export async function start() {

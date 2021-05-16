@@ -1,7 +1,7 @@
 import { JsonDB } from 'node-json-db';
 import { access, readFile, writeFile } from "fs/promises";
 import { hash } from 'bcrypt';
-import { TemperatureSensorManager } from "./peripherals/temperature";
+import { TemperatureSensorManager } from "../peripherals/temperature";
 import moment, { Moment } from 'moment';
 
 export interface LogEntry {
