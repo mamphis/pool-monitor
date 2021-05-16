@@ -3,6 +3,7 @@ import express, { Application, NextFunction, Request, Response, static as static
 import moment from 'moment';
 import { indexRouter } from "./routes";
 import { temperatureRouter } from "./routes/device";
+import { systemRouter } from './routes/system';
 import { triggerRouter } from "./routes/trigger";
 
 export class Server {
@@ -30,6 +31,7 @@ export class Server {
         this.app.use('/', indexRouter);
         this.app.use('/device', temperatureRouter);
         this.app.use('/trigger', triggerRouter);
+        this.app.use('/system', systemRouter);
     }
 
     async start() {

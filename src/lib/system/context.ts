@@ -4,6 +4,7 @@ import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
 import { SemVer } from 'semver';
 import { TemperatureSensorManager } from "../peripherals/temperature";
+import { getLatestVersionTag } from './update';
 
 export interface LogEntry {
     value: number;
@@ -19,6 +20,12 @@ export interface TempSensor {
     sensor: string;
     name: string;
     temperature: number;
+}
+
+export interface VersionInfo {
+    latestVersion: string;
+    installedVersion: string;
+    lastChecked: Moment;
 }
 
 export class Context {
@@ -58,6 +65,7 @@ export class Context {
         await this.loadConfig();
         this.reScheduleUpdate();
         this.update();
+        this.updateVersionInfo();
     }
 
     private reScheduleUpdate() {
@@ -127,6 +135,14 @@ export class Context {
         Object.assign(this, JSON.parse(content));
     }
 
+    private async updateVersionInfo() {
+        this._versionInfo = {
+            installedVersion: this._installedVersion,
+            latestVersion: await getLatestVersionTag(),
+            lastChecked: moment(),
+        }
+    }
+
     private log(device: string, name: string, value: number) {
         this.database.push(`/${device}${name != '' ? '/' + name : ''}/log[]`, {
             timestamp: new Date().getTime(),
@@ -154,6 +170,7 @@ export class Context {
     private _updateInterval: number = 2000;
     private _updateIntervalHandle?: number;
     private _installedVersion: string = '0.0.0';
+    private _versionInfo?: VersionInfo;
     private database: JsonDB;
 
     get users() {
@@ -212,11 +229,25 @@ export class Context {
         this.saveConfig();
     }
 
-    get installedVersion(): SemVer {
-        return new SemVer(this._installedVersion);
+    get installedVersion(): string{
+        return this._installedVersion;
     }
 
-    set installedVersion(value: SemVer) {
-        this._installedVersion = value.format()
+    set installedVersion(value: string) {
+        this._installedVersion = value;
+        this.saveConfig();
+    }
+
+    get versionInfo(): VersionInfo {
+        if (!this._versionInfo) {
+            this.updateVersionInfo();
+            return {
+                installedVersion: this._installedVersion,
+                latestVersion: '0.0.0',
+                lastChecked: moment('1970-01-01'),
+            };
+        }
+        
+        return this._versionInfo;
     }
 }
