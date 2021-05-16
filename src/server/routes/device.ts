@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
-import moment from "moment";
-import { Context } from "../../lib/system/context";
-import { Display } from "../../lib/peripherals/display";
 import { IO } from "../../lib/peripherals/io";
 import { TemperatureSensorManager } from "../../lib/peripherals/temperature";
+import { Context } from "../../lib/system/context";
 import { systemData } from "../../lib/utils";
 
 const router = Router();

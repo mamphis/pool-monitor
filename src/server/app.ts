@@ -1,7 +1,7 @@
-import { Context } from "../lib/system/context";
 import { Display } from "../lib/peripherals/display";
 import { IO } from "../lib/peripherals/io";
 import { TemperatureSensorManager } from "../lib/peripherals/temperature";
+import { Context } from "../lib/system/context";
 import { Trigger } from "../lib/system/trigger";
 import { Server } from "./server";
 
