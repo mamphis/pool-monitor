@@ -1,11 +1,11 @@
 import EventEmitter from "events";
 import { Gpio } from "onoff";
-import CONST from './consts';
-import { Context } from "./context";
-import { sleep } from "./utils";
+import CONST from '../system/consts';
+import { Context } from "../system/context";
+import { sleep } from "../utils";
 
 export interface IO {
-    on(event: 'buttonPressed', listener: (which: 'filter' | 'pump', newState: boolean) => void): this;
+    on(event: 'buttonPressed', listener: (which: 'salt' | 'pump', newState: boolean) => void): this;
 }
 
 export class IO extends EventEmitter {
@@ -23,23 +23,27 @@ export class IO extends EventEmitter {
     private constructor() {
         super();
 
-        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'falling', { debounceTimeout: 10 });
+        if (process.platform === 'win32') {
+            return;
+        }
+
+        this.btnSalt = new Gpio(CONST.PIN_BUTTON_SALT, 'in', 'falling', { debounceTimeout: 10 });
         this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'falling', { debounceTimeout: 10 });
 
-        this.rlsFilter = new Gpio(CONST.PIN_RELAIS_FILTER, 'out');
+        this.rlsSalt = new Gpio(CONST.PIN_RELAIS_SALT, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
         this.pinDisplayLight = new Gpio(CONST.PIN_DISPLAY_LIGHT, 'low');
     }
 
-    private btnPump: Gpio;
-    private btnFilter: Gpio;
+    private btnPump?: Gpio;
+    private btnSalt?: Gpio;
 
-    private rlsPump: Gpio;
-    private rlsFilter: Gpio;
-    private pinDisplayLight: Gpio;
+    private rlsPump?: Gpio;
+    private rlsSalt?: Gpio;
+    private pinDisplayLight?: Gpio;
 
     private async init() {
-        this.btnPump.watch(async (err, value) => {
+        this.btnPump?.watch(async (err, value) => {
             if (err) {
                 return console.warn(err);
             }
@@ -48,18 +52,18 @@ export class IO extends EventEmitter {
             this.emit('buttonPressed', 'pump', Context.it.pumpState);
         });
 
-        this.btnFilter.watch(async (err, value) => {
+        this.btnSalt?.watch(async (err, value) => {
             if (err) {
                 return console.warn(err);
             }
 
-            await this.toggleFilterState();
-            this.emit('buttonPressed', 'filter', Context.it.filterState);
+            await this.toggleSaltState();
+            this.emit('buttonPressed', 'salt', Context.it.saltState);
         });
     }
 
     async setPumpState(state: boolean) {
-        await this.rlsPump.write(state ? 1 : 0);
+        await this.rlsPump?.write(state ? 1 : 0);
         Context.it.pumpState = state;
     }
 
@@ -67,24 +71,24 @@ export class IO extends EventEmitter {
         await this.setPumpState(!Context.it.pumpState);
     }
 
-    async setFilterState(state: boolean) {
-        if (Context.it.filterState === state) {
+    async setSaltState(state: boolean) {
+        if (Context.it.saltState === state) {
             // State is already set to the correct state :^)
             return;
         }
 
         // Immitade "Swiping Switch"
-        await this.rlsFilter.write(1);
+        await this.rlsSalt?.write(1);
         await sleep(500);
-        await this.rlsFilter.write(0);
-        Context.it.filterState = state;
+        await this.rlsSalt?.write(0);
+        Context.it.saltState = state;
     }
 
-    async toggleFilterState() {
-        await this.setFilterState(!Context.it.filterState);
+    async toggleSaltState() {
+        await this.setSaltState(!Context.it.saltState);
     }
 
     async setDisplayLightState(state: boolean) {
-        await this.pinDisplayLight.write(state ? 1 : 0);
+        await this.pinDisplayLight?.write(state ? 1 : 0);
     }
 }

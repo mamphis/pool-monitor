@@ -1,8 +1,8 @@
 import Lcd from 'lcd';
-import CONST from './consts';
-import { Context } from './context';
+import CONST from '../system/consts';
+import { Context } from '../system/context';
+import { sleep } from '../utils';
 import { IO } from './io';
-import { sleep } from './utils';
 
 export class Display {
     private static instance?: Display;
@@ -23,6 +23,10 @@ export class Display {
     private readonly rows: number = 2;
 
     private constructor() {
+        if (process.platform == 'win32') {
+            return;
+        }
+
         this.lcd = new Lcd({
             rs: CONST.PIN_DISPLAY_RS,
             e: CONST.PIN_DISPLAY_E,
@@ -52,7 +56,7 @@ export class Display {
 
                 lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}   ${sensorText}`, async function () {
                     lcd.setCursor(0, 1);
-                    lcd.print(`F: ${Context.it.filterState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
+                    lcd.print(`S: ${Context.it.saltState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
                 });
 
                 setTimeout(refreshDisplay, 500);
@@ -60,7 +64,7 @@ export class Display {
 
             setInterval(() => cnt++, 10000);
 
-            this.lcd.clear()
+            this.lcd?.clear()
             refreshDisplay();
         });
 
@@ -77,7 +81,7 @@ export class Display {
         }
 
         const lcd = this.lcd;
-        lcd.clear(() => {
+        lcd?.clear(() => {
             try {
                 lcd.close();
             } catch (e) {
@@ -106,9 +110,9 @@ export class Display {
 
         const lcd = this.lcd;
         const lines = text.split('\n').map(l => l.substr(0, this.cols).trim());
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print((lines[0] || ''), function () {
+        lcd?.clear();
+        lcd?.setCursor(0, 0);
+        lcd?.print((lines[0] || ''), function () {
             lcd.setCursor(0, 1);
             lcd.print((lines[1] || ''), function () {
                 console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)

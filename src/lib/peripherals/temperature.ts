@@ -1,4 +1,4 @@
-import { readdir, access, readFile } from 'fs/promises'
+import { access, readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
 class TemperatureSensor {
@@ -51,6 +51,10 @@ export class TemperatureSensorManager {
 
     private async init() {
         if (this.ready) {
+            return;
+        }
+
+        if (process.platform === 'win32') {
             return;
         }
 

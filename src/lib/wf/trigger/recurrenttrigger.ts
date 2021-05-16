@@ -1,8 +1,8 @@
-import { IAction } from "../action/iaction";
-import { ITrigger } from "./itrigger";
-import schedule, { RecurrenceRule } from 'node-schedule';
-import { TriggerJob } from "../triggerjob";
 import moment from "moment";
+import schedule, { RecurrenceRule } from 'node-schedule';
+import { IAction } from "../action/iaction";
+import { TriggerJob } from "../triggerjob";
+import { ITrigger } from "./itrigger";
 
 export class RecurrentTrigger extends ITrigger {
     public readonly rule: RecurrenceRule;

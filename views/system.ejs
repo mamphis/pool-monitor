@@ -1,0 +1,77 @@
+<%- include('includes/head.ejs') -%>
+    <section>
+        <h1 class="title">Version</h1>
+        <div class="columns is-multiline">
+            <div class="column pb-0 is-3">Installierte Version</div>
+            <div class="column pb-0 is-9">
+                <%= versionInfo.installedVersion %>
+            </div>
+            <div class="column pb-0 is-3">Letzte Version</div>
+            <div class="column pb-0 is-9">
+                <%= versionInfo.latestVersion %>
+            </div>
+            <div class="column pb-0 is-3">Zuletzt geprüft</div>
+            <div class="column pb-0 is-9">
+                <%= versionInfo.lastChecked.format('DD.MM.yyyy HH:mm:ss') %>
+            </div>
+            <div class="column">
+                <button
+                    class="button <% if (versionInfo.installedVersion === versionInfo.latestVersion) { %>is-disabled<%}%>"
+                    onclick="update()">Update</button>
+            </div>
+        </div>
+    </section>
+    <section id="status">
+        <div class="panel is-link">
+            <div class="panel-heading" style="border-radius: 0px;">Installation Status</div>
+            <div id="status-spinner" class="panel-block is-justify-content-center">
+                <button class="button is-white is-disabled is-loading"></button>
+            </div>
+        </div>
+    </section>
+    <script>
+        const $status = $('#status');
+        $status.hide();
+        function appendMessage(msg, type) {
+            $status.show();
+            try {
+                const { message } = JSON.parse(msg);
+                const $msgContainer = $('<div />');
+                $msgContainer
+                    .addClass('panel-block')
+                    .addClass('is-justify-content-center')
+                    .addClass(`has-background-${type === 'info' ? 'success' : 'danger'}-light`)
+                    .addClass(`has-text-${type === 'info' ? 'success' : 'danger'}`)
+                const $msgCtrl = $('<div />');
+                $msgCtrl.text(message);
+                $msgContainer.append($msgCtrl);
+                $msgContainer.insertBefore($('#status-spinner'));
+            } catch (e) {
+                console.warn('cannot append message', e, msg);
+            }
+        }
+
+        async function update() {
+            appendMessage('{ "message": "Starte update." }', 'info');
+            const response = await fetch(`${window.location.origin + location.pathname}/update`, {
+                method: 'POST',
+            });
+            if (response.status === 400) {
+                appendMessage(await response.text(), 'error');
+                return;
+            }
+            const reader = response.body.getReader();
+            do {
+                const { value, done } = await reader.read();
+                appendMessage(new TextDecoder().decode(value), 'info');
+                if (done) {
+                    break;
+                }
+            } while (true);
+
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        }
+    </script>
+    <%- include('includes/foot.ejs') -%>

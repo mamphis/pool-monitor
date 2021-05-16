@@ -21,10 +21,33 @@
                 </div>
                 <table class="table is-fullwidth">
                     <tbody>
-                        <% state.temperatures.forEach(sensor=> { %>
+                        <% state.temperatures.forEach((sensor, i)=> { %>
                             <tr>
                                 <td style="width: 50%;">
-                                    <%= sensor.sensor %>
+                                    <span id="sensor<%= i %>">
+                                        <span class="name">
+                                            <%= sensor.name %>
+                                        </span>
+                                        <a class="is-white" href="#" onclick="renameSensor(<%= i %>);"><i
+                                                class="fa fa-pen"></i></a>
+                                    </span>
+                                    <div id="sensor-name<%= i %>" class="field sensor-name has-addons">
+                                        <p class="control">
+                                            <input type="text" class="input is-small is-expanded"
+                                                id="sensor-name-text<%= i %>" value="<%= sensor.name %>">
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-small"
+                                                onclick="applyRenameSensor(<%= i %>, '<%= sensor.sensor %>');">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                        </p>
+                                        <p class="control">
+                                            <a class="button is-small" onclick="cancelRenameSensor(<%= i %>);">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        </p>
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="tag">
@@ -56,13 +79,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width: 50%;"> Filter </td>
+                            <td style="width: 50%;"> Salzanlage </td>
                             <td>
                                 <div class="content is-flex is-justify-content-space-between" style="width: 100%;">
-                                    <span class="tag is-<%= state.filter ? 'success' : 'danger' %>" id="filter">
-                                        <%= state.filter ? 'An' : 'Aus' %>
+                                    <span class="tag is-<%= state.salt ? 'success' : 'danger' %>" id="salt">
+                                        <%= state.salt ? 'An' : 'Aus' %>
                                     </span>
-                                    <button class="button is-small" onclick="toggleState('filter')">Umschalten</button>
+                                    <button class="button is-small" onclick="toggleState('salt')">Umschalten</button>
                                 </div>
                             </td>
                         </tr>
@@ -79,8 +102,10 @@
     </div>
 
     <script>
+        $('.sensor-name').hide();
+
         async function toggleState(which) {
-            const response = await fetch(`${location.href}/toggle/${which}`, {
+            const response = await fetch(`${location.origin + location.pathname}/toggle/${which}`, {
                 method: 'POST'
             });
 
@@ -89,12 +114,39 @@
         }
 
         async function updateInterval() {
-            const response = await fetch(`${location.href}/interval/${$('#update-interval').val()}`, {
+            const response = await fetch(`${location.origin + location.pathname}/interval/${$('#update-interval').val()}`, {
                 method: 'POST'
             });
 
             const result = await response.json();
             $(`#update-interval`).val(interval);
+        }
+
+        async function renameSensor(index) {
+            $(`#sensor${index}`).hide().parent('td').css('width', '75%');
+            $(`#sensor-name${index}`).show();
+        }
+
+        async function cancelRenameSensor(index) {
+            $(`#sensor${index}`).show().parent('td').css('width', '50%');
+            $(`#sensor-name${index}`).hide();
+        }
+
+        async function applyRenameSensor(index, sensor) {
+            const newSensorName = $(`#sensor-name${index}`).find('input').val();
+            console.log(newSensorName);
+            const response = await fetch(`${location.origin + location.pathname}/rename/${sensor}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: newSensorName }),
+            });
+
+            if (response.ok) {
+                $(`#sensor${index}`).find('.name').text((await response.json()).name);
+                cancelRenameSensor(index);
+            }
         }
 
         console.log(`<%- system %>`)
