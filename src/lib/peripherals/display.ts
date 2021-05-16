@@ -1,8 +1,8 @@
 import Lcd from 'lcd';
-import CONST from './consts';
-import { Context } from './context';
+import CONST from '../consts';
+import { Context } from '../context';
 import { IO } from './io';
-import { sleep } from './utils';
+import { sleep } from '../utils';
 
 export class Display {
     private static instance?: Display;

@@ -1,4 +1,4 @@
-import { IO } from "../../io";
+import { IO } from "../../peripherals/io";
 import { ICondition } from "../condition/icondition";
 import { IAction } from "./iaction";
 
