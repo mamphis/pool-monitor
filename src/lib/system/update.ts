@@ -28,7 +28,7 @@ export async function pullLatestVersion() {
     const latestTag = await getLatestVersionTag();
 
     await git.stash();
-    await git.checkout(`tags/${latestTag}`, ['-b', 'runtime']);
+    await git.checkout(`tags/${latestTag}`, ['-B', 'runtime']);
     await git.pull('origin', `tags/${latestTag}`);
     await git.stash(['pop']);
     Context.it.installedVersion = latestTag
