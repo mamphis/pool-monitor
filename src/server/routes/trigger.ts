@@ -33,6 +33,19 @@ router.delete('/:index', (req: Request, res: Response, next: NextFunction) => {
     return res.json({});
 });
 
+router.post('/:index', (req: Request, res: Response, next: NextFunction) => {
+    const index = parseInt(req.params.index);
+
+    if (isNaN(index)) {
+        return res.status(400).json({ error: 'Index is not a number.' });
+    }
+
+    const t = Trigger.it.all[index];
+    Trigger.it.changeState(t.name, req.body.enabled);
+
+    return res.json({});
+});
+
 router.get('/new', (req: Request, res: Response, next: NextFunction) => {
     return res.render('newtrigger', {});
 });
