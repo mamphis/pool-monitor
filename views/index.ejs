@@ -2,13 +2,16 @@
     <div class="columns is-multiline is-mobile">
         <div class="column is-full">
             <div class="box">
-                <h1 class="title">Temperatur Sensoren <a class="button is-white" href="/device"><i class="fa fa-pen"></i></a></h1>
+                <h1 class="title">Temperatur Sensoren <a class="button is-white" href="/device"><i
+                            class="fa fa-pen"></i></a></h1>
                 <table class="table is-fullwidth">
                     <tbody>
                         <% state.temperatures.forEach((sensor, i)=> { %>
                             <tr>
                                 <td style="width: 50%;">
-                                    <span id="sensor<%= i %>"><%= sensor.name %></span>
+                                    <span id="sensor<%= i %>">
+                                        <%= sensor.name %>
+                                    </span>
                                 </td>
                                 <td>
                                     <span class="tag">
@@ -61,6 +64,7 @@
                 <table class="table is-fullwidth">
                     <thead>
                         <tr>
+                            <th>Aktiv</th>
                             <th>Trigger</th>
                             <th>Aktion</th>
                         </tr>
@@ -68,6 +72,9 @@
                     <tbody>
                         <% trigger.forEach((t, i)=> { %>
                             <tr>
+                                <td>
+                                    <input type="checkbox" <%=t.enabled ? 'checked' :'' %>>
+                                </td>
                                 <td>
                                     <%= t.trigger %>
                                 </td>

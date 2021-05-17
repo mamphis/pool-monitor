@@ -11,6 +11,7 @@
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
+                        <th>Aktiv</th>
                         <th>Trigger</th>
                         <th>Aktion</th>
                         <th>Nächste Ausführung</th>
@@ -20,6 +21,9 @@
                 <tbody>
                     <% trigger.forEach((t, i)=> { %>
                         <tr>
+                            <td>
+                                <input type="checkbox" <%=t.enabled ? 'checked' :'' %>>
+                            </td>
                             <td>
                                 <%= t.trigger %>
                             </td>
@@ -42,7 +46,7 @@
     </div>
 
     <script>
-        const del = async (index)  => {
+        const del = async (index) => {
             const url = new URL(window.location.origin + location.pathname);
 
             const response = await fetch(`${url.origin}${url.pathname}/${index}`, {

@@ -12,6 +12,7 @@ export class PersistanceManager {
     static persist(trigger: ITrigger): string {
         let triggerObj: any = {};
         triggerObj.name = trigger.constructor.name;
+        triggerObj.enabled = trigger.enabled;
 
         if (trigger instanceof RecurrentTrigger) {
             triggerObj.hour = trigger.rule.hour as number;
@@ -79,6 +80,7 @@ export class PersistanceManager {
                 throw new Error(`Invalid trigger constructor: ${triggerObj.name}`);
         }
 
+        trigger.enabled = triggerObj.enabled ?? true;
         return trigger;
     }
 

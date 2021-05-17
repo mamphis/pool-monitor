@@ -2,6 +2,8 @@ import { IAction } from "../action/iaction";
 import { TriggerJob } from "../triggerjob";
 
 export abstract class ITrigger {
+    enabled: boolean = true;
+
     constructor(public actions: IAction[]) {
 
     }
