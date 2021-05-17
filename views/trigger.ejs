@@ -60,7 +60,7 @@
         }
 
         async function changeTriggerState(event, index) {
-            const enabled = $(event.target).attr('checked');
+            const enabled = $(event.target).prop('checked');
 
             const response = await fetch(`${window.location.origin}${window.location.pathname}/${index}`, {
                 method: 'POST',
