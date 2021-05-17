@@ -11,6 +11,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
             const condition = action?.conditions[0];
 
             return {
+                enabled: t.trigger.enabled,
                 trigger: t.trigger.getDescription(),
                 action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
             }

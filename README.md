@@ -24,3 +24,11 @@
 - [x] Logging of temperature values
 - [x] Toggle state of devices manually over the website
 - [x] Toggle Light of LCD Display when a button is pressed
+
+## Changelog
+
+**v0.0.2** - _17.05.2021_
+- Added disabling of trigger
+    - Triggers can be disabled through the webinterface
+    - Disabled triggers do not run
+    - Disabled triggers do not show the next invocation time in the webinterface

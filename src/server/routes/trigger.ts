@@ -11,6 +11,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
             
             const invocation = t.job.nextInvocation()?.format('DD.MM.YYYY HH:mm') ?? '---';
             return {
+                enabled: t.trigger.enabled,
                 trigger: t.trigger.getDescription(),
                 action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
                 nextInvocation: invocation
@@ -28,6 +29,19 @@ router.delete('/:index', (req: Request, res: Response, next: NextFunction) => {
 
     const t = Trigger.it.all[index];
     Trigger.it.delete(t.name);
+
+    return res.json({});
+});
+
+router.post('/:index', (req: Request, res: Response, next: NextFunction) => {
+    const index = parseInt(req.params.index);
+
+    if (isNaN(index)) {
+        return res.status(400).json({ error: 'Index is not a number.' });
+    }
+
+    const t = Trigger.it.all[index];
+    Trigger.it.changeState(t.name, req.body.enabled);
 
     return res.json({});
 });

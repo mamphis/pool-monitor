@@ -20,7 +20,7 @@ export class IntervalTrigger extends ITrigger {
 
         return {
             cancel: () => clearInterval(interval),
-            nextInvocation: () => this.lastInvocation?.clone()?.add(this.interval, 'milliseconds')
+            nextInvocation: () => this.enabled ? this.lastInvocation?.clone()?.add(this.interval, 'milliseconds') : undefined,
         };
     }
 
