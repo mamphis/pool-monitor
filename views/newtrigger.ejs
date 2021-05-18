@@ -45,6 +45,36 @@
                             </div>
                             <p class="help">Minute, zu der die Aktion täglich ausgeführt werden soll.</p>
                         </div>
+                        <div class="field is-grouped-multiline">
+                            <div class="control">
+                                <label for="weekday-1" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-1" id="weekday-1">Montag</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-2" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-2" id="weekday-2">Dienstag</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-3" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-3" id="weekday-3">Mittwoch</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-4" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-4" id="weekday-4">Donnerstag</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-5" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-5" id="weekday-5">Freitag</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-6" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-6" id="weekday-6">Samstag</label>
+                            </div>
+                            <div class="control">
+                                <label for="weekday-0" class="checkbox"><input type="checkbox" class="weekday" checked
+                                        name="weekday-0" id="weekday-0">Sonntag</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="trigger config" id="triggerTimestampTrigger">
                         <div class="field">
@@ -252,6 +282,10 @@
                 case 'RecurrentTrigger':
                     triggerObj.hour = parseInt($('#triggerRecurrentTriggerHour').val());
                     triggerObj.minute = parseInt($('#triggerRecurrentTriggerMinute').val());
+                    triggerObj.dayOfWeek = [];
+                    $('.weekday').filter(':checked').each((i, elem) => {
+                        triggerObj.dayOfWeek.push(parseInt(elem.id.replace('weekday-', '')));
+                    });
                     break;
 
                 case 'IntervalTrigger':

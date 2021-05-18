@@ -6,11 +6,12 @@ import { ITrigger } from "./itrigger";
 
 export class RecurrentTrigger extends ITrigger {
     public readonly rule: RecurrenceRule;
-    constructor([hour, minute]: [number, number], actions: IAction[]) {
+    constructor([hour, minute, dayOfWeek]: [number, number, number[]], actions: IAction[]) {
         super(actions);
         this.rule = new RecurrenceRule();
         this.rule.hour = hour;
         this.rule.minute = minute;
+        this.rule.dayOfWeek = dayOfWeek;
     }
 
     async register(name: string): Promise<TriggerJob> {
@@ -25,6 +26,24 @@ export class RecurrentTrigger extends ITrigger {
     }
 
     getDescription(): string {
-        return `Täglich um ${this.rule.hour.toString().padStart(2, '0')}:${this.rule.minute.toString().padStart(2, '0')}`;
+        let when = 'Täglich';
+        const days = this.rule.dayOfWeek as number[];
+        if (days.length !== 7) {
+            // Some Days are missing. List all days
+            const dayMap: { [day: number]: string } = {
+                0: 'sonntags',
+                1: 'montags',
+                2: 'dienstags',
+                3: 'mittwochs',
+                4: 'donnerstags',
+                5: 'freitags',
+                6: 'samstags',
+            }
+
+            when = days.map(d => dayMap[d]).join(', ');
+            when = when[0].toUpperCase() + when.substr(1);
+        }
+
+        return `${when} um ${this.rule.hour.toString().padStart(2, '0')}:${this.rule.minute.toString().padStart(2, '0')}`;
     }
 }

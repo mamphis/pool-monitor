@@ -17,6 +17,7 @@ export class PersistanceManager {
         if (trigger instanceof RecurrentTrigger) {
             triggerObj.hour = trigger.rule.hour as number;
             triggerObj.minute = trigger.rule.minute as number;
+            triggerObj.dayOfWeek = trigger.rule.dayOfWeek;
         } else if (trigger instanceof IntervalTrigger) {
             triggerObj.interval = trigger.interval;
         } else if (trigger instanceof TimestampTrigger) {
@@ -65,7 +66,7 @@ export class PersistanceManager {
 
         switch (triggerObj.name) {
             case 'RecurrentTrigger':
-                trigger = new RecurrentTrigger([triggerObj.hour, triggerObj.minute], actions);
+                trigger = new RecurrentTrigger([triggerObj.hour, triggerObj.minute, triggerObj.dayOfWeek ?? [0, 1, 2, 3, 4, 5, 6]], actions);
                 break;
 
             case 'IntervalTrigger':
