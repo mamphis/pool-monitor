@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Context } from "../../lib/system/context";
 import { installApplication, installDependencies, newerVersionAvailable, pullLatestVersion, restartApplication } from "../../lib/system/update";
-import { sleep } from "../../lib/utils";
 
 const router = Router();
 
@@ -27,6 +26,16 @@ router.post('/update', async (req: Request, res: Response, next: NextFunction) =
     }
 
     return res.status(400).json({ ok: false, message: 'Keine neuere Version verfügbar.' })
+});
+
+router.post('/check', async (req: Request, res: Response, next: NextFunction) => {
+    await Context.it.updateVersionInfo();
+    const versionInfo = Context.it.versionInfo;
+    res.json({
+        installedVersion: versionInfo.installedVersion,
+        latestVersion: versionInfo.latestVersion,
+        lastChecked: versionInfo.lastChecked.format('DD.MM.yyyy HH:mm:ss'),
+    });
 });
 
 export { router as systemRouter };
