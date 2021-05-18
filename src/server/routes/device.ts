@@ -19,9 +19,11 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
     switch (device) {
         case 'salt':
             await IO.it.toggleSaltState();
-            return res.json({ state: Context.it.saltState? 'An' : 'Aus' });
+            Context.it.logIODevice('salt', Context.it.saltState ? 1 : 0, 'web');
+            return res.json({ state: Context.it.saltState ? 'An' : 'Aus' });
         case 'pump':
             await IO.it.togglePumpState();
+            Context.it.logIODevice('pump', Context.it.pumpState ? 1 : 0, 'web');
             return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
     }
 
@@ -31,11 +33,11 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
 router.post('/rename/:sensor', async (req: Request, res: Response, next: NextFunction) => {
     const sensor = req.params.sensor;
     if (!TemperatureSensorManager.it.sensors.includes(sensor)) {
-        return res.status(404).json({message: `Temperatursensor "${sensor}" existiert nicht.`});
+        return res.status(404).json({ message: `Temperatursensor "${sensor}" existiert nicht.` });
     }
 
     await Context.it.setTempName(sensor, req.body.name);
-    return res.json({name: Context.it.getTempName(sensor)});
+    return res.json({ name: Context.it.getTempName(sensor) });
 });
 
 router.post('/interval/:value', async (req: Request, res: Response, next: NextFunction) => {

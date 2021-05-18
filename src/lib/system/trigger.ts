@@ -1,11 +1,16 @@
+import EventEmitter from "events";
 import { access, readFile, writeFile } from "fs/promises";
+import { DeviceStateAction } from "../wf/action/devicestateaction";
 import { PersistanceManager } from "../wf/persistancemanager";
 import { ITrigger } from "../wf/trigger/itrigger";
 import { TriggerJob } from "../wf/triggerjob";
 
-export class Trigger {
-    private static instance?: Trigger;
+export interface Trigger {
+    on(event: 'deviceStateChanged', listener: (device: 'pump' | 'salt', newState: boolean) => void): this;
+}
 
+export class Trigger extends EventEmitter {
+    private static instance?: Trigger;
 
     static get it(): Trigger {
         if (!this.instance) {
@@ -17,7 +22,7 @@ export class Trigger {
     }
 
     private constructor() {
-
+        super();
     }
 
     private readonly configPath = './trigger.json';
@@ -60,6 +65,13 @@ export class Trigger {
             }
 
             const trigger = PersistanceManager.fromString(triggerDef);
+
+            trigger.on('actionExecuted', (t, a) => {
+                if (a instanceof DeviceStateAction) {
+                    this.emit('deviceStateChanged', a.device, a.state);
+                }
+            });
+            
             const job = await trigger.register(name);
             this._job[name] = job;
         }
