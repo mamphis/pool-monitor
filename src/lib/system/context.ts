@@ -2,7 +2,9 @@ import { hash } from 'bcrypt';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
+import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
+import { Trigger } from './trigger';
 import { getLatestVersionTag } from './update';
 
 export interface LogEntry {
@@ -65,6 +67,14 @@ export class Context {
         this.reScheduleUpdate();
         this.update();
         this.updateVersionInfo();
+
+        IO.it.on('buttonPressed', (device, state) => {
+            this.logIODevice(device, state ? 1 : 0, 'button');
+        });
+
+        Trigger.it.on('deviceStateChanged', (device, state) => {
+            this.logIODevice(device, state ? 1 : 0, 'trigger');
+        });
     }
 
     private reScheduleUpdate() {
@@ -77,7 +87,7 @@ export class Context {
     private async update() {
         this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-            this.log('temp', s, t ?? 0);
+            this.logTemperature(s, t || 0);
             // this.cleanTempLog(s);
 
             this.saveConfig();
@@ -142,10 +152,18 @@ export class Context {
         }
     }
 
-    private log(device: string, name: string, value: number) {
-        this.database.push(`/${device}${name != '' ? '/' + name : ''}/log[]`, {
+    private logTemperature(sensorId: string, value: number) {
+        this.database.push(`/temp/${sensorId}/log[]`, {
             timestamp: new Date().getTime(),
             value: value
+        });
+    }
+
+    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger') {
+        this.database.push(`/${device}/log[]`, {
+            timestamp: new Date().getTime(),
+            value,
+            from,
         });
     }
 
@@ -187,7 +205,6 @@ export class Context {
 
     set saltState(state) {
         this._saltState = state;
-        this.log('salt', '', state ? 1 : 0);
         this.saveConfig();
     }
 
@@ -197,7 +214,6 @@ export class Context {
 
     set pumpState(state) {
         this._pumpState = state;
-        this.log('pump', '', state ? 1 : 0);
         this.saveConfig();
     }
 
@@ -228,7 +244,7 @@ export class Context {
         this.saveConfig();
     }
 
-    get installedVersion(): string{
+    get installedVersion(): string {
         return this._installedVersion;
     }
 
@@ -246,7 +262,7 @@ export class Context {
                 lastChecked: moment('1970-01-01'),
             };
         }
-        
+
         return this._versionInfo;
     }
 }
