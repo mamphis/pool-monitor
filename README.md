@@ -27,6 +27,10 @@
 
 ## Changelog
 
+**v0.0.3-rc3** - __18.05.2021__
+- Added Weekdays to Recurrent Trigger
+    - Specify the days of the week on which the trigger should run
+
 **v0.0.3-rc2** - __18.05.2021__
 - Removed downloaded scripts and added jQuery and Apexcharts to npm packages to reduce size of repository
 
