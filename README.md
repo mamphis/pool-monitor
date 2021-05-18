@@ -27,6 +27,9 @@
 
 ## Changelog
 
+**v0.0.3-rc2** - __18.05.2021__
+- Removed downloaded scripts and added jQuery and Apexcharts to npm packages to reduce size of repository
+
 **v0.0.3.rc1** - __18.05.2021__
 - Added Button to force a check if new versions are available
 
