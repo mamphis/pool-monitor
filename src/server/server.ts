@@ -18,6 +18,9 @@ export class Server {
         this.app.use(cors());
 
         this.app.use('/static', staticImport('./static'));
+        this.app.use('/static/js', staticImport('./node_modules/jquery/dist'));
+        this.app.use('/static/js', staticImport('./node_modules/apexcharts/dist'));
+        this.app.use('/static/css', staticImport('./node_modules/apexcharts/dist'));
         this.app.set('view engine', 'ejs');
 
         this.app.use(async (req: Request, res: Response, next: NextFunction) => {
