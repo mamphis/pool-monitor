@@ -2,7 +2,6 @@ import { hash } from 'bcrypt';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
-import { SemVer } from 'semver';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { getLatestVersionTag } from './update';
 
@@ -135,7 +134,7 @@ export class Context {
         Object.assign(this, JSON.parse(content));
     }
 
-    private async updateVersionInfo() {
+    async updateVersionInfo() {
         this._versionInfo = {
             installedVersion: this._installedVersion,
             latestVersion: await getLatestVersionTag(),
