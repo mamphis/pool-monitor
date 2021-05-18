@@ -3,20 +3,21 @@
         <h1 class="title">Version</h1>
         <div class="columns is-multiline">
             <div class="column pb-0 is-3">Installierte Version</div>
-            <div class="column pb-0 is-9">
+            <div class="column pb-0 is-9" id="installed-version">
                 <%= versionInfo.installedVersion %>
             </div>
             <div class="column pb-0 is-3">Letzte Version</div>
-            <div class="column pb-0 is-9">
+            <div class="column pb-0 is-9" id="latest-version">
                 <%= versionInfo.latestVersion %>
             </div>
             <div class="column pb-0 is-3">Zuletzt geprüft</div>
-            <div class="column pb-0 is-9">
+            <div class="column pb-0 is-9" id="last-checked">
                 <%= versionInfo.lastChecked.format('DD.MM.yyyy HH:mm:ss') %>
             </div>
-            <div class="column">
+            <div class="column buttons">
+                <button class="button is-small" onclick="checkVersion(event)">Neue Version Prüfen</button>
                 <button
-                    class="button <% if (versionInfo.installedVersion === versionInfo.latestVersion) { %>is-disabled<%}%>"
+                    class="button is-small <% if (versionInfo.installedVersion === versionInfo.latestVersion) { %>is-disabled<%}%>"
                     onclick="update()">Update</button>
             </div>
         </div>
@@ -72,6 +73,21 @@
             setTimeout(() => {
                 location.reload();
             }, 1500);
+        }
+
+        async function checkVersion(event) {
+            const $button = $(event.target);
+            $button.addClass('is-loading');
+            const response = await fetch(`${window.location.origin + location.pathname}/check`, {
+                method: 'POST'
+            });
+
+            const { installedVersion, latestVersion, lastChecked } = await response.json();
+            
+            $('#installed-version').text(installedVersion);
+            $('#latest-version').text(latestVersion);
+            $('#last-checked').text(lastChecked);
+            $button.removeClass('is-loading');
         }
     </script>
     <%- include('includes/foot.ejs') -%>

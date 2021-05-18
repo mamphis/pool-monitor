@@ -27,6 +27,9 @@
 
 ## Changelog
 
+**v0.0.3.rc1** - __18.05.2021__
+- Added Button to force a check if new versions are available
+
 **v0.0.2** - _17.05.2021_
 - Added disabling of trigger
     - Triggers can be disabled through the webinterface
