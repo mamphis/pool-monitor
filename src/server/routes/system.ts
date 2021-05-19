@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { Context } from "../../lib/system/context";
+import moment from "moment";
+import { Context, LogEntry } from "../../lib/system/context";
 import { installApplication, installDependencies, newerVersionAvailable, pullLatestVersion, restartApplication } from "../../lib/system/update";
 
 const router = Router();
@@ -7,6 +8,20 @@ const router = Router();
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
     return res.render('system', {
         versionInfo: Context.it.versionInfo,
+        logEntries: Context.it.devices.reduce((prev, curr) => {
+            prev.push(...curr.log.map(l => {
+                return {
+                    name: curr.name,
+                    ...l,
+                };
+            }));
+            return prev;
+        }, [] as (LogEntry & { name: string })[]).sort((a, b) => b.timestamp - a.timestamp).map(l => {
+            return {
+                ...l,
+                timestamp: moment(new Date(l.timestamp)).format('DD.MM.YYYY HH:mm')
+            }
+        }),
     });
 });
 

@@ -9,6 +9,7 @@ import { getLatestVersionTag } from './update';
 
 export interface LogEntry {
     value: number;
+    from?: string;
     timestamp: number;
 }
 
@@ -232,6 +233,24 @@ export class Context {
         } else {
             return {};
         }
+    }
+
+    get devices(): Device[] {
+        const devices: Device[] = [];
+        if (this.database.exists('/pump')) {
+            devices.push({
+                name: 'Pumpe',
+                log: this.database.getData('/pump/log'),
+            });
+        }
+        if (this.database.exists('/salt')) {
+            devices.push({
+                name: 'Salzanlage',
+                log: this.database.getData('/salt/log'),
+            });
+        }
+
+        return devices;
     }
 
     get updateInterval(): number {
