@@ -23,8 +23,9 @@ export abstract class ITrigger extends EventEmitter {
                 }
             }
 
-            await action.execute();
-            this.emit('actionExecuted', this, action);
+            if (await action.execute()) {
+                this.emit('actionExecuted', this, action);
+            }
         }
     }
 
