@@ -60,7 +60,6 @@ export class Context {
 
     private async init() {
         if (!await this.existsConfig()) {
-            this._users['admin'] = await hash('admin', 10);
             await this.saveConfig();
         }
 
@@ -195,8 +194,8 @@ export class Context {
         return this._users;
     }
 
-    set users(users) {
-        this._users = users;
+    setUser(username: string, password: string) {
+        this._users[username] = password;
         this.saveConfig();
     }
 

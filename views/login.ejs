@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Pool Monitor - Login
+    </title>
+    <link rel="stylesheet" href="/static/css/all.css">
+    <link rel="stylesheet" href="/static/css/bulma.css">
+</head>
+
+<body>
+
+    <div class="container has-text-centered p-6">
+        <div class="column is-4 is-offset-4">
+            <h3 class="title has-text-black">Login</h3>
+            <hr class="login-hr">
+            <p class="subtitle has-text-black">Bitte einloggen</p>
+            <div class="box">
+                <form method="POST">
+                    <div class="field">
+                        <div class="control">
+                            <input class="input is-large" name="username" type="text" placeholder="Benutzername"
+                                autofocus="">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <input class="input is-large" name="password" type="password" placeholder="Passwort">
+                        </div>
+                    </div>
+                    <button class="button is-block is-info is-large is-fullwidth">Login <i class="fa fa-sign-in"
+                            aria-hidden="true"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
