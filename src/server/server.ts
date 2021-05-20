@@ -21,6 +21,9 @@ export class Server {
         this.app.use('/static/js', staticImport('./node_modules/jquery/dist'));
         this.app.use('/static/js', staticImport('./node_modules/apexcharts/dist'));
         this.app.use('/static/css', staticImport('./node_modules/apexcharts/dist'));
+        this.app.use('/static/css', staticImport('./node_modules/@fortawesome/fontawesome-free/css'));
+        this.app.use('/static/webfonts', staticImport('./node_modules/@fortawesome/fontawesome-free/webfonts'));
+        this.app.use('/static/css', staticImport('./node_modules/bulma/css'));
         this.app.set('view engine', 'ejs');
 
         this.app.use(async (req: Request, res: Response, next: NextFunction) => {
