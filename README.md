@@ -26,6 +26,19 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.4-rc3** - __20.05.2021__
+- Formatted the system view
+    - Make the view uniform to other views
+
+**v0.0.4-rc2** - __20.05.2021__
+- Removed the static served content from repository
+    - Use the npm packages instead
+
+**v0.0.4-rc1** - __20.05.2021__
+- Removed the update logic from this application
+    - Created a new npm package `@pcsmw/node-app-updater`
+    - Use this package to update the application now
+
 **v0.0.3** - __19.05.2021__
 - Log the source of a device state change.
     - Logs weather the device was triggered from a button, the web or a trigger
