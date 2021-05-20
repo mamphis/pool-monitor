@@ -1,4 +1,7 @@
 <%- include('includes/head.ejs') -%>
+
+    <link rel="stylesheet" href="/static/css/xterm.css">
+    <script src="/static/js/xterm.js"></script>
     <div class="panel">
         <div class="panel-heading">Systemeinstellungen</div>
         <div class="panel-block is-active">
@@ -89,8 +92,76 @@
                 </div>
             </div>
         </div>
+
+        <div class="panel-block">
+            <div class="control">
+                <div id="xterm"></div>
+            </div>
+        </div>
     </div>
     <script>
+        const terminal = new Terminal();
+        const socket = new WebSocket(`ws://${location.hostname}:3001`);
+        let terminalReady = false;
+        let currentCommand = '';
+        socket.onopen = (ev) => {
+            terminal.open(document.getElementById('xterm'));
+            prompt(terminal);
+
+            socket.onmessage = (msg) => {
+                const { stdout, stderr } = JSON.parse(msg.data);
+                console.log({ stdout, stderr });
+                if (stdout) {
+                    terminal.write('> ' + stdout.replaceAll('\n', '\r\n'));
+                } else if (stderr) {
+                    terminal.write('! ' + stderr);
+                }
+
+                prompt(terminal);
+                terminal.setOption('disableStdin', false);
+            }
+
+            terminalReady = true;
+        }
+
+        function prompt(term) {
+            term.write('\r\n$ ');
+        }
+
+        terminal.prompt = () => {
+            terminal.write('\r\n$ ');
+        };
+
+        terminal.onData(e => {
+            if (!terminalReady) {
+                return;
+            }
+
+            switch (e) {
+                case '\r': // Enter
+                    terminal.write('\r\n');
+                    socket.send(currentCommand);
+                    terminal.setOption('disableStdin', true);
+                    currentCommand = '';
+                    break;
+                case '\u0003': // Ctrl+C
+                    currentCommand = '';
+                    prompt(terminal);
+                    break;
+                case '\u007F': // Backspace (DEL)
+                    // Do not delete the prompt
+                    if (terminal._core.buffer.x > 2) {
+                        terminal.write('\b \b');
+                    }
+
+                    currentCommand = currentCommand.substr(0, currentCommand - 1);
+                    break;
+                default: // Print all other characters for demo
+                    terminal.write(e);
+                    currentCommand += e;
+            }
+        });
+
         const $status = $('#status');
         $status.hide();
         function appendMessage(msg, type) {
