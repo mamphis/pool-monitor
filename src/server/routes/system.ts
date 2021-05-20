@@ -38,7 +38,15 @@ router.post('/update', async (req: Request, res: Response, next: NextFunction) =
         const iterator = updater.update(Context.it.installedVersion);
         let done = false;
         do {
-            const result = await iterator.next();
+            let result;
+            try {
+                result = await iterator.next();
+            } catch (e) {
+                await sleep(100);
+                res.end(JSON.stringify({ ok: false, message: e.message }));
+                break;
+            }
+
             done = result.done ?? true;
             switch (result.value) {
                 case UpdateProgress.DownloadedLatestVersion:
