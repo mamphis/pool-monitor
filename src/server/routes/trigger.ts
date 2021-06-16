@@ -13,6 +13,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
             return {
                 enabled: t.trigger.enabled,
                 trigger: t.trigger.getDescription(),
+                name: t.name,
                 action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
                 nextInvocation: invocation
             }

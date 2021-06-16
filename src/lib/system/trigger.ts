@@ -5,7 +5,7 @@ import { DeviceStateAction } from "../wf/action/devicestateaction";
 import { DeviceStateCondition } from "../wf/condition/devicestatecondition";
 
 export interface Trigger {
-    on(event: 'deviceStateChanged', listener: (device: 'pump' | 'salt', newState: boolean) => void): this;
+    on(event: 'deviceStateChanged', listener: (device: 'pump' | 'salt', newState: boolean, triggerName: string) => void): this;
 }
 
 export class Trigger extends EventEmitter {
@@ -70,7 +70,7 @@ export class Trigger extends EventEmitter {
 
             trigger.on('actionExecuted', (t, a) => {
                 if (a instanceof DeviceStateAction) {
-                    this.emit('deviceStateChanged', a.device, a.state);
+                    this.emit('deviceStateChanged', a.device, a.state, name);
                 }
             });
 

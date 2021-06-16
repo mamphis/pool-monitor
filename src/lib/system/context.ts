@@ -70,11 +70,11 @@ export class Context {
         this.updateVersionInfo();
 
         IO.it.on('buttonPressed', (device, state) => {
-            this.logIODevice(device, state ? 1 : 0, 'button');
+            this.logIODevice(device, state ? 1 : 0, 'button', device);
         });
 
-        Trigger.it.on('deviceStateChanged', (device, state) => {
-            this.logIODevice(device, state ? 1 : 0, 'trigger');
+        Trigger.it.on('deviceStateChanged', (device, state, triggerName) => {
+            this.logIODevice(device, state ? 1 : 0, `trigger`, triggerName);
         });
     }
 
@@ -160,11 +160,11 @@ export class Context {
         });
     }
 
-    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger') {
+    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger', name: string) {
         this.database.push(`/${device}/log[]`, {
             timestamp: new Date().getTime(),
             value,
-            from,
+            from: `${from}[${name}]`,
         });
     }
 
