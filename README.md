@@ -7,7 +7,7 @@
 - [x] Connect Buttons to toggle relais / devices
 - [x] Display state of connected devices in display
 - [x] Create a WebServer which can talk to the application
-- [ ] Login into the webserver
+- [x] Login into the webserver
 - [x] View State of Sensors and Conencted Devices
 - [x] Create Flow on WebSite
     - At 21:00
@@ -26,6 +26,12 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+
+**v0.0.4-rc5** - __27.06.2021__
+- Added Login for UI
+- Added Console to execute commands
+- Seperated Workflow Logic into seperate package
+- Log the source of the action which toggled the state of a device
 
 **v0.0.4-rc4** - __20.05.2021__
 - Propagate error messages to the ui
