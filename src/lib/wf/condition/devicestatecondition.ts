@@ -1,8 +1,11 @@
 import { Context } from "../../system/context";
-import { ICondition } from "./icondition";
+import { Condition } from "@nucleus/wf";
 
-export class DeviceStateCondition extends ICondition {
-    constructor(public readonly device: 'pump' | 'salt', public readonly state: boolean) {
+export class DeviceStateCondition extends Condition.ICondition {
+    public device!: 'pump' | 'salt';
+    public state!: boolean;
+
+    constructor() {
         super();
     }
 
@@ -33,5 +36,12 @@ export class DeviceStateCondition extends ICondition {
 
     getDescription(): string {
         return `wenn der Status ${this.getDeviceName()} "${this.getState()}" ist.`
+    }
+
+    persist(): Partial<DeviceStateCondition> {
+        return {
+            state: this.state,
+            device: this.device
+        }
     }
 }
