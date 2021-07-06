@@ -51,9 +51,9 @@ export class Server {
 
         this.app.use('/login', loginRouter);
         this.app.use('/register', registerRouter);
-        this.app.use('/', auth, indexRouter);
-        this.app.use('/device', auth, temperatureRouter);
-        this.app.use('/trigger', auth, triggerRouter);
+        this.app.use('/', indexRouter);
+        this.app.use('/device', temperatureRouter);
+        this.app.use('/trigger', triggerRouter);
         this.app.use('/system', auth, systemRouter);
 
         this.app.use(async (req: Request, res: Response, next: NextFunction) => {
