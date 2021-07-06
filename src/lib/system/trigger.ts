@@ -1,12 +1,11 @@
+import { PersistanceManager, Trigger as WfTrigger, TriggerJob } from "@nucleus/wf";
 import EventEmitter from "events";
 import { access, readFile, writeFile } from "fs/promises";
 import { DeviceStateAction } from "../wf/action/devicestateaction";
-import { PersistanceManager } from "../wf/persistancemanager";
-import { ITrigger } from "../wf/trigger/itrigger";
-import { TriggerJob } from "../wf/triggerjob";
+import { DeviceStateCondition } from "../wf/condition/devicestatecondition";
 
 export interface Trigger {
-    on(event: 'deviceStateChanged', listener: (device: 'pump' | 'salt', newState: boolean) => void): this;
+    on(event: 'deviceStateChanged', listener: (device: 'pump' | 'salt', newState: boolean, triggerName: string) => void): this;
 }
 
 export class Trigger extends EventEmitter {
@@ -15,6 +14,9 @@ export class Trigger extends EventEmitter {
     static get it(): Trigger {
         if (!this.instance) {
             this.instance = new Trigger();
+            PersistanceManager.registerAction(DeviceStateAction);
+            PersistanceManager.registerCondition(DeviceStateCondition);
+
             this.instance.init();
         }
 
@@ -68,10 +70,10 @@ export class Trigger extends EventEmitter {
 
             trigger.on('actionExecuted', (t, a) => {
                 if (a instanceof DeviceStateAction) {
-                    this.emit('deviceStateChanged', a.device, a.state);
+                    this.emit('deviceStateChanged', a.device, a.state, name);
                 }
             });
-            
+
             const job = await trigger.register(name);
             this._job[name] = job;
         }
@@ -93,7 +95,7 @@ export class Trigger extends EventEmitter {
         }
     }
 
-    get all(): Array<{ name: string, job: TriggerJob, trigger: ITrigger }> {
+    get all(): Array<{ name: string, job: TriggerJob, trigger: WfTrigger.ITrigger }> {
         return Object.keys(this._triggers).map(name => {
             return { name, job: this._job[name], trigger: PersistanceManager.fromString(this._triggers[name]) };
         })

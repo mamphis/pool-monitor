@@ -20,7 +20,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
         }, [] as (LogEntry & { name: string })[]).sort((a, b) => b.timestamp - a.timestamp).map(l => {
             return {
                 ...l,
-                timestamp: moment(new Date(l.timestamp)).format('DD.MM.YYYY HH:mm')
+                timestamp: moment(new Date(l.timestamp)).format('DD.MM.YYYY HH:mm:ss')
             }
         }),
     });
@@ -35,7 +35,7 @@ router.post('/update', async (req: Request, res: Response, next: NextFunction) =
         res.chunkedEncoding = true;
         res.write(JSON.stringify({ ok: true, message: 'Neue Version wird heruntergeladen.' }));
 
-        const iterator = updater.update(Context.it.installedVersion);
+        const iterator = updater.update();
         let done = false;
         do {
             let result;
