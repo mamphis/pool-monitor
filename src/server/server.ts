@@ -3,21 +3,20 @@ import cors from 'cors';
 import express, { Application, NextFunction, Request, Response, static as staticImport, urlencoded } from "express";
 import createHttpError, { HttpError } from 'http-errors';
 import moment from 'moment';
+import { Server as WebSocketServer } from 'ws';
+import { Terminal } from '../lib/terminal/terminal';
 import { randomString } from '../lib/utils';
-import { auth, login } from './middleware/auth';
+import { auth } from './middleware/auth';
 import { indexRouter } from "./routes";
 import { temperatureRouter } from "./routes/device";
 import { loginRouter } from './routes/login';
 import { registerRouter } from './routes/register';
 import { systemRouter } from './routes/system';
 import { triggerRouter } from "./routes/trigger";
-import { Server as WebSocketServer } from 'ws';
-import { exec } from 'child_process';
 
 export class Server {
     private app: Application;
     private wss: WebSocketServer;
-    private cookieParser: any;
     private cookieSecret: string = ``;
     constructor(private port: number) {
         this.app = express();
@@ -26,8 +25,7 @@ export class Server {
 
     async config() {
         this.cookieSecret = randomString(10);
-        this.cookieParser = cookieParser(this.cookieSecret);
-        this.app.use(this.cookieParser);
+        this.app.use(cookieParser(this.cookieSecret));
         this.app.use(express.json());
         this.app.use(urlencoded({ extended: true }));
         this.app.use(cors());
@@ -78,44 +76,7 @@ export class Server {
         });
 
         this.wss.on('connection', async (socket, req) => {
-            const { cookie } = req.headers;
-            if (!cookie) {
-                socket.close(3001, 'No cookie 🍪');
-                console.warn(`The socket request has no cookie. 🍪`);
-                return;
-            }
-
-            const cookies = cookie.split(';').map(c => c.trim()).reduce((prev, curr) => { 
-                const [key, value] = curr.split('=');
-                prev[key] = decodeURIComponent(value);
-                return prev;
-            }, {} as { [key: string]: string });
-
-            const success = cookieParser.signedCookie(cookies.user, this.cookieSecret);
-            if (!success) {
-                socket.close(3002, 'Cookie not valid ❌');
-                console.warn('The socket cookie was not valid. ❌');
-                return;
-            }
-
-            if (!await login(success)) {
-                socket.close(3003, 'Credentials not valid 🔐');
-                console.warn('The socket cookie can not login due invalid credentials. 🔐');
-                return;
-            }
-
-            console.log("Someone connected.");
-            socket.on('message', (data) => {
-                console.log(data);
-                try {
-                    exec(data as string, (err, stdout, stderr) => {
-                        socket.send(JSON.stringify({ stdout, stderr }));
-                    });
-                }
-                catch (e) {
-                    socket.send(JSON.stringify({ stderr: `${e.name}: ${e.message}` }));
-                }
-            });
+            Terminal.startSession(socket, req, this.cookieSecret);
         });
     }
 
