@@ -80,7 +80,7 @@ export class Server {
         this.wss.on('connection', async (socket, req) => {
             const { cookie } = req.headers;
             if (!cookie) {
-                socket.close();
+                socket.close(3001, 'No cookie 🍪');
                 console.warn(`The socket request has no cookie. 🍪`);
                 return;
             }
@@ -93,18 +93,18 @@ export class Server {
 
             const success = cookieParser.signedCookie(cookies.user, this.cookieSecret);
             if (!success) {
-                socket.close();
-                console.warn('The socket cookie was not valid. ❌', success);
+                socket.close(3002, 'Cookie not valid ❌');
+                console.warn('The socket cookie was not valid. ❌');
                 return;
             }
 
             if (!await login(success)) {
-                socket.close();
-                console.warn('The socket cookie can not login. ❌', success);
+                socket.close(3003, 'Credentials not valid 🔐');
+                console.warn('The socket cookie can not login due invalid credentials. 🔐');
                 return;
             }
 
-            console.log("Someone connected.", success);
+            console.log("Someone connected.");
             socket.on('message', (data) => {
                 console.log(data);
                 try {
