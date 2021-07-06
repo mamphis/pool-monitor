@@ -36,7 +36,6 @@ export class Context {
     static get it(): Context {
         if (!this.instance) {
             this.instance = new Context();
-            this.instance.init();
         }
 
         return this.instance;
@@ -58,7 +57,7 @@ export class Context {
         }
     }
 
-    private async init() {
+    async init() {
         if (!await this.existsConfig()) {
             await this.saveConfig();
         }
