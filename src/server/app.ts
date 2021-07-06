@@ -7,6 +7,7 @@ import { Server } from "./server";
 
 export async function start() {
     const server = new Server(3000);
+    await Context.it.init();
     Display.it;
     TemperatureSensorManager.it;
     IO.it;
