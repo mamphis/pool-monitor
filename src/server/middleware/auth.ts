@@ -60,7 +60,7 @@ export async function login(usernameOrCookie: string, password?: string): Promis
     const users = Context.it.users;
 
     if (users[username]) {
-        if (await compare(pwd, users[username])) {
+        if (await compare(pwd, users[username].password)) {
             if (!password) {
                 return { success: true, username };
             }
