@@ -26,6 +26,10 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5-rc3** - __07.07.2021__
+- Added a telegram bot interface which can send the current status of the pool
+- Connect the user to the telegram account via a secret key, generated for the user
+
 **v0.0.5-rc2** - __06.07.2021__
 - Revamp the Terminal
 - Implemented system commands like `!status` to view status via the console
