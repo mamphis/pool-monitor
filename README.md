@@ -26,6 +26,10 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5-rc4** - __10.07.2021__
+- Added toggle from telegram
+- Send telegram notification if a state was toggled
+
 **v0.0.5-rc3** - __07.07.2021__
 - Added a telegram bot interface which can send the current status of the pool
 - Connect the user to the telegram account via a secret key, generated for the user
