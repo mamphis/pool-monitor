@@ -1,4 +1,5 @@
 import { PersistanceManager, Trigger as WfTrigger, TriggerJob } from "@nucleus/wf";
+import { IAction } from "@nucleus/wf/out/wf/action/iaction";
 import EventEmitter from "events";
 import { access, readFile, writeFile } from "fs/promises";
 import { DeviceStateAction } from "../wf/action/devicestateaction";
@@ -68,9 +69,9 @@ export class Trigger extends EventEmitter {
 
             const trigger = PersistanceManager.fromString(triggerDef);
 
-            trigger.on('actionExecuted', (t, a) => {
+            trigger.on('actionExecuted', (t: WfTrigger.ITrigger, a: IAction) => {
                 if (a instanceof DeviceStateAction) {
-                    this.emit('deviceStateChanged', a.device, a.state, name);
+                    this.emit('deviceStateChanged', a.device, a.state, `${name}`);
                 }
             });
 
