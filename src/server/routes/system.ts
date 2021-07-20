@@ -1,9 +1,9 @@
+import Updater, { UpdateProgress } from "@pcsmw/node-app-updater";
 import { NextFunction, Request, Response, Router } from "express";
 import moment from "moment";
-import { Context, LogEntry } from "../../lib/system/context";
-import Updater, { UpdateProgress } from "@pcsmw/node-app-updater";
-import { sleep } from "../../lib/utils";
 import { Telegram } from "../../lib/interfaces/telegram";
+import { Context, LogEntry } from "../../lib/system/context";
+import { sleep } from "../../lib/utils";
 
 const router = Router();
 
@@ -28,9 +28,20 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
+router.post('/user', async (req: Request, res: Response, next: NextFunction) => {
+    let { notificationEnabled, notificationMuted } = req.body;
+
+    if (!notificationEnabled) {
+        notificationMuted = false;
+    }
+
+    Context.it.updateUser(res.locals.user.name, { notificationMuted, notificationEnabled });
+
+    res.json(Context.it.users[res.locals.user.name]);
+});
+
 router.post('/update', async (req: Request, res: Response, next: NextFunction) => {
     const updater = new Updater();
-
 
     if (await updater.isNewerVersionAvailable(Context.it.installedVersion)) {
         res.status(200);

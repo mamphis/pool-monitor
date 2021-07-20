@@ -47,11 +47,14 @@ export class Telegram {
             const users = Object.keys(Context.it.users);
             users.forEach(username => {
                 const user = Context.it.users[username];
+                if (user.telegram.id !== 0 && user.telegram.notificationEnabled) {
                     this.api.sendMessage(user.telegram.id, `
 Hallo ${user.name}!
 Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der neue Status ist ${state ? 'an ✅' : 'aus ❌'}.`, {
                         reply_markup: keyboards.default,
+                        disable_notification: user.telegram.notificationMuted,
                     });
+                }
             });
         });
 
@@ -201,6 +204,7 @@ ${t.trigger.actions.map(a => a.getDescription()).join()}
             if (user.telegram.id !== 0 && user.telegram.notificationEnabled) {
                 this.api.sendMessage(user.telegram.id, await this.getPoolStatusText(), {
                     parse_mode: 'MarkdownV2',
+                    disable_notification: user.telegram.notificationMuted,
                 });
             }
         }
