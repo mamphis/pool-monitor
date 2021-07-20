@@ -3,6 +3,7 @@ import { IAction } from "@nucleus/wf/out/wf/action/iaction";
 import EventEmitter from "events";
 import { access, readFile, writeFile } from "fs/promises";
 import { DeviceStateAction } from "../wf/action/devicestateaction";
+import { TelegramAction } from "../wf/action/telegramaction";
 import { DeviceStateCondition } from "../wf/condition/devicestatecondition";
 
 export interface Trigger {
@@ -16,6 +17,7 @@ export class Trigger extends EventEmitter {
         if (!this.instance) {
             this.instance = new Trigger();
             PersistanceManager.registerAction(DeviceStateAction);
+            PersistanceManager.registerAction(TelegramAction);
             PersistanceManager.registerCondition(DeviceStateCondition);
 
             this.instance.init();
