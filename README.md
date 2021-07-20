@@ -26,6 +26,9 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5-rc5** - __20.07.2021__
+- Added action to send a message to telegram users
+
 **v0.0.5-rc4** - __10.07.2021__
 - Added toggle from telegram
 - Send telegram notification if a state was toggled
