@@ -3,11 +3,13 @@ import moment from "moment";
 import { Context, LogEntry } from "../../lib/system/context";
 import Updater, { UpdateProgress } from "@pcsmw/node-app-updater";
 import { sleep } from "../../lib/utils";
+import { Telegram } from "../../lib/interfaces/telegram";
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response, next: NextFunction) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     return res.render('system', {
+        telegramLink: await Telegram.it.getTelegramLink(res.locals.user.username),
         versionInfo: Context.it.versionInfo,
         logEntries: Context.it.devices.reduce((prev, curr) => {
             prev.push(...curr.log.map(l => {

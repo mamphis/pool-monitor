@@ -6,6 +6,8 @@ import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { Trigger } from './trigger';
 import Updater from '@pcsmw/node-app-updater';
+import { randomString } from '../utils';
+import EventEmitter from 'events';
 
 export interface LogEntry {
     value: number;
@@ -30,19 +32,30 @@ export interface VersionInfo {
     lastChecked: Moment;
 }
 
-export class Context {
+export interface UserInfo {
+    password: string;
+    telegramToken: string;
+    telegramId: number;
+    name: string;
+}
+
+export interface Context {
+    on(event: 'stateToggled', listener: (which: 'salt' | 'pump', newState: boolean, source: string) => void): this;
+}
+
+export class Context extends EventEmitter {
     private static instance?: Context;
 
     static get it(): Context {
         if (!this.instance) {
             this.instance = new Context();
-            this.instance.init();
         }
 
         return this.instance;
     }
 
     private constructor() {
+        super();
         this.database = new JsonDB(this.databasePath, true);
     }
 
@@ -58,10 +71,11 @@ export class Context {
         }
     }
 
-    private async init() {
+    async init() {
         if (!await this.existsConfig()) {
             await this.saveConfig();
         }
+        console.log('Context initialized.')
 
         await this.loadConfig();
         this.reScheduleUpdate();
@@ -73,7 +87,7 @@ export class Context {
         });
 
         Trigger.it.on('deviceStateChanged', (device, state, triggerName) => {
-            this.logIODevice(device, state ? 1 : 0, `trigger`, triggerName);
+            this.logIODevice(device, state ? 1 : 0, `trigger`, `${triggerName}`);
         });
     }
 
@@ -159,12 +173,14 @@ export class Context {
         });
     }
 
-    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger', name: string) {
+    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger' | 'telegram', name: string) {
         this.database.push(`/${device}/log[]`, {
             timestamp: new Date().getTime(),
             value,
-            from: `${from}[${name}]`,
+            from: `${from} [${name}]`,
         });
+
+        this.emit('stateToggled', device, value === 1, `${from} [${name}]`);
     }
 
     async setTempName(device: string, name: string) {
@@ -180,7 +196,7 @@ export class Context {
         return device;
     }
 
-    private _users: { [username: string]: string } = {};
+    private _users: { [username: string]: UserInfo } = {};
     private _saltState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<TempSensor> = [];
@@ -195,8 +211,28 @@ export class Context {
     }
 
     setUser(username: string, password: string) {
-        this._users[username] = password;
+        this._users[username] = { name: username, telegramId: 0, telegramToken: randomString(6), password };
         this.saveConfig();
+    }
+
+    updateUser(username: string, { password, telegramId, telegramToken, name }: Partial<UserInfo>) {
+        if (this._users[username]) {
+            if (password) {
+                this._users[username].password = password;
+            }
+            if (telegramId) {
+                this._users[username].telegramId = telegramId;
+            }
+            if (telegramToken) {
+                this._users[username].telegramToken = telegramToken;
+            }
+            if (name) {
+                this._users[username].name = name;
+            }
+
+
+            this.saveConfig();
+        }
     }
 
     get saltState() {
