@@ -9,7 +9,7 @@ class TemperatureSensor {
         const deviceTemperaturePath = join(this.manager.devicePath, this.id, 'temperature');
         try {
             const stats = await access(deviceTemperaturePath);
-        } catch (e) {
+        } catch (e: any) {
             console.warn(`Cannot get a temperature for device "${this.id}": ${e.message}`);
             return 0;
         }

@@ -194,7 +194,7 @@ ${Trigger.it.all.map(t => {
                         }));
                     });
                 }
-                catch (e) {
+                catch (e: any) {
                     this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${e.name}: ${e.message}` }));
                     this.socket.send(JSON.stringify({
                         type: 'system-command',
