@@ -1,10 +1,9 @@
-import { compare } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import jwt from 'jsonwebtoken';
 import { Context } from "../../lib/system/context";
 import { userCount } from "../../lib/system/user";
-import { randomString } from "../../lib/utils";
+import { hash, randomString } from "../../lib/utils";
 
 const secret = randomString(20);
 
@@ -60,7 +59,7 @@ export async function login(usernameOrCookie: string, password?: string): Promis
     const users = Context.it.users;
 
     if (users[username]) {
-        if (await compare(pwd, users[username].password)) {
+        if (hash(pwd) == users[username].password) {
             if (!password) {
                 return { success: true, username };
             }
