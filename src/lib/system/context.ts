@@ -161,6 +161,10 @@ export class Context extends EventEmitter {
 
     private async loadConfig() {
         const content = (await readFile(this.configPath)).toString()
+        if (content === '') {
+            await this.saveConfig();
+            return;
+        }
         Object.assign(this, JSON.parse(content));
     }
 
