@@ -107,10 +107,13 @@ export class Context extends EventEmitter {
     private async update() {
         this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-            this.logTemperature(s, t || 0);
-            // this.cleanTempLog(s);
+            if (t !== 0) {
+                this.logTemperature(s, t || 0);
+                // this.cleanTempLog(s);
 
-            this.saveConfig();
+                this.saveConfig();
+            }
+
             return { sensor: s, name: this.getTempName(s), temperature: t ?? 0 };
         }));
     }
