@@ -62,7 +62,7 @@ export class Context extends EventEmitter {
 
     private constructor() {
         super();
-        this.database = new JsonDB(this.databasePath, true);
+        this.database = new JsonDB(this.databasePath, true, true, undefined, true);
     }
 
     private readonly configPath = './config.json';

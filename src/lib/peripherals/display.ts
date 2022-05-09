@@ -40,9 +40,10 @@ export class Display {
             console.log(`Display is ready to show something.`);
             this.printable = true;
             let cnt = 0;
-            const refreshDisplay = async () => {
+            const refreshDisplay: () => Promise<void> = async () => {
                 if (!this.displayTime) {
-                    return setTimeout(refreshDisplay, 500);
+                    setTimeout(refreshDisplay, 500);
+                    return;
                 }
 
                 lcd.setCursor(0, 0);
