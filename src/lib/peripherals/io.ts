@@ -27,16 +27,18 @@ export class IO extends EventEmitter {
             return;
         }
 
-        this.btnSalt = new Gpio(CONST.PIN_BUTTON_SALT, 'in', 'falling', { debounceTimeout: 10 });
-        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'falling', { debounceTimeout: 10 });
-
+        this.btnSalt = new Gpio(CONST.PIN_BUTTON_SALT, 'in', 'rising', { debounceTimeout: 50 });
+        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { debounceTimeout: 50 });
+        this.btnLight = new Gpio(CONST.PIN_BUTTON_LIGHT, 'in', 'both', { debounceTimeout: 50 });
         this.rlsSalt = new Gpio(CONST.PIN_RELAIS_SALT, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
-        this.pinDisplayLight = new Gpio(CONST.PIN_DISPLAY_LIGHT, 'low');
+
+        this.pinDisplayLight = new Gpio(CONST.PIN_DISPLAY_LIGHT, 'out');
     }
 
     private btnPump?: Gpio;
     private btnSalt?: Gpio;
+    private btnLight?: Gpio;
 
     private rlsPump?: Gpio;
     private rlsSalt?: Gpio;
@@ -59,6 +61,14 @@ export class IO extends EventEmitter {
 
             await this.toggleSaltState();
             this.emit('buttonPressed', 'salt', Context.it.saltState);
+        });
+
+        this.btnLight?.watch(async (err, value) => {
+            if (err) {
+                return console.warn(err);
+            }
+
+            this.setDisplayLightState(value === 1);
         });
     }
 
