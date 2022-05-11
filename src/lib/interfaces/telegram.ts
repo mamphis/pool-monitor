@@ -65,6 +65,7 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
         this.api.onText(/\/start(.*)/, (msg, match) => {
             const startToken = (match && match[1].trim()) ?? '';
             if (startToken === '') {
+                console.log('Empty start token received');
                 return;
             }
 
@@ -72,6 +73,7 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
             const username = users.find(u => Context.it.users[u].telegram?.token === startToken);
 
             if (!username) {
+                console.log(`Unknown start token received: ${startToken}`);
                 return;
             }
 

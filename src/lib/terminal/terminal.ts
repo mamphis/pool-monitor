@@ -129,12 +129,14 @@ ${Trigger.it.all.map(t => {
 
     private async messageHandler(data: WebSocket.Data) {
         console.log(data, typeof data)
+
         if (typeof data !== 'string') {
-            this.socket.send(JSON.stringify({
-                type: 'system-err',
-                message: `The data format is not valid. Allowed is: 'string'.`
-            }));
-            return;
+            data = data.toString('utf8');
+            // this.socket.send(JSON.stringify({
+            //     type: 'system-err',
+            //     message: `The data format is not valid. Allowed is: 'string'.`
+            // }));
+            // return;
         }
 
         const { type, message } = JSON.parse(data) as { type: string, message: string };

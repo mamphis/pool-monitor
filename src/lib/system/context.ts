@@ -109,7 +109,7 @@ export class Context extends EventEmitter {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
             if (t !== 0) {
                 this.logTemperature(s, t || 0);
-                // this.cleanTempLog(s);
+                this.cleanTempLog(s);
 
                 this.saveConfig();
             }
@@ -121,7 +121,8 @@ export class Context extends EventEmitter {
     private cleanTempLog(device: string) {
         const logData = (this.database.getData(`/temp/${device}/log`) as Array<{ timestamp: number, value: number }>).sort((a, b) => a.timestamp - b.timestamp);
         const cleanData = [];
-        let lastData: { timestamp: number, value: number, mom: Moment } | undefined = undefined;;
+        let lastData: { timestamp: number, value: number, mom: Moment } | undefined = undefined;
+        console.log('Original Length', logData.length);
         for (const data of logData) {
             // Add the first event.
             if (cleanData.length == 0) {
@@ -132,24 +133,24 @@ export class Context extends EventEmitter {
 
             // if data is longer away then a week, only take every 10 minutes
             const mom = moment(new Date(data.timestamp));
-            if (mom.isBefore(moment().subtract(1, 'week'))) {
+            if (mom.isBefore(moment().subtract(1, 'day'))) {
                 if (lastData && lastData.mom.diff(mom, 'minute') >= 10) {
                     cleanData.push(data);
                     lastData = { ...data, mom };
                 }
             }
 
-
-            // if data is longer away then a day, only take every 1 minute
-            if (mom.isBefore(moment().subtract(1, 'day'))) {
+            // if data is longer away then an hour, only take every 1 minute
+            if (mom.isBefore(moment().subtract(1, 'hour'))) {
                 if (lastData && lastData.mom.diff(mom, 'minute') >= 1) {
                     cleanData.push(data);
                     lastData = { ...data, mom };
                 }
             }
         }
+        console.log('Clean Length', cleanData.length);
 
-        this.database.push(`/temp/${device}/log`, cleanData);
+        this.database.push(`/temp/${device}/log`, cleanData, true);
     }
 
     private async saveConfig() {
