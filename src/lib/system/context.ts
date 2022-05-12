@@ -130,17 +130,17 @@ export class Context extends EventEmitter {
         const oldData = logData.filter((d) => {
             const mom = moment(d.timestamp);
 
-            return (mom.isBefore(moment().subtract(10, 'minutes')))
+            return (mom.isBefore(moment().subtract(6, 'hours')))
         });
 
         const middleData = logData.filter((d) => {
             const mom = moment(d.timestamp);
-            return (mom.isAfter(moment().subtract(10, 'minutes'))) && (mom.isBefore(moment().add(5, 'minutes')))
+            return (mom.isAfter(moment().subtract(6, 'hours'))) && (mom.isBefore(moment().add(1, 'hour')))
         });
 
         const newData = logData.filter((d) => {
             const mom = moment(d.timestamp);
-            return (mom.isAfter(moment().add(5, 'minutes')))
+            return (mom.isAfter(moment().add(1, 'hour')))
         });
 
         const cleanData: Array<ExtendedLogEntry> = [];
@@ -152,7 +152,7 @@ export class Context extends EventEmitter {
                 cleanData.push(lastData);
             } else {
 
-                if (Math.abs(lastData.mom.diff(mom, 'seconds')) > 30) {
+                if (Math.abs(lastData.mom.diff(mom, 'minutes')) > 10) {
                     lastData = { ...d, mom };
                     cleanData.push(lastData);
                 }
@@ -165,7 +165,7 @@ export class Context extends EventEmitter {
                 lastData = { ...d, mom };
                 cleanData.push(lastData);
             } else {
-                if (Math.abs(lastData.mom.diff(mom, 'seconds')) > 5) {
+                if (Math.abs(lastData.mom.diff(mom, 'seconds')) > 30) {
                     lastData = { ...d, mom };
                     cleanData.push(lastData);
                 }
