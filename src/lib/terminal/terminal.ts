@@ -188,7 +188,7 @@ ${Trigger.it.all.map(t => {
                     });
 
                     childProcess.on('close', (code) => {
-                        this.socket.send(JSON.stringify({ type: 'exec-stdout', message: `Process exited with code ${code}` }));
+                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code}` }));
                         this.socket.send(JSON.stringify({ type: 'system-command', message: 'prompt' }));
                     });
                     // exec(message, (err, stdout, stderr) => {
