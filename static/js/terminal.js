@@ -69,7 +69,7 @@ terminal.warn = function (text) {
 }
 
 terminal.systemInfo = function (text) {
-    this.write(`\u001b[38;5;7m${text}\u001b[0m`);
+    this.write(`\u001b[38;5;59m${text}\u001b[0m`);
 };
 
 terminal.prompt = function () {
