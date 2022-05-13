@@ -111,6 +111,7 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
                 let websocketAlive = true;
                 let tunnelAlive = true;
                 this.api.editMessageText(tunnel.url, {
+                    chat_id: msg.from?.id ?? 0,
                     message_id: message.message_id,
                 })
 
