@@ -6,6 +6,7 @@ import { login } from "../../server/middleware/auth";
 import figlet from "figlet";
 import { Context } from "../system/context";
 import { Trigger } from "../system/trigger";
+import moment from "moment";
 
 export class Terminal {
     private terminalSettings?: { dim: { rows: number; cols: number; }; };
@@ -179,6 +180,7 @@ ${Trigger.it.all.map(t => {
             } else {
                 try {
                     const childProcess = exec(message);
+                    const start = moment();
                     childProcess.stdout?.on('data', (data) => {
                         this.socket.send(JSON.stringify({ type: 'exec-stdout', message: data }));
                     });
@@ -188,7 +190,8 @@ ${Trigger.it.all.map(t => {
                     });
 
                     childProcess.on('close', (code) => {
-                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code}` }));
+                        const end = moment();
+                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code}; Executuion to ${moment.duration(start.diff(end)).abs().humanize()}` }));
                         this.socket.send(JSON.stringify({ type: 'system-command', message: 'prompt' }));
                     });
                     // exec(message, (err, stdout, stderr) => {
