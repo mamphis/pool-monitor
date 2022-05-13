@@ -251,14 +251,21 @@ export class Context extends EventEmitter {
     }
 
     updateUser(username: string, { id, token, username: telegramUsername, notificationEnabled, notificationMuted }: Partial<TelegramSettings>) {
-        if (this._users[username]) {
-            const telegramSettings: TelegramSettings = {
-                id: id ?? 0,
-                token: token ?? '',
-                username: telegramUsername ?? '',
-                notificationEnabled: notificationEnabled ?? false,
-                notificationMuted: notificationMuted ?? false
-            };
+        const user = this._users[username];
+        if (user) {
+            const telegramSettings: TelegramSettings = Object.assign({
+                id: 0,
+                token: randomString(6),
+                username: '',
+                notificationEnabled: true,
+                notificationMuted: false,
+            }, user.telegram, {
+                id,
+                token,
+                username: telegramUsername,
+                notificationEnabled,
+                notificationMuted,
+            });
 
             this._users[username].telegram = telegramSettings;
             this.saveConfig();
