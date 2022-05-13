@@ -99,12 +99,33 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
             if (user) {
                 const tunnel = await localtunnel({
                     port: 3000,
-                    host: hostname(),
                 });
+                const websocketTunnel = await localtunnel({
+                    port: 3001,
+                });
+
+                const url = new URL(websocketTunnel.url);
+                Context.it.websocketHost = url.host;
+
+                let websocketAlive = true;
+                let tunnelAlive = true;
 
                 this.api.sendMessage(msg.from?.id ?? 0, tunnel.url);
                 tunnel.on('close', () => {
+                    if (websocketTunnel && websocketAlive) {
+                        websocketTunnel.close();
+                    }
+                    tunnelAlive = false;
+                    Context.it.websocketHost = hostname();
                     this.api.sendMessage(msg.from?.id ?? 0, tunnel.url + ' wurde geschlossen.');
+
+                });
+
+                websocketTunnel.on('close', () => {
+                    if (tunnel && tunnelAlive) {
+                        tunnel.close();
+                    }
+                    websocketAlive = false;
                 });
             }
         });

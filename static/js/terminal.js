@@ -1,5 +1,5 @@
 const terminal = new Terminal();
-const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${location.hostname}:3001`);
+const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${websocketHost}:3001`);
 let terminalReady = false;
 let currentCommand = '';
 const termHistory = [];
