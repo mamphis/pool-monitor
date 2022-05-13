@@ -105,7 +105,7 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
                 });
 
                 const url = new URL(websocketTunnel.url);
-                Context.it.websocketHost = url.host;
+                Context.it.websocketUrl = `wss://${url.host}`;
 
                 let websocketAlive = true;
                 let tunnelAlive = true;
@@ -115,8 +115,9 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
                     if (websocketTunnel && websocketAlive) {
                         websocketTunnel.close();
                     }
+
                     tunnelAlive = false;
-                    Context.it.websocketHost = hostname();
+                    Context.it.websocketUrl = `ws://${hostname()}:3001`;
                     this.api.sendMessage(msg.from?.id ?? 0, tunnel.url + ' wurde geschlossen.');
 
                 });
