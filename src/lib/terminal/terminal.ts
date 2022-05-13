@@ -129,8 +129,6 @@ ${Trigger.it.all.map(t => {
     }
 
     private async messageHandler(data: WebSocket.Data) {
-        console.log(data, typeof data)
-
         if (typeof data !== 'string') {
             data = data.toString('utf8');
             // this.socket.send(JSON.stringify({
