@@ -76,6 +76,7 @@ export class Server {
         });
 
         this.wss.on('connection', async (socket, req) => {
+            console.log(req);
             Terminal.startSession(socket, req, this.cookieSecret);
         });
     }

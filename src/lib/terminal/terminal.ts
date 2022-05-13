@@ -7,16 +7,22 @@ import figlet from "figlet";
 import { Context } from "../system/context";
 import { Trigger } from "../system/trigger";
 import moment from "moment";
+import { url } from "inspector";
 
 export class Terminal {
     private terminalSettings?: { dim: { rows: number; cols: number; }; };
 
     public static async startSession(socket: WebSocket, req: IncomingMessage, secret: string): Promise<Terminal | undefined> {
-        const { cookie } = req.headers;
+        let { cookie } = req.headers;
+
         if (!cookie) {
-            socket.close(3001, 'No cookie 🍪');
-            console.warn(`The socket request has no cookie. 🍪`);
-            return;
+            if (req.url) {
+                cookie = req.url.match(/\/\?(.*)/)?.[1] ?? '';
+            } else {
+                socket.close(3001, 'No cookie 🍪');
+                console.warn(`The socket request has no cookie. 🍪`);
+                return;
+            }
         }
 
         const cookies = cookie.split(';').map(c => c.trim()).reduce((prev, curr) => {
