@@ -101,7 +101,10 @@
         const options = {};
         options.series = [];
         options.xaxis = {
-            type: 'datetime'
+            type: 'datetime',
+            label: {
+                datetimeUTC: false,
+            },
         };
         options.chart = {
             height: 350,
