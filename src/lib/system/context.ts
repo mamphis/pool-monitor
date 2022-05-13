@@ -236,7 +236,7 @@ export class Context extends EventEmitter {
     private _saltState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<TempSensor> = [];
-    private _updateInterval: number = 2000;
+    private _updateInterval: number = 10000;
     private _updateIntervalHandle?: number;
     private _installedVersion: string = '0.0.0';
     private _versionInfo?: VersionInfo;
