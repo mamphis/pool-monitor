@@ -3,6 +3,7 @@ import cors from 'cors';
 import moment from 'moment';
 import { indexRouter } from "./routes";
 import { temperatureRouter } from "./routes/temperature";
+import { triggerRouter } from "./routes/trigger";
 
 export class Server {
     private app: Application;
@@ -28,6 +29,7 @@ export class Server {
 
         this.app.use('/', indexRouter);
         this.app.use('/temperature', temperatureRouter);
+        this.app.use('/trigger', triggerRouter);
     }
 
     async start() {

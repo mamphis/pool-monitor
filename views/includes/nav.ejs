@@ -1,26 +1,49 @@
-<style>
-    .navbar {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/static/swimming-pool-solid.svg" width="48" height="28">
+            <span>
+                Pool Monitor
+            </span>
+        </a>
 
-    .navbar a,
-    .navbar a:visited {
-        text-decoration: none;
-        color: unset;
-    }
-
-    .navbar>div {
-        padding: 8px 4px;
-    }
-</style>
-
-<div class="navbar">
-    <div>
-        <a href="/">Home</a>
+        <a role="button" class="navbar-burger" aria-label="menu" data-target="navigation" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
     </div>
-    <div>
-        <a href="/temperature">Temperature</a>
+    <div class="navbar-menu" id="navigation">
+        <div class="navbar-start">
+            <a href="/temperature" class="navbar-item">Temperatur</a>
+            <a href="/trigger" class="navbar-item">Trigger</a>
+        </div>
     </div>
-</div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+
+                    // Get the target from the "data-target" attribute
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+
+                    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+        }
+
+    });
+</script>

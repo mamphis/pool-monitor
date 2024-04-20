@@ -63,6 +63,10 @@ export class Display {
     }
 
     killDisplay() {
+        if (!this.printable) {
+            return;
+        }
+
         const lcd = this.lcd;
         lcd.clear(() => {
             try {
@@ -71,6 +75,7 @@ export class Display {
                 console.warn(`Error while closing the display: ${e.message}`);
             }
             
+            this.printable = false;
             Display.instance = undefined;
         });
 
