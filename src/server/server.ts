@@ -64,7 +64,7 @@ export class Server {
             if (error instanceof HttpError) {
                 switch (error.status) {
                     case 401:
-                        return res.redirect('/login');
+                        return res.redirect(`/login?returnTo=${encodeURI(req.originalUrl)}`);
 
                     default:
                         return res.render('error', { code: error.status, message: error.message });
