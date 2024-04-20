@@ -3,6 +3,8 @@ import cors from 'cors';
 import express, { Application, NextFunction, Request, Response, static as staticImport, urlencoded } from "express";
 import createHttpError, { HttpError } from 'http-errors';
 import moment from 'moment';
+import { Server as WebSocketServer } from 'ws';
+import { Terminal } from '../lib/terminal/terminal';
 import { randomString } from '../lib/utils';
 import { auth } from './middleware/auth';
 import { indexRouter } from "./routes";
@@ -11,21 +13,19 @@ import { loginRouter } from './routes/login';
 import { registerRouter } from './routes/register';
 import { systemRouter } from './routes/system';
 import { triggerRouter } from "./routes/trigger";
-import { Server as WebSocketServer } from 'ws';
-import { createServer } from 'http';
-import { exec } from 'child_process';
-import { stderr } from 'node:process';
 
 export class Server {
     private app: Application;
     private wss: WebSocketServer;
+    private cookieSecret: string = ``;
     constructor(private port: number) {
         this.app = express();
         this.wss = new WebSocketServer({ port: 3001 });
     }
 
     async config() {
-        this.app.use(cookieParser(randomString(10)));
+        this.cookieSecret = randomString(10);
+        this.app.use(cookieParser(this.cookieSecret));
         this.app.use(express.json());
         this.app.use(urlencoded({ extended: true }));
         this.app.use(cors());
@@ -51,9 +51,9 @@ export class Server {
 
         this.app.use('/login', loginRouter);
         this.app.use('/register', registerRouter);
-        this.app.use('/', auth, indexRouter);
-        this.app.use('/device', auth, temperatureRouter);
-        this.app.use('/trigger', auth, triggerRouter);
+        this.app.use('/', indexRouter);
+        this.app.use('/device', temperatureRouter);
+        this.app.use('/trigger', triggerRouter);
         this.app.use('/system', auth, systemRouter);
 
         this.app.use(async (req: Request, res: Response, next: NextFunction) => {
@@ -64,7 +64,7 @@ export class Server {
             if (error instanceof HttpError) {
                 switch (error.status) {
                     case 401:
-                        return res.redirect('/login');
+                        return res.redirect(`/login?returnTo=${encodeURI(req.originalUrl)}`);
 
                     default:
                         return res.render('error', { code: error.status, message: error.message });
@@ -75,19 +75,8 @@ export class Server {
             }
         });
 
-        this.wss.on('connection', (socket, req) => {
-            console.log("Someone connected.");
-            socket.on('message', (data) => {
-                console.log(data);
-                try {
-                    exec(data as string, (err, stdout, stderr) => {
-                        socket.send(JSON.stringify({ stdout, stderr }));
-                    });
-                }
-                catch (e) {
-                    socket.send(JSON.stringify({ stderr: `${e.name}: ${e.message}` }));
-                }
-            });
+        this.wss.on('connection', async (socket, req) => {
+            Terminal.startSession(socket, req, this.cookieSecret);
         });
     }
 
