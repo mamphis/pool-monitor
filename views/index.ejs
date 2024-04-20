@@ -132,9 +132,11 @@
 
                 chart.updateSeries(result, false);
             }
+
+            setTimeout(updateSeries, 10000);
         };
 
-        setInterval(updateSeries, 10000)
+        setTimeout(updateSeries, 10000);
         updateSeries();
 
         async function toggleState(which) {
