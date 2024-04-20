@@ -43,7 +43,7 @@
 
     <script>
         const del = async (index)  => {
-            const url = new URL(window.location.href);
+            const url = new URL(window.location.origin + location.path);
 
             const response = await fetch(`${url.origin}${url.pathname}/${index}`, {
                 method: 'DELETE',
