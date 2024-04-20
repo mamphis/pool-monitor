@@ -8,7 +8,7 @@
 - [x] Display state of connected devices in display
 - [x] Create a WebServer which can talk to the application
 - [ ] Login into the webserver
-- [ ] View State of Sensors and Conencted Devices
+- [x] View State of Sensors and Conencted Devices
 - [x] Create Flow on WebSite
     - At 21:00
         - If Pump = 'off'
@@ -22,5 +22,5 @@
     - Condition
     - Action
 - [ ] Logging of temperature values
-- [ ] Toggle state of devices manually over the website
+- [x] Toggle state of devices manually over the website
 - [ ] Toggle Light of LCD Display when a button is pressed
