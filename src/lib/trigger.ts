@@ -79,7 +79,7 @@ export class Trigger {
 
     async delete(name: string) {
         delete this._triggers[name];
-        scheduledJobs['trigger' + name].cancel();
+        scheduledJobs['trigger' + name]?.cancel();
         await this.saveConfig();
     }
 }
