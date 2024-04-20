@@ -1,16 +1,20 @@
 <%- include('includes/head.ejs') -%>
+    <div class="columns is-multiline is-mobile">
+        <div class="column is-full ">
+            <div id="chart"></div>
 
-    <h1>This ist the Pool Monitor.</h1>
-    <div>
-        <%= message %>
-    </div>
-    <div>
-        <form action="/setText" method="post">
-            <label>Set custom Text on the Display:</label>
-            <textarea rows="2" cols="16" name="customText"></textarea>
-
-            <button type="submit">Send</button>
-        </form>
+        </div>
     </div>
 
+    <script>
+        const options = {};
+        options.series = JSON.parse("<%= JSON.stringify(temperatures) %>");
+        option.xaxis = {
+            type: 'datetime'
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+        chart.render();
+    </script>
     <%- include('includes/foot.ejs') -%>

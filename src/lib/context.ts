@@ -2,6 +2,13 @@ import { access, readFile, writeFile } from "fs/promises";
 import { hash } from 'bcrypt';
 import { TemperatureSensorManager } from "./temperature";
 
+export interface LogEntry {
+    device: 'temp' | 'filter' | 'pump';
+    deviceName: string;
+    value: number;
+    timestamp: number;
+}
+
 export class Context {
     private static instance?: Context;
 
@@ -39,7 +46,7 @@ export class Context {
         setInterval(async () => {
             this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
                 const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-                this._log.push({ device: 'temp', deviceName: s, value: t ?? 0 });
+                this._log.push({ device: 'temp', deviceName: s, value: t ?? 0, timestamp: new Date().getTime() });
                 this.saveConfig();
                 return { sensor: s, temperature: t ?? 0 };
             }));
@@ -64,7 +71,7 @@ export class Context {
     private _filterState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<{ sensor: string, temperature: number }> = [];
-    private _log: Array<{ device: 'temp' | 'filter' | 'pump', deviceName: string, value: number }> = [];
+    private _log: Array<LogEntry> = [];
 
     get users() {
         return this._users;
@@ -81,7 +88,7 @@ export class Context {
 
     set filterState(state) {
         this._filterState = state;
-        this._log.push({ device: 'filter', deviceName: '', value: state ? 1 : 0 });
+        this._log.push({ device: 'filter', deviceName: '', value: state ? 1 : 0, timestamp: new Date().getTime() });
         this.saveConfig();
     }
 
@@ -91,7 +98,7 @@ export class Context {
 
     set pumpState(state) {
         this._pumpState = state;
-        this._log.push({ device: 'pump', deviceName: '', value: state ? 1 : 0 });
+        this._log.push({ device: 'pump', deviceName: '', value: state ? 1 : 0, timestamp: new Date().getTime() });
         this.saveConfig();
     }
 
@@ -103,7 +110,7 @@ export class Context {
         }
     }
 
-    get log(): Array<{ device: 'temp' | 'filter' | 'pump', deviceName: string, value: number }> {
+    get log(): Array<LogEntry> {
         return this._log;
     }
 }
