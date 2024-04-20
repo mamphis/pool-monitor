@@ -1,6 +1,8 @@
 export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 import os from 'os';
 import { createHash, randomBytes } from 'crypto';
+import { nanoid } from 'nanoid';
+
 export const systemData = () => {
     const ifs = os.networkInterfaces();
 
@@ -46,7 +48,8 @@ export const systemData = () => {
 }
 
 export const randomString = (length: number): string => {
-    return randomBytes(length).toString('base64').substring(0, length);
+    // return randomBytes(length).toString('base64').substring(0, length);
+    return nanoid(length)
 }
 
 export const hash = (text: string): string => {
