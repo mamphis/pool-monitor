@@ -19,15 +19,15 @@
     <% if (typeof currentSensor !=='undefined' ) { %>
         <div>
             Got a temperature from: <%= currentSensor.id %><br />
-                <%= currentSensor.temperature %>
+                <%= currentSensor.formatted %>
         </div>
         <% } %>
             <div>
                 <% sensors.forEach(s=> { %>
                     <div>
-                        <a href="./<%= s.id %>">
+                        <a href="./<%= s %>">
                             <button>
-                                <%= s.id %>
+                                <%= s %>
                             </button>
                         </a>
                     </div>
