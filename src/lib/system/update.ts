@@ -13,6 +13,7 @@ export async function getLatestVersionTag(): Promise<string> {
 
     await git.fetch()
     const tags = await git.tags();
+    console.log(tags);
     if (tags.latest) {
         return tags.latest;
     }
@@ -22,9 +23,17 @@ export async function getLatestVersionTag(): Promise<string> {
 
 export async function pullLatestVersion() {
     const git = simpleGit()
-    await git.fetch();
-    await git.checkoutLatestTag('', '')
-    Context.it.installedVersion = await getLatestVersionTag();
+    const resp = await git.fetch();
+    console.log(resp.raw);
+    const latestTag = await getLatestVersionTag();
+
+    const co = await git.checkout(`tags/${latestTag}`, { '-b': 'runtime' });
+    console.log("Checkout:", co);
+    const pu = await git.pull('origin', `tags/${latestTag}`);
+    console.log(pu.summary);
+    
+    console.log('latest tag checked out.');
+    Context.it.installedVersion = latestTag
 }
 
 export async function installDependencies(): Promise<void> {
