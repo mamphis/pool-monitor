@@ -133,7 +133,7 @@ export class Context extends EventEmitter {
 
             // if data is longer away then a week, only take every 10 minutes
             const mom = moment(new Date(data.timestamp));
-            if (mom.isBefore(moment().subtract(1, 'day'))) {
+            if (moment().subtract(1, 'day').isBefore(mom)) {
                 if (lastData && lastData.mom.diff(mom, 'minute') >= 10) {
                     cleanData.push(data);
                     lastData = { ...data, mom };
@@ -141,7 +141,7 @@ export class Context extends EventEmitter {
             }
 
             // if data is longer away then an hour, only take every 1 minute
-            if (mom.isBefore(moment().subtract(1, 'hour'))) {
+            if (moment().subtract(1, 'hour').isBefore(mom)) {
                 if (lastData && lastData.mom.diff(mom, 'minute') >= 1) {
                     cleanData.push(data);
                     lastData = { ...data, mom };
