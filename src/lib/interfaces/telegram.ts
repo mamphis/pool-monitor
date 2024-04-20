@@ -97,6 +97,7 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
         this.api.onText(/\/service/, async (msg, match) => {
             const user = Object.values(Context.it.users).find(u => u.telegram?.id === msg.from?.id);
             if (user) {
+                const message = await this.api.sendMessage(msg.from?.id ?? 0, 'Der Tunnel wird vorbereitet. Bitte warte einen Moment.');
                 const tunnel = await localtunnel({
                     port: 3000,
                 });
@@ -109,8 +110,10 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
 
                 let websocketAlive = true;
                 let tunnelAlive = true;
+                this.api.editMessageText(tunnel.url, {
+                    message_id: message.message_id,
+                })
 
-                this.api.sendMessage(msg.from?.id ?? 0, tunnel.url);
                 tunnel.on('close', () => {
                     if (websocketTunnel && websocketAlive) {
                         websocketTunnel.close();
