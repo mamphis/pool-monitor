@@ -26,6 +26,23 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5-rc4** - __10.07.2021__
+- Added toggle from telegram
+- Send telegram notification if a state was toggled
+
+**v0.0.5-rc3** - __07.07.2021__
+- Added a telegram bot interface which can send the current status of the pool
+- Connect the user to the telegram account via a secret key, generated for the user
+
+**v0.0.5-rc2** - __06.07.2021__
+- Revamp the Terminal
+- Implemented system commands like `!status` to view status via the console
+
+**v0.0.5-rc1** - __06.07.2021__
+- Disable authentication for pages other than system
+- Use authentication for the Websocket used by the system page
+- Fix that users are saved before they are loaded, effectively deleting users
+
 **v0.0.4** - __06.07.2021__
 - Bumped version and make full version
 
