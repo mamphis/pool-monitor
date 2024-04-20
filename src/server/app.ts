@@ -1,3 +1,4 @@
+import { Telegram } from "../lib/interfaces/telegram";
 import { Display } from "../lib/peripherals/display";
 import { IO } from "../lib/peripherals/io";
 import { TemperatureSensorManager } from "../lib/peripherals/temperature";
@@ -12,6 +13,8 @@ export async function start() {
     TemperatureSensorManager.it;
     IO.it;
     Trigger.it;
+
+    Telegram.it;
 
     await server.config();
     await server.start();
