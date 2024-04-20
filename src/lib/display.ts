@@ -48,8 +48,11 @@ export class Display {
     }
 
     killDisplay() {
-        this.lcd.clear();
-        this.lcd.close();
+        const lcd = this.lcd;
+        lcd.clear(() => {
+            lcd.close();
+        });
+
         Display.instance = undefined;
     }
 
@@ -65,13 +68,11 @@ export class Display {
 
         const lcd = this.lcd;
         const lines = text.split('\n').map(l => l.substr(0, this.cols));
-        lcd.setCursor(0, 0, () => {
-            lcd.print((lines[0] || ''), () => {
-                lcd.setCursor(0, 1, () => {
-                    lcd.print((lines[1] || ''), () => {
-                        console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)
-                    });
-                });
+        lcd.setCursor(0, 0);
+        lcd.print((lines[0] || ''), function () {
+            lcd.setCursor(0, 1);
+            lcd.print((lines[1] || ''), function () {
+                console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)
             });
         });
     }
