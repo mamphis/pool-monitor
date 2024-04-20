@@ -2,6 +2,7 @@ import { JsonDB } from 'node-json-db';
 import { access, readFile, writeFile } from "fs/promises";
 import { hash } from 'bcrypt';
 import { TemperatureSensorManager } from "./temperature";
+import moment, { Moment } from 'moment';
 
 export interface LogEntry {
     value: number;
@@ -69,9 +70,45 @@ export class Context {
         this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
             this.log('temp', s, t ?? 0);
+            this.cleanTempLog(s);
+
             this.saveConfig();
             return { sensor: s, name: this.getTempName(s), temperature: t ?? 0 };
         }));
+    }
+
+    private cleanTempLog(device: string) {
+        const logData = (this.database.getData(`/temp/${device}/log`) as Array<{ timestamp: number, value: number }>).sort((a, b) => a.timestamp - b.timestamp);
+        const cleanData = [];
+        let lastData: { timestamp: number, value: number, mom: Moment } | undefined = undefined;;
+        for (const data of logData) {
+            // Add the first event.
+            if (cleanData.length == 0) {
+                cleanData.push(data);
+                lastData = { ...data, mom: moment(new Date(data.timestamp)) };
+                continue;
+            }
+
+            // if data is longer away then a week, only take every 10 minutes
+            const mom = moment(new Date(data.timestamp));
+            if (mom.isBefore(moment().subtract(1, 'week'))) {
+                if (lastData && lastData.mom.diff(mom, 'minute') >= 10) {
+                    cleanData.push(data);
+                    lastData = { ...data, mom };
+                }
+            }
+
+
+            // if data is longer away then a day, only take every 1 minute
+            if (mom.isBefore(moment().subtract(1, 'day'))) {
+                if (lastData && lastData.mom.diff(mom, 'minute') >= 1) {
+                    cleanData.push(data);
+                    lastData = { ...data, mom };
+                }
+            }
+        }
+
+        this.database.push(`/temp/${device}/log`, cleanData);
     }
 
     private async saveConfig() {
