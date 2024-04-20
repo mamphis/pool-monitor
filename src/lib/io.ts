@@ -33,25 +33,19 @@ export class IO extends EventEmitter {
 
     private async init() {
         this.btnPump.watch(async (err, value) => {
-            console.log("btnPump Pressed:  " + value)
             if (err) {
                 return console.warn(err);
             }
 
-            if (value == 1) {
                 await this.togglePumpState();
-            }
         });
 
         this.btnFilter.watch(async (err, value) => {
-            console.log("btnFilter Pressed:  " + value)
             if (err) {
                 return console.warn(err);
             }
 
-            if (value == 1) {
                 await this.toggleFilterState();
-            }
         });
     }
 
