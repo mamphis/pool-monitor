@@ -18,8 +18,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
         returnObj.currentSensor = { id: req.params.id, temperature: temp }
     }
 
-    return res.render('temperature',);
-    return res.render('index', { message: "Set Text: " });
+    return res.render('temperature', returnObj);
 });
 
-export { router as indexRouter };
+export { router as temperatureRouter };
