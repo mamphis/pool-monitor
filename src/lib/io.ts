@@ -50,7 +50,7 @@ export class IO extends EventEmitter {
     }
 
     async setPumpState(state: boolean) {
-        await this.rlsPump.write(Context.it.pumpState ? 1 : 0);
+        await this.rlsPump.write(state ? 1 : 0);
         Context.it.pumpState = state;
     }
 
