@@ -18,8 +18,8 @@ export class IO extends EventEmitter {
     private constructor() {
         super();
 
-        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising', { activeLow: true });
-        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { activeLow: true });
+        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising', { debounceTimeout: 10 });
+        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { debounceTimeout: 10 });
 
         this.rlsFilter = new Gpio(CONST.PIN_RELAIS_FILTER, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
