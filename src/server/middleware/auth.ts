@@ -24,7 +24,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     } else {
         try {
             const { user } = jwt.verify(req.signedCookies.user, secret) as { user: payload };
-            res.locals.user = user;
+            res.locals.user = Context.it.users[user.username];
             next();
         } catch {
             next(createHttpError(401));
@@ -71,6 +71,6 @@ export async function login(usernameOrCookie: string, password?: string): Promis
     if (!password) {
         return { success: false, username };
     }
-    
+
     return false;
 }

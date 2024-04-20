@@ -32,11 +32,18 @@ export interface VersionInfo {
     lastChecked: Moment;
 }
 
+export interface TelegramSettings {
+    token: string;
+    id: number;
+    username: string;
+    notificationEnabled: boolean;
+    notificationMuted: boolean;
+}
+
 export interface UserInfo {
-    password: string;
-    telegramToken: string;
-    telegramId: number;
     name: string;
+    password: string;
+    telegram: TelegramSettings;
 }
 
 export interface Context {
@@ -211,25 +218,29 @@ export class Context extends EventEmitter {
     }
 
     setUser(username: string, password: string) {
-        this._users[username] = { name: username, telegramId: 0, telegramToken: randomString(6), password };
+        this._users[username] = { name: username, password, telegram: { id: 0, token: randomString(6), username: '', notificationEnabled: true, notificationMuted: false } };
         this.saveConfig();
     }
 
-    updateUser(username: string, { password, telegramId, telegramToken, name }: Partial<UserInfo>) {
+    updateUser(username: string, { id, token, username: telegramUsername, notificationEnabled, notificationMuted }: Partial<TelegramSettings>) {
         if (this._users[username]) {
-            if (password) {
-                this._users[username].password = password;
-            }
-            if (telegramId) {
-                this._users[username].telegramId = telegramId;
-            }
-            if (telegramToken) {
-                this._users[username].telegramToken = telegramToken;
-            }
-            if (name) {
-                this._users[username].name = name;
-            }
+            this._users[username].telegram = this._users[username].telegram || {};
 
+            if (id !== undefined) {
+                this._users[username].telegram.id = id;
+            }
+            if (token !== undefined) {
+                this._users[username].telegram.token = token;
+            }
+            if (telegramUsername !== undefined) {
+                this._users[username].telegram.username = telegramUsername;
+            }
+            if (notificationEnabled !== undefined) {
+                this._users[username].telegram.notificationEnabled = notificationEnabled;
+            }
+            if (notificationMuted !== undefined) {
+                this._users[username].telegram.notificationMuted = notificationMuted;
+            }
 
             this.saveConfig();
         }
