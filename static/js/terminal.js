@@ -100,7 +100,7 @@ terminal.onData(e => {
                 terminal.write('\b \b');
             }
 
-            currentCommand = currentCommand.substr(0, currentCommand - 1);
+            currentCommand = currentCommand.substr(0, currentCommand.length - 1);
             break;
         case '\u001b[A':
             currentCommand = termHistory[termHistoryIndex];
@@ -109,6 +109,7 @@ terminal.onData(e => {
                 termHistoryIndex--
             }
 
+            terminal.write('\x1b[2K\r');
             terminal.write(`\r$ ${currentCommand}`);
             break;
         default: // Print all other characters for demo
