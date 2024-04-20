@@ -34,6 +34,7 @@ export class IO extends EventEmitter {
 
     private async init() {
         this.btnPump.watch((err, value) => {
+            console.log("btnPump Pressed:  " + value)
             if (err) {
                 return console.warn(err);
             }
