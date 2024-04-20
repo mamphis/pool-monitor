@@ -56,7 +56,7 @@ export class Display {
 
                 lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}   ${sensorText}`, async function () {
                     lcd.setCursor(0, 1);
-                    lcd.print(`F: ${Context.it.filterState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
+                    lcd.print(`S: ${Context.it.saltState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
                 });
 
                 setTimeout(refreshDisplay, 500);

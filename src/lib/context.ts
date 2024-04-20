@@ -76,7 +76,7 @@ export class Context {
     private async saveConfig() {
         await writeFile(this.configPath, JSON.stringify({
             _users: this._users,
-            _filterState: this._filterState,
+            _saltState: this._saltState,
             _pumpState: this._pumpState,
             _updateInterval: this._updateInterval,
         }));
@@ -108,7 +108,7 @@ export class Context {
     }
 
     private _users: { [username: string]: string } = {};
-    private _filterState: boolean = false;
+    private _saltState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<TempSensor> = [];
     private _updateInterval: number = 2000;
@@ -124,13 +124,13 @@ export class Context {
         this.saveConfig();
     }
 
-    get filterState() {
-        return this._filterState;
+    get saltState() {
+        return this._saltState;
     }
 
-    set filterState(state) {
-        this._filterState = state;
-        this.log('filter', '', state ? 1 : 0);
+    set saltState(state) {
+        this._saltState = state;
+        this.log('salt', '', state ? 1 : 0);
         this.saveConfig();
     }
 
@@ -144,9 +144,9 @@ export class Context {
         this.saveConfig();
     }
 
-    get lastIOStates(): { filter: boolean, pump: boolean, interval: number, temperatures: Array<TempSensor> } {
+    get lastIOStates(): { salt: boolean, pump: boolean, interval: number, temperatures: Array<TempSensor> } {
         return {
-            filter: this._filterState,
+            salt: this._saltState,
             pump: this._pumpState,
             temperatures: this._sensors,
             interval: this._updateInterval,

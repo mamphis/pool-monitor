@@ -19,9 +19,9 @@ router.get('state', async (req: Request, res: Response, next: NextFunction) => {
 router.post('/toggle/:device', async (req: Request, res: Response, next: NextFunction) => {
     const device = req.params.device;
     switch (device) {
-        case 'filter':
-            await IO.it.toggleFilterState();
-            return res.json({ state: Context.it.filterState ? 'An' : 'Aus' });
+        case 'salt':
+            await IO.it.toggleSaltState();
+            return res.json({ state: Context.it.saltState? 'An' : 'Aus' });
         case 'pump':
             await IO.it.togglePumpState();
             return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
