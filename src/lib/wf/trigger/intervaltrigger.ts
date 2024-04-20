@@ -11,6 +11,7 @@ export class IntervalTrigger extends ITrigger {
     private lastInvocation?: Moment;
 
     async register(name: string): Promise<TriggerJob> {
+        this.lastInvocation = moment();
         const interval = setInterval(async () => {
             this.lastInvocation = moment();
             await this.execute();
@@ -19,7 +20,7 @@ export class IntervalTrigger extends ITrigger {
 
         return {
             cancel: () => clearInterval(interval),
-            nextInvocation: () => this.lastInvocation?.add(this.interval, 'milliseconds')
+            nextInvocation: () => this.lastInvocation?.clone()?.add(this.interval, 'milliseconds')
         };
     }
 
