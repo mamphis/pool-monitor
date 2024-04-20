@@ -1,6 +1,6 @@
 export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 import os from 'os';
-
+import { randomBytes } from 'crypto';
 export const systemData = () => {
     const ifs = os.networkInterfaces();
 
@@ -43,4 +43,8 @@ export const systemData = () => {
             })
         }
     };
+}
+
+export const randomString = (length: number): string => {
+    return randomBytes(length).toString('base64').substring(0, length);
 }
