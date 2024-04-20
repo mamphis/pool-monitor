@@ -1,4 +1,5 @@
 import Lcd from 'lcd';
+import { TemperatureSensorManager } from './temperature';
 
 export class Display {
     private static instance?: Display;
@@ -40,7 +41,7 @@ export class Display {
                 lcd.setCursor(0, 0);
                 lcd.print('Current time is:', function () {
                     lcd.setCursor(0, 1);
-                    lcd.print(new Date().toLocaleTimeString());
+                    lcd.print(`${new Date().toLocaleTimeString()}    S: ${TemperatureSensorManager.it.sensors.length}`);
                 });
             }, 1000);
         });
@@ -57,6 +58,10 @@ export class Display {
 
     async setText(text: string) {
         if (!this.printable) {
+            return;
+        }
+
+        if (!text) {
             return;
         }
 
