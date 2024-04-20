@@ -1,7 +1,7 @@
 import Lcd from 'lcd';
 
 export class Display {
-    private static instance: Display;
+    private static instance?: Display;
 
 
     static get it(): Display {
@@ -27,14 +27,8 @@ export class Display {
             cols: this.cols,
             rows: this.rows
         });
-
-        process.on('SIGINT', () => {
-            this.lcd.clear();
-            this.lcd.close();
-        });
-
-
         const lcd = this.lcd;
+
         this.lcd.on('ready', () => {
             console.log(`Display is ready to show something.`);
             // this.lcd.clear()
@@ -43,7 +37,7 @@ export class Display {
                 if (!this.displayTime) {
                     return;
                 }
-                
+
                 lcd.setCursor(0, 0);
                 lcd.print('Current time is:', function () {
                     lcd.setCursor(0, 1);
@@ -51,6 +45,12 @@ export class Display {
                 });
             }, 1000);
         });
+    }
+
+    killDisplay() {
+        this.lcd.clear();
+        this.lcd.close();
+        Display.instance = undefined;
     }
 
     async setText(text: string) {
