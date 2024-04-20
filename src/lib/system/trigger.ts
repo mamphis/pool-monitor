@@ -84,11 +84,9 @@ export class Trigger extends EventEmitter {
         try {
             const t = PersistanceManager.fromString(triggerDef);
             this._triggers[name] = triggerDef;
-
-            const job = await t.register(name);
-            this._job[name] = job;
-
             await this.saveConfig();
+
+            this.rescheduleJobs();
             return true;
         } catch (e) {
             return false;
