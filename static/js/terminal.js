@@ -4,6 +4,7 @@ let terminalReady = false;
 let currentCommand = '';
 const termHistory = [];
 let termHistoryIndex = 0;
+let clipboard = '';
 
 socket.onopen = (ev) => {
     terminal.resize(120, terminal.rows);
@@ -115,5 +116,19 @@ terminal.onData(e => {
         default: // Print all other characters for demo
             terminal.write(e);
             currentCommand += e;
+    }
+});
+
+terminal.onSelectionChange(() => {
+    if (terminal.getSelectionPosition() !== undefined) {
+        clipboard = terminal.getSelection();
+    }
+});
+
+$('#xterm').on('contextmenu', (e) => {
+    if (clipboard !== '') {
+        e.preventDefault();
+        terminal.write(clipboard);
+        currentCommand += clipboard;
     }
 });
