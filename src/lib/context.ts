@@ -43,14 +43,23 @@ export class Context {
         }
 
         await this.loadConfig();
-        setInterval(async () => {
-            this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
-                const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-                this._log.push({ device: 'temp', deviceName: s, value: t ?? 0, timestamp: new Date().getTime() });
-                this.saveConfig();
-                return { sensor: s, temperature: t ?? 0 };
-            }));
-        }, 2000);
+        this.reScheduleUpdate();
+    }
+
+    private reScheduleUpdate() {
+        clearInterval(this._updateIntervalHandle);
+        this._updateIntervalHandle = setInterval(async () => {
+            await this.update();
+        }, this._updateInterval) as unknown as number;
+    }
+
+    private async update() {
+        this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
+            const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
+            this._log.push({ device: 'temp', deviceName: s, value: t ?? 0, timestamp: new Date().getTime() });
+            this.saveConfig();
+            return { sensor: s, temperature: t ?? 0 };
+        }));
     }
 
     private async saveConfig() {
@@ -59,6 +68,7 @@ export class Context {
             _filterState: this._filterState,
             _pumpState: this._pumpState,
             _log: this._log,
+            _updateInterval: this._updateInterval,
         }));
     }
 
@@ -72,6 +82,8 @@ export class Context {
     private _pumpState: boolean = false;
     private _sensors: Array<{ sensor: string, temperature: number }> = [];
     private _log: Array<LogEntry> = [];
+    private _updateInterval: number = 2000;
+    private _updateIntervalHandle?: number;
 
     get users() {
         return this._users;
@@ -102,15 +114,26 @@ export class Context {
         this.saveConfig();
     }
 
-    get lastIOStates(): { filter: boolean, pump: boolean, temperatures: Array<{ sensor: string, temperature: number }> } {
+    get lastIOStates(): { filter: boolean, pump: boolean, interval: number, temperatures: Array<{ sensor: string, temperature: number }> } {
         return {
             filter: this._filterState,
             pump: this._pumpState,
             temperatures: this._sensors,
+            interval: this._updateInterval,
         }
     }
 
     get log(): Array<LogEntry> {
         return this._log;
+    }
+
+    get updateInterval(): number {
+        return this._updateInterval;
+    }
+
+    set updateInterval(interval: number) {
+        this._updateInterval = interval;
+        this.reScheduleUpdate();
+        this.saveConfig();
     }
 }

@@ -19,7 +19,7 @@ export class TimestampTrigger extends ITrigger {
         });
 
         return {
-            cancel: job.cancel.bind(job),
+            cancel: job ? job.cancel.bind(job) : () => { },
             nextInvocation: () => (job && job.nextInvocation()) ? moment(job.nextInvocation().toISOString()) : undefined
         }
     }
