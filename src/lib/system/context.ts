@@ -124,8 +124,6 @@ export class Context extends EventEmitter {
         // Get the data from the database and sort them so the oldest is first
         const logData = (this.database.getData(`/temp/${device}/log`) as Array<LogEntry>).sort((a, b) => a.timestamp - b.timestamp);
 
-        console.log('Original Length', logData.length);
-
         // get all entries which are older than a day
         const oldData = logData.filter((d) => {
             const mom = moment(d.timestamp);
@@ -171,11 +169,8 @@ export class Context extends EventEmitter {
                 }
             }
         });
-
+        // TODO: further remove old data older than a week
         cleanData.push(...newData.map((d) => ({ ...d, mom: moment(d.timestamp) })));
-
-        console.log('Clean Length', cleanData.length);
-
         this.database.push(`/temp/${device}/log`, cleanData, true);
     }
 
