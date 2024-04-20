@@ -49,8 +49,15 @@ export class Trigger {
         const content = (await readFile(this.configPath)).toString()
         Object.assign(this, JSON.parse(content));
 
+        this.rescheduleJobs();
+    }
+
+    private async rescheduleJobs() {
         for (const name in this._triggers) {
             const triggerDef = this._triggers[name];
+            if (name in this._job) {
+                this._job[name].cancel();
+            }
 
             const trigger = PersistanceManager.fromString(triggerDef);
             const job = await trigger.register(name);
@@ -87,6 +94,16 @@ export class Trigger {
         this._job[name].cancel();
         delete this._job[name];
 
+        await this.saveConfig();
+    }
+
+    async changeState(name: string, state: boolean) {
+        const trigger = PersistanceManager.fromString(this._triggers[name]);
+        trigger.enabled = state;
+
+        this._triggers[name] = PersistanceManager.persist(trigger);
+
+        await this.rescheduleJobs();
         await this.saveConfig();
     }
 }
