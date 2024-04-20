@@ -26,6 +26,10 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5** - __17.03.2022__
+- Changed pin to current pinout
+- Telegram options
+
 **v0.0.5-rc5** - __20.07.2021__
 - Added action to send a message to telegram users
 
