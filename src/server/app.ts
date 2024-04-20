@@ -5,9 +5,9 @@ import { Server } from "./server";
 
 export async function start() {
     const server = new Server(3000);
-    // Display.it;
-    // TemperatureSensorManager.it;
-    // IO.it;
+    Display.it;
+    TemperatureSensorManager.it;
+    IO.it;
     
     await server.config();
     await server.start();
