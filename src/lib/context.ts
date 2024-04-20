@@ -12,6 +12,11 @@ export interface Device {
     log: Array<LogEntry>
 }
 
+export interface TempSensor {
+    sensor: string;
+    name: string;
+    temperature: number;
+}
 
 export class Context {
     private static instance?: Context;
@@ -63,7 +68,7 @@ export class Context {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
             this.log('temp', s, t ?? 0);
             this.saveConfig();
-            return { sensor: s, temperature: t ?? 0 };
+            return { sensor: s, name: this.getTempName(s), temperature: t ?? 0 };
         }));
     }
 
@@ -88,10 +93,23 @@ export class Context {
         });
     }
 
+    async setTempName(device: string, name: string) {
+        this.database.push(`/temp/${device}/name`, name);
+        await this.saveConfig();
+    }
+
+    getTempName(device: string): string {
+        if (this.database.exists(`/temp/${device}/name`)) {
+            return this.database.getData(`/temp/${device}/name`);
+        }
+
+        return device;
+    }
+
     private _users: { [username: string]: string } = {};
     private _filterState: boolean = false;
     private _pumpState: boolean = false;
-    private _sensors: Array<{ sensor: string, temperature: number }> = [];
+    private _sensors: Array<TempSensor> = [];
     private _updateInterval: number = 2000;
     private _updateIntervalHandle?: number;
     private database: JsonDB;
@@ -125,7 +143,7 @@ export class Context {
         this.saveConfig();
     }
 
-    get lastIOStates(): { filter: boolean, pump: boolean, interval: number, temperatures: Array<{ sensor: string, temperature: number }> } {
+    get lastIOStates(): { filter: boolean, pump: boolean, interval: number, temperatures: Array<TempSensor> } {
         return {
             filter: this._filterState,
             pump: this._pumpState,

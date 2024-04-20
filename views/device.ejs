@@ -21,19 +21,43 @@
                 </div>
                 <table class="table is-fullwidth">
                     <tbody>
-                        <% state.temperatures.forEach(sensor=> { %>
-                            <tr>
-                                <td style="width: 50%;">
-                                    <%= sensor.sensor %>
-                                </td>
-                                <td>
-                                    <span class="tag">
-                                        <%= sensor.temperature.toFixed(2) %> °C
-                                    </span>
-                                </td>
-                            </tr>
+                        <% state.temperatures=[{sensor: '28-234567890' , temperature: 34.12}] %>
+                            <% state.temperatures.forEach((sensor, i)=> { %>
+                                <tr>
+                                    <td style="width: 50%;">
+                                        <span id="sensor<%= i %>">
+                                            <span class="name">
+                                                <%= sensor.name %>
+                                            </span>
+                                            <a class="is-white" href="#" onclick="renameSensor(<%= i %>);"><i
+                                                    class="fa fa-pen"></i></a>
+                                        </span>
+                                        <div id="sensor-name<%= i %>" class="field sensor-name has-addons">
+                                            <p class="control">
+                                                <input type="text" class="input is-small is-expanded"
+                                                    id="sensor-name-text<%= i %>" value="<%= sensor.name %>">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-small"
+                                                    onclick="applyRenameSensor(<%= i %>, '<%= sensor.sensor %>');">
+                                                    <i class="fa fa-check"></i>
+                                                </a>
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-small" onclick="cancelRenameSensor(<%= i %>);">
+                                                    <i class="fa fa-times"></i>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="tag">
+                                            <%= sensor.temperature.toFixed(2) %> °C
+                                        </span>
+                                    </td>
+                                </tr>
 
-                            <%});%>
+                                <%});%>
                     </tbody>
                 </table>
             </div>
@@ -79,6 +103,8 @@
     </div>
 
     <script>
+        $('.sensor-name').hide();
+
         async function toggleState(which) {
             const response = await fetch(`${location.href}/toggle/${which}`, {
                 method: 'POST'
@@ -95,6 +121,30 @@
 
             const result = await response.json();
             $(`#update-interval`).val(interval);
+        }
+
+        async function renameSensor(index) {
+            $(`#sensor${index}`).hide().parent('td').css('width', '75%');
+            $(`#sensor-name${index}`).show();
+        }
+
+        async function cancelRenameSensor(index) {
+            $(`#sensor${index}`).show().parent('td').css('width', '50%');
+            $(`#sensor-name${index}`).hide();
+        }
+
+        async function applyRenameSensor(index, sensor) {
+            const newSensorName = $(`#sensor-name${index}`).find('input').val();
+            console.log(newSensorName);
+            const response = await fetch(`${location.href}/rename/${sensor}`, {
+                method: 'POST',
+                body: JSON.stringify({ name: newSensorName }),
+            });
+
+            if (response.ok) {
+                $(`#sensor${index}`).find('.name').text((await response.json()).name);
+                cancelRenameSensor(index);
+            }
         }
 
         console.log(`<%- system %>`)
