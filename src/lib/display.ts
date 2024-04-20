@@ -1,5 +1,7 @@
 import Lcd from 'lcd';
 import { TemperatureSensorManager } from './temperature';
+import CONST from './consts';
+import { Context } from './context';
 
 export class Display {
     private static instance?: Display;
@@ -21,9 +23,9 @@ export class Display {
 
     private constructor() {
         this.lcd = new Lcd({
-            rs: 12,
-            e: 13,
-            data: [16, 19, 20, 26],
+            rs: CONST.PIN_DISPLAY_RS,
+            e: CONST.PIN_DISPLAY_E,
+            data: [CONST.PIN_DISPLAY_DATA1, CONST.PIN_DISPLAY_DATA2, CONST.PIN_DISPLAY_DATA3, CONST.PIN_DISPLAY_DATA4],
             cols: this.cols,
             rows: this.rows
         });
@@ -33,24 +35,31 @@ export class Display {
             console.log(`Display is ready to show something.`);
             // this.lcd.clear()
             this.printable = true;
+            let cnt = 0;
             setInterval(() => {
                 if (!this.displayTime) {
                     return;
                 }
 
                 lcd.setCursor(0, 0);
-                lcd.print('Current time is:', function () {
-                    lcd.setCursor(0, 1);
-                    lcd.print(`${new Date().toLocaleTimeString()}    S: ${TemperatureSensorManager.it.sensors.length}`);
-                });
-            }, 1000);
+                lcd.print(cnt + ': ' + Buffer.from([cnt++]).toString());
+
+                // lcd.print(`Pumpe: ${Context.it.pumpState ? 'an ' : 'aus'} | Filter: ${Context.it.filterState ? 'an ' : 'aus'}`, function () {
+                //     lcd.setCursor(0, 1);
+                //     lcd.print(`${new Date().toLocaleTimeString()}   sc: ${TemperatureSensorManager.it.sensors.length}`);
+                // });
+            }, 500);
         });
     }
 
     killDisplay() {
         const lcd = this.lcd;
         lcd.clear(() => {
-            lcd.close();
+            try {
+                lcd.close();
+            } catch (e) {
+                console.warn(`Error while closing the display: ${e.message}`);
+            }
         });
 
         Display.instance = undefined;
