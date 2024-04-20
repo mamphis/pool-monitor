@@ -41,11 +41,10 @@ export class Display {
                 }
 
                 lcd.setCursor(0, 0);
-                const sensors = TemperatureSensorManager.it.sensors;
-                const sensorIndex = cnt % sensors.length;
-                const sensor = TemperatureSensorManager.it.sensor[sensors[sensorIndex]];
-                
-                const sensorText = `S${sensorIndex + 1} ${(await sensor?.getTemperature())?.toFixed(2)}C`;
+                const sensorIndex = cnt % Context.it.lastIOStates.temperatures.length;
+                const sensor = Context.it.lastIOStates.temperatures[sensorIndex];
+
+                const sensorText = `S${sensorIndex + 1} ${sensor.temperature.toFixed(2)}C`;
 
                 lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}   ${sensorText}`, async function () {
                     lcd.setCursor(0, 1);
@@ -74,7 +73,7 @@ export class Display {
             } catch (e) {
                 console.warn(`Error while closing the display: ${e.message}`);
             }
-            
+
             this.printable = false;
             Display.instance = undefined;
         });
