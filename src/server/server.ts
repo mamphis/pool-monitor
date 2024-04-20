@@ -1,5 +1,5 @@
-import express, { Application, json, NextFunction, Request, Response, static as staticImport, urlencoded } from "express";
 import cors from 'cors';
+import express, { Application, NextFunction, Request, Response, static as staticImport } from "express";
 import moment from 'moment';
 import { indexRouter } from "./routes";
 import { temperatureRouter } from "./routes/device";

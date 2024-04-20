@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { Context, LogEntry } from "../../lib/system/context";
+import { Context } from "../../lib/system/context";
 import { Trigger } from "../../lib/system/trigger";
 
 const router = Router();

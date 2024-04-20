@@ -1,4 +1,4 @@
-import { readdir, access, readFile } from 'fs/promises'
+import { access, readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
 class TemperatureSensor {
