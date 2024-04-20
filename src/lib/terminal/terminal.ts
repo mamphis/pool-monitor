@@ -191,7 +191,7 @@ ${Trigger.it.all.map(t => {
 
                     childProcess.on('close', (code) => {
                         const end = moment();
-                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code}; Executuion to ${moment.duration(start.diff(end)).abs().humanize()}` }));
+                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code} (${moment.duration(start.diff(end)).abs().asSeconds()}s)` }));
                         this.socket.send(JSON.stringify({ type: 'system-command', message: 'prompt' }));
                     });
                     // exec(message, (err, stdout, stderr) => {
