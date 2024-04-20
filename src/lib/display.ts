@@ -1,5 +1,6 @@
 import { promisify } from 'util';
-import Lcd from 'lcd';
+// import Lcd from 'lcd';
+const Lcd = require('lcd');
 
 export class Display {
     private static instance: Display;
@@ -12,7 +13,7 @@ export class Display {
         return this.instance;
     }
 
-    private lcd: Lcd;
+    private lcd;
     private printable: boolean = false;
 
     private readonly cols: number = 16;
