@@ -1,10 +1,9 @@
-import { compare } from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import jwt from 'jsonwebtoken';
 import { Context } from "../../lib/system/context";
 import { userCount } from "../../lib/system/user";
-import { randomString } from "../../lib/utils";
+import { hash, randomString } from "../../lib/utils";
 
 const secret = randomString(20);
 
@@ -24,7 +23,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     } else {
         try {
             const { user } = jwt.verify(req.signedCookies.user, secret) as { user: payload };
-            res.locals.user = user;
+            res.locals.user = Context.it.users[user.username];
             next();
         } catch {
             next(createHttpError(401));
@@ -60,7 +59,7 @@ export async function login(usernameOrCookie: string, password?: string): Promis
     const users = Context.it.users;
 
     if (users[username]) {
-        if (await compare(pwd, users[username].password)) {
+        if (hash(pwd) == users[username].password) {
             if (!password) {
                 return { success: true, username };
             }
@@ -71,6 +70,6 @@ export async function login(usernameOrCookie: string, password?: string): Promis
     if (!password) {
         return { success: false, username };
     }
-    
+
     return false;
 }

@@ -43,9 +43,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="column is-full">
-                        <a href="<%= telegramLink %>" target="_blank" rel="noopener noreferrer">Mit Telegram Verknüpfen</a>
-                    </div>                    
                 </div>
                 <div id="status">
                     <div class="panel is-link">
@@ -54,6 +51,46 @@
                             <button class="button is-white is-disabled is-loading"></button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-block">
+            <div class="control">
+                <h1 class="title">Telegram</h1>
+                <div class="columns is-multiline">
+                    <% if (user.telegram.id===0) { %>
+                        <div class="column is-full">
+                            <a href="<%= telegramLink %>" target="_blank" rel="noopener noreferrer">Mit Telegram
+                                Verknüpfen</a>
+                        </div>
+                        <%} else {%>
+                            <div class="column is-full">
+                                <a href="https://t.me/<%= user.telegram.username %>" target="_blank"
+                                    rel="noopener noreferrer">Verknüpfter Benutzer <%= user.telegram.username %></a>
+                            </div>
+                            <div class="column is-full">
+                                <div class="columns">
+                                    <div class="column pb-0 is-3">Benachrichtigung aktiviert</div>
+                                    <div class="column pb-0">
+                                        <input type="checkbox" id="notificationEnabled"
+                                            <%=user.telegram.notificationEnabled ? 'checked' : '' %>
+                                        onclick="changeUser();">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-full">
+                                <div class="columns">
+                                    <div class="column is-3">Benachrichtigung stummgeschaltet</div>
+                                    <div class="column">
+                                        <input type="checkbox" id="notificationMuted" <%=user.telegram.notificationMuted
+                                            ? 'checked' : '' %>
+                                        onclick="changeUser();">
+                                    </div>
+                                </div>
+                            </div>
+                            <%} %>
+
                 </div>
             </div>
         </div>
@@ -169,6 +206,26 @@
             $('#latest-version').text(latestVersion);
             $('#last-checked').text(lastChecked);
             $button.removeClass('is-loading');
+        }
+
+        async function changeUser() {
+            const $enabled = $('#notificationEnabled');
+            const $muted = $('#notificationMuted');
+            const response = await fetch(`${window.location.origin + location.pathname}/user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    notificationEnabled: $enabled.prop('checked'),
+                    notificationMuted: $muted.prop('checked'),
+                }),
+            });
+
+            const { telegram } = await response.json();
+            console.log(telegram);
+            $enabled.prop('checked', telegram.notificationEnabled);
+            $muted.prop('checked', telegram.notificationMuted);
         }
     </script>
     <%- include('includes/foot.ejs') -%>

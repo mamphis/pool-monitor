@@ -4,6 +4,7 @@ let terminalReady = false;
 let currentCommand = '';
 const termHistory = [];
 let termHistoryIndex = 0;
+let clipboard = '';
 
 socket.onopen = (ev) => {
     terminal.resize(120, terminal.rows);
@@ -100,7 +101,7 @@ terminal.onData(e => {
                 terminal.write('\b \b');
             }
 
-            currentCommand = currentCommand.substr(0, currentCommand - 1);
+            currentCommand = currentCommand.substr(0, currentCommand.length - 1);
             break;
         case '\u001b[A':
             currentCommand = termHistory[termHistoryIndex];
@@ -109,10 +110,25 @@ terminal.onData(e => {
                 termHistoryIndex--
             }
 
+            terminal.write('\x1b[2K\r');
             terminal.write(`\r$ ${currentCommand}`);
             break;
         default: // Print all other characters for demo
             terminal.write(e);
             currentCommand += e;
+    }
+});
+
+terminal.onSelectionChange(() => {
+    if (terminal.getSelectionPosition() !== undefined) {
+        clipboard = terminal.getSelection();
+    }
+});
+
+$('#xterm').on('contextmenu', (e) => {
+    if (clipboard !== '') {
+        e.preventDefault();
+        terminal.write(clipboard);
+        currentCommand += clipboard;
     }
 });
