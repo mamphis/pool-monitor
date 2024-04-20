@@ -11,6 +11,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
             
             const invocation = t.job.nextInvocation()?.format('DD.MM.YYYY HH:mm') ?? '---';
             return {
+                enabled: t.trigger.enabled,
                 trigger: t.trigger.getDescription(),
                 action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
                 nextInvocation: invocation
