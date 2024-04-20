@@ -9,7 +9,8 @@ export interface LogEntry {
 }
 
 export interface Device {
-    log: Array<LogEntry>
+    log: Array<LogEntry>;
+    name: string;
 }
 
 export interface TempSensor {
