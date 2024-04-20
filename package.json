@@ -1,6 +1,6 @@
 {
   "name": "pool-monitor",
-  "version": "0.0.4-rc5",
+  "version": "0.0.4",
   "description": "",
   "main": "out/index.js",
   "scripts": {

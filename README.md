@@ -26,6 +26,8 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.4** - __06.07.2021__
+- Bumped version and make full version
 
 **v0.0.4-rc5** - __27.06.2021__
 - Added Login for UI
