@@ -16,6 +16,7 @@ export async function getLatestVersionTag(): Promise<string> {
     if (tags.all.length === 0) {
         return '0.0.0';
     }
+
     const [latestTag] = tags.all.sort((a, b) => semver.gt(a, b) ? -1 : 1);
     return latestTag;
 }
@@ -26,17 +27,10 @@ export async function pullLatestVersion() {
     console.log(resp.raw);
     const latestTag = await getLatestVersionTag();
 
-    const st = await git.stash();
-    console.log('stashed changes', st);
-    const co = await git.checkout(`tags/${latestTag}`, { '-b': 'runtime' });
-    console.log("Checkout:", co);
-    const pu = await git.pull('origin', `tags/${latestTag}`);
-    console.log(pu.summary);
-    
-    const sp = await git.stash(['pop']);
-    console.log('stash pop', sp);    
-
-    console.log('latest tag checked out.');
+    await git.stash();
+    await git.checkout(`tags/${latestTag}`, ['-b', 'runtime']);
+    await git.pull('origin', `tags/${latestTag}`);
+    await git.stash(['pop']);
     Context.it.installedVersion = latestTag
 }
 
