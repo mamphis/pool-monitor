@@ -1,13 +1,12 @@
-import { hash } from 'bcrypt';
+import Updater from '@pcsmw/node-app-updater';
+import EventEmitter from 'events';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
 import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
-import { Trigger } from './trigger';
-import Updater from '@pcsmw/node-app-updater';
 import { randomString } from '../utils';
-import EventEmitter from 'events';
+import { Trigger } from './trigger';
 
 export interface LogEntry {
     value: number;
