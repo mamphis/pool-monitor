@@ -13,12 +13,11 @@ export async function getLatestVersionTag(): Promise<string> {
 
     await git.fetch()
     const tags = await git.tags();
-    console.log(tags);
-    if (tags.latest) {
-        return tags.latest;
+    if (tags.all.length === 0) {
+        return '0.0.0';
     }
-
-    return '0.0.0';
+    const [latestTag] = tags.all.sort((a, b) => semver.gt(a, b) ? -1 : 1);
+    return latestTag;
 }
 
 export async function pullLatestVersion() {
@@ -31,7 +30,7 @@ export async function pullLatestVersion() {
     console.log("Checkout:", co);
     const pu = await git.pull('origin', `tags/${latestTag}`);
     console.log(pu.summary);
-    
+
     console.log('latest tag checked out.');
     Context.it.installedVersion = latestTag
 }
