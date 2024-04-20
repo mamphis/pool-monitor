@@ -7,6 +7,7 @@ import { TemperatureSensorManager } from "../peripherals/temperature";
 import { Trigger } from './trigger';
 import Updater from '@pcsmw/node-app-updater';
 import { randomString } from '../utils';
+import EventEmitter from 'events';
 
 export interface LogEntry {
     value: number;
@@ -38,7 +39,11 @@ export interface UserInfo {
     name: string;
 }
 
-export class Context {
+export interface Context {
+    on(event: 'stateToggled', listener: (which: 'salt' | 'pump', newState: boolean, source: string) => void): this;
+}
+
+export class Context extends EventEmitter {
     private static instance?: Context;
 
     static get it(): Context {
@@ -50,6 +55,7 @@ export class Context {
     }
 
     private constructor() {
+        super();
         this.database = new JsonDB(this.databasePath, true);
     }
 
@@ -69,6 +75,7 @@ export class Context {
         if (!await this.existsConfig()) {
             await this.saveConfig();
         }
+        console.log('Context initialized.')
 
         await this.loadConfig();
         this.reScheduleUpdate();
@@ -80,7 +87,7 @@ export class Context {
         });
 
         Trigger.it.on('deviceStateChanged', (device, state, triggerName) => {
-            this.logIODevice(device, state ? 1 : 0, `trigger`, triggerName);
+            this.logIODevice(device, state ? 1 : 0, `trigger`, `${triggerName}`);
         });
     }
 
@@ -166,12 +173,14 @@ export class Context {
         });
     }
 
-    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger', name: string) {
+    logIODevice(device: string, value: number, from: 'button' | 'web' | 'trigger' | 'telegram', name: string) {
         this.database.push(`/${device}/log[]`, {
             timestamp: new Date().getTime(),
             value,
-            from: `${from}[${name}]`,
+            from: `${from} [${name}]`,
         });
+
+        this.emit('stateToggled', device, value === 1, `${from} [${name}]`);
     }
 
     async setTempName(device: string, name: string) {
