@@ -33,22 +33,27 @@ export class Display {
 
         this.lcd.on('ready', () => {
             console.log(`Display is ready to show something.`);
-            // this.lcd.clear()
+            
             this.printable = true;
             let cnt = 0;
-            setInterval(() => {
+            const refreshDisplay = () => {
                 if (!this.displayTime) {
                     return;
                 }
 
                 lcd.setCursor(0, 0);
-                lcd.print(cnt + ': ' + Buffer.from([cnt++]).toString());
+                const sensors = TemperatureSensorManager.it.sensors;
+                const sensor = TemperatureSensorManager.it.sensor[sensors[cnt++ % sensors.length]];
 
-                // lcd.print(`Pumpe: ${Context.it.pumpState ? 'an ' : 'aus'} | Filter: ${Context.it.filterState ? 'an ' : 'aus'}`, function () {
-                //     lcd.setCursor(0, 1);
-                //     lcd.print(`${new Date().toLocaleTimeString()}   sc: ${TemperatureSensorManager.it.sensors.length}`);
-                // });
-            }, 500);
+                lcd.print(`  P: ${Context.it.pumpState ? 'x' : 'o'} | F: ${Context.it.filterState ? 'x' : 'o'}`, async function () {
+                    lcd.setCursor(0, 1);
+                    lcd.print(`${(await sensor?.getTemperature())?.toFixed(2)}C  ${new Date().toLocaleTimeString()}`);
+                });
+
+                setTimeout(refreshDisplay, 500);
+            };
+
+            refreshDisplay();
         });
     }
 
