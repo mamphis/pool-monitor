@@ -33,6 +33,18 @@ router.delete('/:index', (req: Request, res: Response, next: NextFunction) => {
     return res.json({});
 });
 
+router.get('/new', (req: Request, res: Response, next: NextFunction) => {
+    return res.render('newtrigger', {});
+});
+
+router.post('/new', async (req: Request, res: Response, next: NextFunction) => {
+    if (await Trigger.it.add(Math.floor(Math.random() * 1000000).toString(), JSON.stringify(req.body))) {
+        return res.json({});
+    }
+
+    return res.status(400).json({ error: "Trigger kann nicht hinzugefügt werden." });
+});
+
 router.post('/:index', (req: Request, res: Response, next: NextFunction) => {
     const index = parseInt(req.params.index);
 
@@ -44,18 +56,6 @@ router.post('/:index', (req: Request, res: Response, next: NextFunction) => {
     Trigger.it.changeState(t.name, req.body.enabled);
 
     return res.json({});
-});
-
-router.get('/new', (req: Request, res: Response, next: NextFunction) => {
-    return res.render('newtrigger', {});
-});
-
-router.post('/new', async (req: Request, res: Response, next: NextFunction) => {
-    if (await Trigger.it.add(Math.floor(Math.random() * 1000000).toString(), JSON.stringify(req.body))) {
-        return res.json({});
-    }
-
-    return res.status(400).json({ error: "Trigger kann nicht hinzugefügt werden." });
 });
 
 export { router as triggerRouter };
