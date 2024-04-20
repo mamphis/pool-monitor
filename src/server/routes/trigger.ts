@@ -15,7 +15,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
             const job = scheduledJobs['trigger' + t.name];
             console.log(job?.nextInvocation());
 
-            const invocation = job ? moment(job.nextInvocation()).format('DD.MM.YYYY HH:mm') : '---';
+            const invocation = job ? moment(job.nextInvocation().toISOString()).format('DD.MM.YYYY HH:mm') : '---';
             return {
                 trigger: trigger.getDescription(),
                 action: (action?.getDescription() ?? '') + ' ' + (condition?.getDescription() ?? ''),
