@@ -3,6 +3,7 @@ import TelegramBot, { CallbackQuery, InlineKeyboardMarkup } from 'node-telegram-
 import { IO } from '../peripherals/io';
 import { Context } from '../system/context';
 import { Trigger } from '../system/trigger';
+import localtunnel from 'localtunnel';
 
 const keyboards: { [key: string]: InlineKeyboardMarkup } = {
     default: {
@@ -85,6 +86,15 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
                 reply_markup: keyboards.status,
                 parse_mode: 'MarkdownV2'
             });
+        });
+
+        this.api.onText(/\/service/, async (msg, match) => {
+            const user = Object.values(Context.it.users).find(u => u.telegram.id === msg.from?.id);
+            if (user) {
+                const tunnel = await localtunnel(3000);
+                
+                this.api.sendMessage(msg.from?.id ?? 0, tunnel.url);
+            }
         });
 
         this.api.on('callback_query', async (query) => {

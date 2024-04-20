@@ -84,7 +84,7 @@ export class Display {
         lcd?.clear(() => {
             try {
                 lcd.close();
-            } catch (e) {
+            } catch (e: any) {
                 console.warn(`Error while closing the display: ${e.message}`);
             }
 
