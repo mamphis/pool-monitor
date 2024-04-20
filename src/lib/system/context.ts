@@ -2,6 +2,7 @@ import { hash } from 'bcrypt';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
+import { SemVer } from 'semver';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 
 export interface LogEntry {
@@ -117,6 +118,7 @@ export class Context {
             _saltState: this._saltState,
             _pumpState: this._pumpState,
             _updateInterval: this._updateInterval,
+            _installedVersion: this._installedVersion,
         }));
     }
 
@@ -151,6 +153,7 @@ export class Context {
     private _sensors: Array<TempSensor> = [];
     private _updateInterval: number = 2000;
     private _updateIntervalHandle?: number;
+    private _installedVersion: string = '0.0.0';
     private database: JsonDB;
 
     get users() {
@@ -207,5 +210,13 @@ export class Context {
         this._updateInterval = interval;
         this.reScheduleUpdate();
         this.saveConfig();
+    }
+
+    get installedVersion(): SemVer {
+        return new SemVer(this._installedVersion);
+    }
+
+    set installedVersion(value: SemVer) {
+        this._installedVersion = value.format()
     }
 }
