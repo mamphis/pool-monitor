@@ -26,6 +26,11 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.5-rc1** - __06.07.2021__
+- Disable authentication for pages other than system
+- Use authentication for the Websocket used by the system page
+- Fix that users are saved before they are loaded, effectively deleting users
+
 **v0.0.4** - __06.07.2021__
 - Bumped version and make full version
 
