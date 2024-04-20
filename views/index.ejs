@@ -16,10 +16,19 @@
         options.chart = {
             height: 350,
             type: "line",
-            stacked: false
+            stacked: false,
+            animations: {
+                enabled: false,
+            }
         };
         options.stroke = {
             curve: 'smooth'
+        };
+
+        options.tooltip = {
+            x: {
+                format: 'dd.MM.yy HH:mm:ss'
+            }
         };
 
         var chart = new ApexCharts(document.querySelector("#chart"), options);
