@@ -5,7 +5,7 @@ import { JsonDB } from 'node-json-db';
 import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { Trigger } from './trigger';
-import { getLatestVersionTag } from './update';
+import Updater from '@pcsmw/node-app-updater';
 
 export interface LogEntry {
     value: number;
@@ -148,7 +148,7 @@ export class Context {
     async updateVersionInfo() {
         this._versionInfo = {
             installedVersion: this._installedVersion,
-            latestVersion: await getLatestVersionTag(),
+            latestVersion: await new Updater().getLatestVersion(),
             lastChecked: moment(),
         }
     }
