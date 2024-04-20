@@ -178,23 +178,36 @@ ${Trigger.it.all.map(t => {
                 }
             } else {
                 try {
-                    exec(message, (err, stdout, stderr) => {
-                        if (stdout) {
-                            this.socket.send(JSON.stringify({ type: 'exec-stdout', message: stdout }));
-
-                            if (err) {
-                                this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${err.name}: ${err.message}` }));
-                            }
-                        }
-                        if (stderr) {
-                            this.socket.send(JSON.stringify({ type: 'exec-stderr', message: stderr }));
-                        }
-
-                        this.socket.send(JSON.stringify({
-                            type: 'system-command',
-                            message: 'prompt'
-                        }));
+                    const childProcess = exec(message);
+                    childProcess.stdout?.on('data', (data) => {
+                        this.socket.send(JSON.stringify({ type: 'exec-stdout', message: data }));
                     });
+
+                    childProcess.stderr?.on('data', (data) => {
+                        this.socket.send(JSON.stringify({ type: 'exec-stderr', message: data }));
+                    });
+
+                    childProcess.on('close', (code) => {
+                        this.socket.send(JSON.stringify({ type: 'exec-stdout', message: `Process exited with code ${code}` }));
+                        this.socket.send(JSON.stringify({ type: 'system-command', message: 'prompt' }));
+                    });
+                    // exec(message, (err, stdout, stderr) => {
+                    //     if (stdout) {
+                    //         this.socket.send(JSON.stringify({ type: 'exec-stdout', message: stdout }));
+
+                    //         if (err) {
+                    //             this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${err.name}: ${err.message}` }));
+                    //         }
+                    //     }
+                    //     if (stderr) {
+                    //         this.socket.send(JSON.stringify({ type: 'exec-stderr', message: stderr }));
+                    //     }
+
+                    //     this.socket.send(JSON.stringify({
+                    //         type: 'system-command',
+                    //         message: 'prompt'
+                    //     }));
+                    // });
                 }
                 catch (e: any) {
                     this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${e.name}: ${e.message}` }));
