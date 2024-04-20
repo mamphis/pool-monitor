@@ -37,7 +37,7 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
-                await this.togglePumpState();
+            await this.togglePumpState();
         });
 
         this.btnFilter.watch(async (err, value) => {
@@ -45,7 +45,7 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
-                await this.toggleFilterState();
+            await this.toggleFilterState();
         });
     }
 
