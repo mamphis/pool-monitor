@@ -4,26 +4,40 @@ import simpleGit from "simple-git/promise";
 import { Context } from "./context";
 
 export async function newerVersionAvailable(): Promise<boolean> {
+    const latestTag = await getLatestVersionTag();
+    return semver.gt(latestTag, Context.it.installedVersion, { includePrerelease: true });
+}
+
+export async function getLatestVersionTag(): Promise<string> {
     const git = simpleGit()
 
     await git.fetch()
     const tags = await git.tags();
-    if (!tags.latest) {
-        return false;
+    if (tags.latest) {
+        return tags.latest;
     }
 
-    return semver.gt(tags.latest, Context.it.installedVersion, { includePrerelease: true });
+    return '0.0.0';
 }
 
 export async function pullLatestVersion() {
     const git = simpleGit()
     await git.fetch();
     await git.checkoutLatestTag('', '')
+    Context.it.installedVersion = await getLatestVersionTag();
 }
 
 export async function installDependencies(): Promise<void> {
     return new Promise<void>((res) => {
         exec('npm i', (err, stdout, stderr) => {
+            res();
+        });
+    })
+}
+
+export async function installApplication(): Promise<void> {
+    return new Promise<void>((res) => {
+        exec('npm run build', (err, stdout, stderr) => {
             res();
         });
     })
