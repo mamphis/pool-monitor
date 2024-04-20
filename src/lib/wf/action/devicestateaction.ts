@@ -1,10 +1,12 @@
+import { Action, Condition } from "@nucleus/wf";
 import { IO } from "../../peripherals/io";
 import { Context } from "../../system/context";
-import { ICondition } from "../condition/icondition";
-import { IAction } from "./iaction";
 
-export class DeviceStateAction extends IAction {
-    constructor(public readonly device: 'pump' | 'salt', public readonly state: boolean, conditions: ICondition[]) {
+export class DeviceStateAction extends Action.IAction {
+    public device!: 'pump' | 'salt';
+    public state!: boolean;
+
+    constructor(conditions: Condition.ICondition[]) {
         super(conditions);
     }
 
@@ -45,5 +47,12 @@ export class DeviceStateAction extends IAction {
 
     getDescription(): string {
         return `Setze den Status ${this.getDeviceName()} auf "${this.getState()}"`
+    }
+
+    persist(): Partial<DeviceStateAction> {
+        return {
+            device: this.device,
+            state: this.state,
+        };
     }
 }
