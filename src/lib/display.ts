@@ -71,7 +71,7 @@ export class Display {
         }, 5000);
 
         const lcd = this.lcd;
-        const lines = text.split('\n').map(l => l.substr(0, this.cols));
+        const lines = text.split('\n').map(l => l.substr(0, this.cols).trim());
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print((lines[0] || ''), function () {
