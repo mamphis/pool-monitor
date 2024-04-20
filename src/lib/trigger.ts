@@ -1,6 +1,8 @@
 import { access, readFile, writeFile } from "fs/promises";
 import { scheduledJobs } from "node-schedule";
 import { PersistanceManager } from "./wf/persistancemanager";
+import { ITrigger } from "./wf/trigger/itrigger";
+import { TriggerJob } from "./wf/triggerjob";
 
 export class Trigger {
     private static instance?: Trigger;
@@ -52,18 +54,22 @@ export class Trigger {
             const triggerDef = this._triggers[name];
 
             const trigger = PersistanceManager.fromString(triggerDef);
-            await trigger.register(name);
+            const job = await trigger.register(name);
+            this._job[name] = job;
         }
     }
 
     private _triggers: { [name: string]: string } = {};
+    private _job: { [name: string]: TriggerJob } = {};
 
     async add(name: string, triggerDef: string): Promise<boolean> {
         try {
             const t = PersistanceManager.fromString(triggerDef);
             this._triggers[name] = triggerDef;
 
-            await t.register(name);
+            const job = await t.register(name);
+            this._job[name] = job;
+
             await this.saveConfig();
             return true;
         } catch (e) {
@@ -71,15 +77,17 @@ export class Trigger {
         }
     }
 
-    get all(): Array<{ name: string, triggerDef: string }> {
+    get all(): Array<{ name: string, job: TriggerJob, trigger: ITrigger }> {
         return Object.keys(this._triggers).map(name => {
-            return { name, triggerDef: this._triggers[name] };
+            return { name, job: this._job[name], trigger: PersistanceManager.fromString(this._triggers[name]) };
         })
     }
 
     async delete(name: string) {
         delete this._triggers[name];
-        scheduledJobs['trigger' + name]?.cancel();
+        this._job[name].cancel();
+        delete this._job[name];
+
         await this.saveConfig();
     }
 }
