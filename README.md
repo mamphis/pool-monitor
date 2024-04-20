@@ -21,6 +21,6 @@
         - Time
     - Condition
     - Action
-- [ ] Logging of temperature values
+- [x] Logging of temperature values
 - [x] Toggle state of devices manually over the website
 - [x] Toggle Light of LCD Display when a button is pressed
