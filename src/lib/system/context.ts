@@ -119,35 +119,60 @@ export class Context extends EventEmitter {
     }
 
     private cleanTempLog(device: string) {
-        const logData = (this.database.getData(`/temp/${device}/log`) as Array<{ timestamp: number, value: number }>).sort((a, b) => a.timestamp - b.timestamp);
-        const cleanData = [];
-        let lastData: { timestamp: number, value: number, mom: Moment } | undefined = undefined;
+        type LogEntry = { timestamp: number, value: number };
+        type ExtendedLogEntry = LogEntry & { mom: Moment };
+        // Get the data from the database and sort them so the oldest is first
+        const logData = (this.database.getData(`/temp/${device}/log`) as Array<LogEntry>).sort((a, b) => a.timestamp - b.timestamp);
+
         console.log('Original Length', logData.length);
-        for (const data of logData) {
-            // Add the first event.
-            if (cleanData.length == 0) {
-                cleanData.push(data);
-                lastData = { ...data, mom: moment(new Date(data.timestamp)) };
-                continue;
-            }
 
-            // if data is longer away then a week, only take every 10 minutes
-            const mom = moment(new Date(data.timestamp));
-            if (moment().subtract(1, 'day').isBefore(mom)) {
-                if (lastData && lastData.mom.diff(mom, 'minute') >= 10) {
-                    cleanData.push(data);
-                    lastData = { ...data, mom };
+        // get all entries which are older than a day
+        const oldData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+
+            return (mom.isBefore(moment().subtract(1, 'days')))
+        });
+
+        const middleData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+            return (mom.isAfter(moment().subtract(1, 'days'))) && (mom.isBefore(moment().add(1, 'hour')))
+        });
+
+        const newData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+            return (mom.isAfter(moment().add(1, 'hour')))
+        });
+
+        const cleanData: Array<ExtendedLogEntry> = [];
+        let lastData: ExtendedLogEntry;
+        oldData.forEach((d) => {
+            const mom = moment(d.timestamp);
+            if (!lastData) {
+                lastData = { ...d, mom };
+                cleanData.push(lastData);
+            } else {
+                if (Math.abs(lastData.mom.diff(mom, 'minutes')) > 30) {
+                    lastData = { ...d, mom };
+                    cleanData.push(lastData);
                 }
             }
+        });
 
-            // if data is longer away then an hour, only take every 1 minute
-            if (moment().subtract(1, 'hour').isBefore(mom)) {
-                if (lastData && lastData.mom.diff(mom, 'minute') >= 1) {
-                    cleanData.push(data);
-                    lastData = { ...data, mom };
+        middleData.forEach((d) => {
+            const mom = moment(d.timestamp);
+            if (!lastData) {
+                lastData = { ...d, mom };
+                cleanData.push(lastData);
+            } else {
+                if (Math.abs(lastData.mom.diff(mom, 'minutes')) > 5) {
+                    lastData = { ...d, mom };
+                    cleanData.push(lastData);
                 }
             }
-        }
+        });
+
+        cleanData.push(...newData.map((d) => ({ ...d, mom: moment(d.timestamp) })));
+
         console.log('Clean Length', cleanData.length);
 
         this.database.push(`/temp/${device}/log`, cleanData, true);
