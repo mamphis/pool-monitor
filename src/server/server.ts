@@ -11,12 +11,17 @@ import { loginRouter } from './routes/login';
 import { registerRouter } from './routes/register';
 import { systemRouter } from './routes/system';
 import { triggerRouter } from "./routes/trigger";
+import { Server as WebSocketServer } from 'ws';
+import { createServer } from 'http';
+import { exec } from 'child_process';
+import { stderr } from 'node:process';
 
 export class Server {
     private app: Application;
-
+    private wss: WebSocketServer;
     constructor(private port: number) {
         this.app = express();
+        this.wss = new WebSocketServer({ port: 3001 });
     }
 
     async config() {
@@ -32,6 +37,8 @@ export class Server {
         this.app.use('/static/css', staticImport('./node_modules/@fortawesome/fontawesome-free/css'));
         this.app.use('/static/webfonts', staticImport('./node_modules/@fortawesome/fontawesome-free/webfonts'));
         this.app.use('/static/css', staticImport('./node_modules/bulma/css'));
+        this.app.use('/static/js', staticImport('./node_modules/xterm/lib'));
+        this.app.use('/static/css', staticImport('./node_modules/xterm/css'));
         this.app.set('view engine', 'ejs');
 
         this.app.use(async (req: Request, res: Response, next: NextFunction) => {
@@ -66,6 +73,21 @@ export class Server {
             } else {
                 res.render('error', { code: 500, message: error.message });
             }
+        });
+
+        this.wss.on('connection', (socket, req) => {
+            console.log("Someone connected.");
+            socket.on('message', (data) => {
+                console.log(data);
+                try {
+                    exec(data as string, (err, stdout, stderr) => {
+                        socket.send(JSON.stringify({ stdout, stderr }));
+                    });
+                }
+                catch (e) {
+                    socket.send(JSON.stringify({ stderr: `${e.name}: ${e.message}` }));
+                }
+            });
         });
     }
 
