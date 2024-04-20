@@ -35,7 +35,7 @@ router.post('/update', async (req: Request, res: Response, next: NextFunction) =
         res.chunkedEncoding = true;
         res.write(JSON.stringify({ ok: true, message: 'Neue Version wird heruntergeladen.' }));
 
-        const iterator = updater.update(Context.it.installedVersion);
+        const iterator = updater.update();
         let done = false;
         do {
             let result;
