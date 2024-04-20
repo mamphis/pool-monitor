@@ -43,10 +43,15 @@ export class Display {
             return;
         }
 
-        const lines = text.split('\n');
-        this.lcd.setCursor(0, 0);
-        this.lcd.print((lines[0] || '').substr(0, this.cols));
-        this.lcd.setCursor(0, 1);
-        this.lcd.print((lines[1] || '').substr(0, this.cols));
+        const lines = text.split('\n').map(l => l.substr(0, this.cols));
+        this.lcd.setCursor(0, 0, () => {
+            this.lcd.print((lines[0] || ''), () => {
+                this.lcd.setCursor(0, 1, () => {
+                    this.lcd.print((lines[1] || ''), () => {
+                        console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)
+                    });
+                });
+            });
+        });
     }
 }
