@@ -44,7 +44,7 @@ export class Display {
                 const sensorIndex = cnt % Context.it.lastIOStates.temperatures.length;
                 const sensor = Context.it.lastIOStates.temperatures[sensorIndex];
 
-                const sensorText = `S${sensorIndex + 1} ${sensor.temperature.toFixed(2)}C`;
+                const sensorText = `S${sensorIndex + 1} ${(sensor?.temperature ?? 0).toFixed(2).padStart(5, '0')}C`;
 
                 lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}   ${sensorText}`, async function () {
                     lcd.setCursor(0, 1);
