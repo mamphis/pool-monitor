@@ -15,12 +15,11 @@ export class IO extends EventEmitter {
         return this.instance;
     }
 
-    private ready: boolean = false;
     private constructor() {
         super();
 
-        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising', { activeLow: false });
-        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { activeLow: false });
+        this.btnFilter = new Gpio(CONST.PIN_BUTTON_FILTER, 'in', 'rising', { activeLow: true });
+        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { activeLow: true });
 
         this.rlsFilter = new Gpio(CONST.PIN_RELAIS_FILTER, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
