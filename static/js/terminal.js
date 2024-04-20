@@ -6,9 +6,11 @@ const termHistory = [];
 let termHistoryIndex = 0;
 
 socket.onopen = (ev) => {
+    terminal.resize(120, terminal.rows);
+
     terminal.open(document.getElementById('xterm'));
+    terminal.setOption('disableStdin', true);
     terminal.write('You are connected to the console on this device.\r\n');
-    terminal.prompt(terminal);
 
     socket.onmessage = (msg) => {
         const { type, message } = JSON.parse(msg.data);
@@ -19,15 +21,28 @@ socket.onopen = (ev) => {
             terminal.warn('! ' + parsedMessage);
         } else if (type === 'system-err') {
             terminal.error(parsedMessage);
-        }else if (type === 'system-info') {
+        } else if (type === 'system-warn') {
+            terminal.warn(parsedMessage);
+        } else if (type === 'system-info') {
             terminal.write(parsedMessage);
+        } else if (type === 'system-command') {
+            if (parsedMessage === 'prompt') {
+                terminal.prompt();
+                terminal.setOption('disableStdin', false);
+            } else if (parsedMessage === 'disableStdin') {
+                terminal.setOption('disableStdin', true);
+            } else if (parsedMessage === 'doInit') {
+                socket.send(JSON.stringify({
+                    type: 'terminal-ready',
+                    message: JSON.stringify({
+                        rows: terminal.rows,
+                        cols: terminal.cols
+                    })
+                }));
+                terminalReady = true;
+            }
         }
-
-        terminal.prompt();
-        terminal.setOption('disableStdin', false);
     }
-
-    terminalReady = true;
 }
 
 socket.onclose = (ev) => {

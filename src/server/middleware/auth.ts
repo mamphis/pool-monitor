@@ -41,8 +41,8 @@ export const isAuthed = (req: Request): boolean => {
     }
 }
 export async function login(username: string, password: string): Promise<boolean>;
-export async function login(cookie: string): Promise<boolean>;
-export async function login(usernameOrCookie: string, password?: string): Promise<boolean> {
+export async function login(cookie: string): Promise<{ success: boolean, username: string }>;
+export async function login(usernameOrCookie: string, password?: string): Promise<boolean | { success: boolean, username: string }> {
     let username, pwd: string;
     if (!password) {
         try {
@@ -50,7 +50,7 @@ export async function login(usernameOrCookie: string, password?: string): Promis
             username = user.username;
             pwd = user.password;
         } catch {
-            return false;
+            return { success: false, username: '' };
         }
     } else {
         username = usernameOrCookie;
@@ -61,9 +61,16 @@ export async function login(usernameOrCookie: string, password?: string): Promis
 
     if (users[username]) {
         if (await compare(pwd, users[username])) {
+            if (!password) {
+                return { success: true, username };
+            }
             return true;
         }
     }
 
+    if (!password) {
+        return { success: false, username };
+    }
+    
     return false;
 }
