@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/static/css/apexcharts.css">
     <script>
         const options = {};
-        options.series = JSON.parse(`<%- JSON.stringify(temperatures) %>`);
         options.xaxis = {
             type: 'datetime'
         };
@@ -18,9 +17,24 @@
             type: "line",
             stacked: false
         };
-        
+        options.stroke = {
+            curve: 'smooth'
+        };
+
         var chart = new ApexCharts(document.querySelector("#chart"), options);
 
         chart.render();
+
+        const updateSeries = async () => {
+            const response = await fetch('/tempLog');
+            if (response.ok) {
+                const result = await response.json();
+
+                chart.updateSeries(result, false);
+            }
+        };
+
+        setInterval(updateSeries, 10000)
+        updateSeries();
     </script>
     <%- include('includes/foot.ejs') -%>
