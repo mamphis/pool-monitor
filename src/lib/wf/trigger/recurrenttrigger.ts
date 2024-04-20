@@ -11,8 +11,8 @@ export class RecurrentTrigger extends ITrigger {
         this.rule.minute = minute;
     }
 
-    async register(): Promise<void> {
-        const job = schedule.scheduleJob(this.rule, async () => {
+    async register(name: string): Promise<void> {
+        const job = schedule.scheduleJob(`trigger${name}`, this.rule, async () => {
             await this.execute();
         });
     }

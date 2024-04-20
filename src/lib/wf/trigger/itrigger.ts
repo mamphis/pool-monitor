@@ -16,7 +16,7 @@ export abstract class ITrigger {
             await action.execute();
         }
     }
-    
+
     abstract getDescription(): string;
-    abstract register(): Promise<void>;
+    abstract register(name: string): Promise<void>;
 }

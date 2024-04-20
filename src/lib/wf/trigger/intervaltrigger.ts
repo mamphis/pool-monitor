@@ -6,14 +6,14 @@ export class IntervalTrigger extends ITrigger {
         super(actions);
     }
 
-    async register(): Promise<void> {
+    async register(name: string): Promise<void> {
         // TODO: Use node-schedule to have a consistent way of handling jobs
         setInterval(async () => {
             await this.execute();
         }, this.interval)
     }
 
-    getDescription(): string{
+    getDescription(): string {
         return `Alle ${(this.interval / 1000).toFixed(1)} Sekunden`;
-    } 
+    }
 }
