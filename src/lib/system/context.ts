@@ -42,7 +42,7 @@ export interface TelegramSettings {
 export interface UserInfo {
     name: string;
     password: string;
-    telegram: TelegramSettings;
+    telegram?: TelegramSettings;
 }
 
 export interface Context {
@@ -223,24 +223,15 @@ export class Context extends EventEmitter {
 
     updateUser(username: string, { id, token, username: telegramUsername, notificationEnabled, notificationMuted }: Partial<TelegramSettings>) {
         if (this._users[username]) {
-            this._users[username].telegram = this._users[username].telegram || {};
+            const telegramSettings: TelegramSettings = {
+                id: id ?? 0,
+                token: token ?? '',
+                username: telegramUsername ?? '',
+                notificationEnabled: notificationEnabled ?? false,
+                notificationMuted: notificationMuted ?? false
+            };
 
-            if (id !== undefined) {
-                this._users[username].telegram.id = id;
-            }
-            if (token !== undefined) {
-                this._users[username].telegram.token = token;
-            }
-            if (telegramUsername !== undefined) {
-                this._users[username].telegram.username = telegramUsername;
-            }
-            if (notificationEnabled !== undefined) {
-                this._users[username].telegram.notificationEnabled = notificationEnabled;
-            }
-            if (notificationMuted !== undefined) {
-                this._users[username].telegram.notificationMuted = notificationMuted;
-            }
-
+            this._users[username].telegram = telegramSettings;
             this.saveConfig();
         }
     }

@@ -8,6 +8,6 @@ export default {
     PIN_DISPLAY_LIGHT: 25,
     PIN_BUTTON_SALT: 14,
     PIN_BUTTON_PUMP: 15,
-    PIN_RELAIS_SALT: 3,
-    PIN_RELAIS_PUMP: 4
+    PIN_RELAIS_SALT: 2,
+    PIN_RELAIS_PUMP: 3
 }
