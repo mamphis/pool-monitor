@@ -143,8 +143,6 @@ export class Context extends EventEmitter {
             return (mom.isAfter(moment().add(5, 'minutes')))
         });
 
-        console.log(oldData, middleData, newData);
-
         const cleanData: Array<ExtendedLogEntry> = [];
         let lastData: ExtendedLogEntry;
         oldData.forEach((d) => {
