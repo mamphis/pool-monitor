@@ -1,9 +1,9 @@
-import Updater, { UpdateProgress } from "@pcsmw/node-app-updater";
 import { NextFunction, Request, Response, Router } from "express";
 import moment from "moment";
 import { Telegram } from "../../lib/interfaces/telegram";
 import { Context, LogEntry } from "../../lib/system/context";
 import { sleep } from "../../lib/utils";
+import { installApplication, installDependencies, newerVersionAvailable, pullLatestVersion, restartApplication } from "../../lib/system/update";
 
 const router = Router();
 
@@ -41,48 +41,21 @@ router.post('/user', async (req: Request, res: Response, next: NextFunction) => 
 });
 
 router.post('/update', async (req: Request, res: Response, next: NextFunction) => {
-    const updater = new Updater();
 
-    if (await updater.isNewerVersionAvailable(Context.it.installedVersion)) {
+    res.status(200);
+    res.chunkedEncoding = true;
+    res.write(JSON.stringify({ ok: true, message: 'Neue Version wird heruntergeladen.' }));
+    if (await newerVersionAvailable()) {
         res.status(200);
         res.chunkedEncoding = true;
         res.write(JSON.stringify({ ok: true, message: 'Neue Version wird heruntergeladen.' }));
-
-        const iterator = updater.update();
-        let done = false;
-        do {
-            let result;
-            try {
-                result = await iterator.next();
-            } catch (e: any) {
-                await sleep(100);
-                res.end(JSON.stringify({ ok: false, message: e.message }));
-                break;
-            }
-
-            done = result.done ?? true;
-            switch (result.value) {
-                case UpdateProgress.DownloadedLatestVersion:
-                    res.write(JSON.stringify({ ok: true, message: 'Neuste Version heruntergeladen.' }));
-                    await sleep(50);
-                    res.write(JSON.stringify({ ok: true, message: 'Abhängigkeiten werden installiert.' }));
-                    break;
-                case UpdateProgress.InstalledDependecies:
-                    res.write(JSON.stringify({ ok: true, message: 'Abhängigkeiten wurden installiert.' }));
-                    await sleep(50);
-                    res.write(JSON.stringify({ ok: true, message: 'Anwendung wird installiert.' }));
-                    break;
-                case UpdateProgress.InstalledApplication:
-                    res.write(JSON.stringify({ ok: true, message: 'Anwendung wurde installiert.' }));
-                    await sleep(50);
-                    res.end(JSON.stringify({ ok: true, message: 'Anwendung wird neu gestartet.' }));
-                    break;
-                case UpdateProgress.DownloadedLatestVersion:
-                    break;
-            }
-
-        } while (!done);
-
+        await pullLatestVersion();
+        res.write(JSON.stringify({ ok: true, message: 'Abhängigkeiten werden installiert.' }));
+        await installDependencies();
+        res.write(JSON.stringify({ ok: true, message: 'Anwendung wird installiert.' }));
+        await installApplication();
+        res.end(JSON.stringify({ ok: true, message: 'Anwendung wird neu gestartet.' }));
+        restartApplication();
         return;
     }
 

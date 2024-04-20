@@ -1,4 +1,3 @@
-import Updater from '@pcsmw/node-app-updater';
 import EventEmitter from 'events';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
@@ -8,6 +7,7 @@ import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { randomString } from '../utils';
 import { Trigger } from './trigger';
+import { getLatestVersionTag } from './update';
 
 export interface LogEntry {
     value: number;
@@ -63,7 +63,7 @@ export class Context extends EventEmitter {
 
     private constructor() {
         super();
-        this.database = new JsonDB(this.databasePath, true, true, undefined, true);
+        this.database = new JsonDB(this.databasePath, true, true);
     }
 
     private readonly configPath = './config.json';
@@ -197,7 +197,7 @@ export class Context extends EventEmitter {
     async updateVersionInfo() {
         this._versionInfo = {
             installedVersion: this._installedVersion,
-            latestVersion: await new Updater().getLatestVersion(),
+            latestVersion: await getLatestVersionTag(),
             lastChecked: moment(),
         }
     }

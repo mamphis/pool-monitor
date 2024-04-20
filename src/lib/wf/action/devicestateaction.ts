@@ -1,12 +1,13 @@
-import { Action, Condition } from "@nucleus/wf";
 import { IO } from "../../peripherals/io";
 import { Context } from "../../system/context";
+import { IAction } from "./iaction";
+import { ICondition } from "../condition/icondition";
 
-export class DeviceStateAction extends Action.IAction {
+export class DeviceStateAction extends IAction {
     public device!: 'pump' | 'salt';
     public state!: boolean;
 
-    constructor(conditions: Condition.ICondition[]) {
+    constructor(conditions: ICondition[]) {
         super(conditions);
     }
 

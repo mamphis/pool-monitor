@@ -1,7 +1,7 @@
 import { Context } from "../../system/context";
-import { Condition } from "@nucleus/wf";
+import { ICondition } from "./icondition";
 
-export class DeviceStateCondition extends Condition.ICondition {
+export class DeviceStateCondition extends ICondition {
     public device!: 'pump' | 'salt';
     public state!: boolean;
 

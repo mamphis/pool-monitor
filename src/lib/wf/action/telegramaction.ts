@@ -1,9 +1,11 @@
-import { Action, Condition } from "@nucleus/wf";
+
 import { Telegram } from "../../interfaces/telegram";
+import { ICondition } from "../condition/icondition";
+import { IAction } from "./iaction";
 
-export class TelegramAction extends Action.IAction {
+export class TelegramAction extends IAction {
 
-    constructor(conditions: Condition.ICondition[]) {
+    constructor(conditions: ICondition[]) {
         super(conditions);
     }
 
