@@ -135,7 +135,11 @@ export class Context {
     }
 
     get temperatures(): { [name: string]: Device } {
-        return this.database.getData('/temp');
+        if (this.database.exists('/temp')) {
+            return this.database.getData('/temp');
+        } else {
+            return {};
+        }
     }
 
     get updateInterval(): number {
