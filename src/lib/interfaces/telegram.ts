@@ -17,8 +17,8 @@ const keyboards: { [key: string]: InlineKeyboardMarkup } = {
             [
                 { text: 'Status', callback_data: 'cmd-get-status' },
             ], [
+                { text: 'Pumpe umschalten', callback_data: 'cmd-toggle-pump' },
                 { text: 'Salzanlage umschalten', callback_data: 'cmd-toggle-salt' },
-                { text: 'Pumpe umschalten', callback_data: 'cmd-toggle-pump' }
             ]
         ]
     }
@@ -109,14 +109,14 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
             if (data === 'cmd-toggle-salt') {
                 await IO.it.toggleSaltState();
                 Context.it.logIODevice('salt', Context.it.saltState ? 1 : 0, 'telegram', query.from.username ? `@${query.from.username}` : query.from.first_name);
-                
+
                 this.updateStatus(query);
             }
 
             if (data === 'cmd-toggle-pump') {
                 await IO.it.togglePumpState();
                 Context.it.logIODevice('pump', Context.it.pumpState ? 1 : 0, 'telegram', query.from.username ? `@${query.from.username}` : query.from.first_name);
-                
+
                 this.updateStatus(query);
             }
 
@@ -195,5 +195,12 @@ ${t.trigger.actions.map(a => a.getDescription()).join()}
         return url;
     }
 
-
+    async sendStatusToAllUsers() {
+        for (const username in Context.it.users) {
+            const user = Context.it.users[username];
+            if (user.telegramId !== 0) {
+                this.api.sendMessage(user.telegramId, await this.getPoolStatusText(), { parse_mode: 'MarkdownV2' })
+            }
+        }
+    }
 }
