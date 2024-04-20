@@ -1,9 +1,8 @@
-import { Moment } from "moment";
-import { IAction } from "../action/iaction";
-import { ITrigger } from "./itrigger";
+import moment, { Moment } from "moment";
 import schedule from 'node-schedule';
+import { IAction } from "../action/iaction";
 import { TriggerJob } from "../triggerjob";
-import moment from "moment";
+import { ITrigger } from "./itrigger";
 
 export class TimestampTrigger extends ITrigger {
     constructor(public readonly time: Moment, actions: IAction[]) {

@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
-import moment from "moment";
-import { Context } from "../../lib/context";
-import { Display } from "../../lib/display";
-import { IO } from "../../lib/io";
-import { TemperatureSensorManager } from "../../lib/temperature";
+import { IO } from "../../lib/peripherals/io";
+import { TemperatureSensorManager } from "../../lib/peripherals/temperature";
+import { Context } from "../../lib/system/context";
 import { systemData } from "../../lib/utils";
 
 const router = Router();
@@ -19,15 +17,25 @@ router.get('state', async (req: Request, res: Response, next: NextFunction) => {
 router.post('/toggle/:device', async (req: Request, res: Response, next: NextFunction) => {
     const device = req.params.device;
     switch (device) {
-        case 'filter':
-            await IO.it.toggleFilterState();
-            return res.json({ state: Context.it.filterState ? 'An' : 'Aus' });
+        case 'salt':
+            await IO.it.toggleSaltState();
+            return res.json({ state: Context.it.saltState? 'An' : 'Aus' });
         case 'pump':
             await IO.it.togglePumpState();
             return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
     }
 
     res.end();
+});
+
+router.post('/rename/:sensor', async (req: Request, res: Response, next: NextFunction) => {
+    const sensor = req.params.sensor;
+    if (!TemperatureSensorManager.it.sensors.includes(sensor)) {
+        return res.status(404).json({message: `Temperatursensor "${sensor}" existiert nicht.`});
+    }
+
+    await Context.it.setTempName(sensor, req.body.name);
+    return res.json({name: Context.it.getTempName(sensor)});
 });
 
 router.post('/interval/:value', async (req: Request, res: Response, next: NextFunction) => {

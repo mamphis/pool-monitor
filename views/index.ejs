@@ -1,8 +1,91 @@
 <%- include('includes/head.ejs') -%>
     <div class="columns is-multiline is-mobile">
-        <div class="column is-full ">
-            <div id="chart"></div>
+        <div class="column is-full">
+            <div class="box">
+                <h1 class="title">Temperatur Sensoren <a class="button is-white" href="/device"><i class="fa fa-pen"></i></a></h1>
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <% state.temperatures.forEach((sensor, i)=> { %>
+                            <tr>
+                                <td style="width: 50%;">
+                                    <span id="sensor<%= i %>"><%= sensor.name %></span>
+                                </td>
+                                <td>
+                                    <span class="tag">
+                                        <%= sensor.temperature.toFixed(2) %> °C
+                                    </span>
+                                </td>
+                            </tr>
 
+                            <%});%>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column is-full">
+            <div class="box">
+                <h1 class="title">Angeschlossende Geräte</h1>
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr>
+                            <td style="width: 50%;"> Pumpe </td>
+                            <td>
+                                <div class="content is-flex is-justify-content-space-between" style="width: 100%;">
+                                    <span class="tag is-<%= state.pump ? 'success' : 'danger' %>" id="pump">
+                                        <%= state.pump ? 'An' : 'Aus' %>
+                                    </span>
+                                    <button class="button is-small" onclick="toggleState('pump')">Umschalten</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;"> Salzanlage </td>
+                            <td>
+                                <div class="content is-flex is-justify-content-space-between" style="width: 100%;">
+                                    <span class="tag is-<%= state.salt ? 'success' : 'danger' %>" id="salt">
+                                        <%= state.salt ? 'An' : 'Aus' %>
+                                    </span>
+                                    <button class="button is-small" onclick="toggleState('salt')">Umschalten</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column is-full">
+            <div class="box">
+                <h1 class="title">Trigger <a class="button is-white" href="/trigger"><i class="fa fa-pen"></i></a> </h1>
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Trigger</th>
+                            <th>Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% trigger.forEach((t, i)=> { %>
+                            <tr>
+                                <td>
+                                    <%= t.trigger %>
+                                </td>
+                                <td>
+                                    <%= t.action %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column is-full">
+            <div class="box">
+                <h1 class="title">Temperatur Historie</h1>
+                <div id="chart"></div>
+            </div>
         </div>
     </div>
     <script src="/static/js/apexcharts.js"></script>
@@ -46,5 +129,14 @@
 
         setInterval(updateSeries, 10000)
         updateSeries();
+
+        async function toggleState(which) {
+            const response = await fetch(`${location.origin + location.pathname}device/toggle/${which}`, {
+                method: 'POST'
+            });
+
+            const result = await response.json();
+            $(`#${which}`).text(result.state).removeClass(result.state == 'An' ? 'is-danger' : 'is-success').addClass(result.state == 'An' ? 'is-success' : 'is-danger');
+        }
     </script>
     <%- include('includes/foot.ejs') -%>
