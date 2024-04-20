@@ -118,7 +118,7 @@
                 if (stdout) {
                     terminal.write('> ' + stdout.replaceAll('\n', '\r\n'));
                 } else if (stderr) {
-                    terminal.write('! ' + stderr);
+                    terminal.warn('! ' + stderr);
                 }
 
                 prompt(terminal);
@@ -128,13 +128,18 @@
             terminalReady = true;
         }
 
+        socket.onclose = (ev) => {
+            terminal.warn(`The connection has been closed [${ev.code}]: ${ev.reason}.\r\n`);
+            terminal.setOption('disableStdin', true);
+        }
+
+        terminal.warn = function (text) {
+            this.write(`\u001b[31m${text}\u001b[0m`);
+        }
+
         function prompt(term) {
             term.write('\r\n$ ');
         }
-
-        terminal.prompt = () => {
-            terminal.write('\r\n$ ');
-        };
 
         terminal.onData(e => {
             if (!terminalReady) {
