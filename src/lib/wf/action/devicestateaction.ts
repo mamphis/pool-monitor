@@ -10,9 +10,9 @@ export class DeviceStateAction extends IAction {
     async execute(): Promise<void> {
         switch (this.device) {
             case 'filter':
-                await IO.it.setFilterState(this.state);
+                return await IO.it.setFilterState(this.state);
             case 'pump':
-                await IO.it.setPumpState(this.state);
+                return await IO.it.setPumpState(this.state);
         }
     }
 
