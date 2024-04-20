@@ -2,7 +2,7 @@ import express, { Application, json, NextFunction, Request, Response, static as 
 import cors from 'cors';
 import moment from 'moment';
 import { indexRouter } from "./routes";
-import { temperatureRouter } from "./routes/temperature";
+import { temperatureRouter } from "./routes/device";
 import { triggerRouter } from "./routes/trigger";
 
 export class Server {
@@ -28,7 +28,7 @@ export class Server {
         });
 
         this.app.use('/', indexRouter);
-        this.app.use('/temperature', temperatureRouter);
+        this.app.use('/device', temperatureRouter);
         this.app.use('/trigger', triggerRouter);
     }
 
