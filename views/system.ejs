@@ -96,24 +96,29 @@
         function appendMessage(msg, type) {
             $status.show();
             try {
-                const { message } = JSON.parse(msg);
+                const { message, ok } = JSON.parse(msg);
                 const $msgContainer = $('<div />');
                 $msgContainer
                     .addClass('panel-block')
                     .addClass('is-justify-content-center')
-                    .addClass(`has-background-${type === 'info' ? 'success' : 'danger'}-light`)
-                    .addClass(`has-text-${type === 'info' ? 'success' : 'danger'}`)
+                    .addClass(`has-background-${type === 'info' && ok ? 'success' : 'danger'}-light`)
+                    .addClass(`has-text-${type === 'info' && ok ? 'success' : 'danger'}`)
                 const $msgCtrl = $('<div />');
                 $msgCtrl.text(message);
                 $msgContainer.append($msgCtrl);
                 $msgContainer.insertBefore($('#status-spinner'));
+                if (!ok) {
+                    return false;
+                }
             } catch (e) {
                 console.warn('cannot append message', e, msg);
             }
+
+            return true;
         }
 
         async function update() {
-            appendMessage('{ "message": "Starte update." }', 'info');
+            appendMessage('{ "ok": true, "message": "Starte update." }', 'info');
             const response = await fetch(`${window.location.origin + location.pathname}/update`, {
                 method: 'POST',
             });
@@ -124,7 +129,10 @@
             const reader = response.body.getReader();
             do {
                 const { value, done } = await reader.read();
-                appendMessage(new TextDecoder().decode(value), 'info');
+                if (!appendMessage(new TextDecoder().decode(value), 'info')) {
+                    return;
+                }
+
                 if (done) {
                     break;
                 }

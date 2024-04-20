@@ -26,6 +26,12 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+
+**v0.0.4-rc4** - __20.05.2021__
+- Propagate error messages to the ui
+    - Send the error message to the ui when the update fails
+    - Do not reload page if the update process fails
+
 **v0.0.4-rc3** - __20.05.2021__
 - Formatted the system view
     - Make the view uniform to other views
