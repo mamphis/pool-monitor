@@ -38,6 +38,7 @@ export class IO extends EventEmitter {
             }
 
             await this.togglePumpState();
+            this.emit('buttonPressed', 'pump', Context.it.pumpState);
         });
 
         this.btnFilter.watch(async (err, value) => {
@@ -46,6 +47,7 @@ export class IO extends EventEmitter {
             }
 
             await this.toggleFilterState();
+            this.emit('buttonPressed', 'filter', Context.it.filterState);
         });
     }
 
