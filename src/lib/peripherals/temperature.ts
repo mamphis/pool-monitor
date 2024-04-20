@@ -2,6 +2,7 @@ import { access, readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
 class TemperatureSensor {
+    private notified = false;
     constructor(private manager: TemperatureSensorManager, public readonly id: string) {
     }
 
@@ -9,8 +10,12 @@ class TemperatureSensor {
         const deviceTemperaturePath = join(this.manager.devicePath, this.id, 'temperature');
         try {
             const stats = await access(deviceTemperaturePath);
-        } catch (e) {
-            console.warn(`Cannot get a temperature for device "${this.id}": ${e.message}`);
+        } catch (e: any) {
+            if (!this.notified) {
+                console.warn(`Cannot get a temperature for device "${this.id}": ${e.message}`);
+                this.notified = true;
+            }
+
             return 0;
         }
 
@@ -24,7 +29,7 @@ class TemperatureSensor {
         if (!temp) {
             temp = await this.getTemperature();
         }
-        
+
         return `${temp.toFixed(3)} °C`;
     }
 }

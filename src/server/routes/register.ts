@@ -7,10 +7,10 @@ import { isAuthed } from "../middleware/auth";
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    if (userCount() > 0 || isAuthed(req)) {
+    if (isAuthed(req)) {
         return res.redirect('/');
     }
-    
+
     return res.render('register', {});
 });
 

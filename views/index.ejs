@@ -101,7 +101,10 @@
         const options = {};
         options.series = [];
         options.xaxis = {
-            type: 'datetime'
+            type: 'datetime',
+            labels: {
+                datetimeUTC: false,
+            },
         };
         options.chart = {
             height: 350,
@@ -132,9 +135,10 @@
 
                 chart.updateSeries(result, false);
             }
+
+            setTimeout(updateSeries, 10000);
         };
 
-        setInterval(updateSeries, 10000)
         updateSeries();
 
         async function toggleState(which) {

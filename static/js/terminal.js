@@ -1,5 +1,5 @@
 const terminal = new Terminal();
-const socket = new WebSocket(`ws://${location.hostname}:3001`);
+const socket = new WebSocket(websocketUrl);
 let terminalReady = false;
 let currentCommand = '';
 const termHistory = [];
@@ -25,7 +25,7 @@ socket.onopen = (ev) => {
         } else if (type === 'system-warn') {
             terminal.warn(parsedMessage);
         } else if (type === 'system-info') {
-            terminal.write(parsedMessage);
+            terminal.systemInfo(parsedMessage);
         } else if (type === 'system-command') {
             if (parsedMessage === 'prompt') {
                 terminal.prompt();
@@ -67,6 +67,10 @@ terminal.error = function (text) {
 terminal.warn = function (text) {
     this.write(`\u001b[33m${text}\u001b[0m`);
 }
+
+terminal.systemInfo = function (text) {
+    this.write(`\u001b[38;5;59m${text}\u001b[0m`);
+};
 
 terminal.prompt = function () {
     this.write('\r\n$ ');

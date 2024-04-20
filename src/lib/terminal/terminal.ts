@@ -6,16 +6,23 @@ import { login } from "../../server/middleware/auth";
 import figlet from "figlet";
 import { Context } from "../system/context";
 import { Trigger } from "../system/trigger";
+import moment from "moment";
+import { url } from "inspector";
 
 export class Terminal {
     private terminalSettings?: { dim: { rows: number; cols: number; }; };
 
     public static async startSession(socket: WebSocket, req: IncomingMessage, secret: string): Promise<Terminal | undefined> {
-        const { cookie } = req.headers;
+        let { cookie } = req.headers;
+
         if (!cookie) {
-            socket.close(3001, 'No cookie 🍪');
-            console.warn(`The socket request has no cookie. 🍪`);
-            return;
+            if (req.url) {
+                cookie = req.url.match(/\/\?(.*)/)?.[1] ?? '';
+            } else {
+                socket.close(3001, 'No cookie 🍪');
+                console.warn(`The socket request has no cookie. 🍪`);
+                return;
+            }
         }
 
         const cookies = cookie.split(';').map(c => c.trim()).reduce((prev, curr) => {
@@ -128,13 +135,13 @@ ${Trigger.it.all.map(t => {
     }
 
     private async messageHandler(data: WebSocket.Data) {
-        console.log(data, typeof data)
         if (typeof data !== 'string') {
-            this.socket.send(JSON.stringify({
-                type: 'system-err',
-                message: `The data format is not valid. Allowed is: 'string'.`
-            }));
-            return;
+            data = data.toString('utf8');
+            // this.socket.send(JSON.stringify({
+            //     type: 'system-err',
+            //     message: `The data format is not valid. Allowed is: 'string'.`
+            // }));
+            // return;
         }
 
         const { type, message } = JSON.parse(data) as { type: string, message: string };
@@ -176,25 +183,40 @@ ${Trigger.it.all.map(t => {
                 }
             } else {
                 try {
-                    exec(message, (err, stdout, stderr) => {
-                        if (stdout) {
-                            this.socket.send(JSON.stringify({ type: 'exec-stdout', message: stdout }));
-
-                            if (err) {
-                                this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${err.name}: ${err.message}` }));
-                            }
-                        }
-                        if (stderr) {
-                            this.socket.send(JSON.stringify({ type: 'exec-stderr', message: stderr }));
-                        }
-
-                        this.socket.send(JSON.stringify({
-                            type: 'system-command',
-                            message: 'prompt'
-                        }));
+                    const childProcess = exec(message);
+                    const start = moment();
+                    childProcess.stdout?.on('data', (data) => {
+                        this.socket.send(JSON.stringify({ type: 'exec-stdout', message: data }));
                     });
+
+                    childProcess.stderr?.on('data', (data) => {
+                        this.socket.send(JSON.stringify({ type: 'exec-stderr', message: data }));
+                    });
+
+                    childProcess.on('close', (code) => {
+                        const end = moment();
+                        this.socket.send(JSON.stringify({ type: 'system-info', message: `Process exited with code ${code} (${moment.duration(start.diff(end)).abs().asSeconds()}s)` }));
+                        this.socket.send(JSON.stringify({ type: 'system-command', message: 'prompt' }));
+                    });
+                    // exec(message, (err, stdout, stderr) => {
+                    //     if (stdout) {
+                    //         this.socket.send(JSON.stringify({ type: 'exec-stdout', message: stdout }));
+
+                    //         if (err) {
+                    //             this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${err.name}: ${err.message}` }));
+                    //         }
+                    //     }
+                    //     if (stderr) {
+                    //         this.socket.send(JSON.stringify({ type: 'exec-stderr', message: stderr }));
+                    //     }
+
+                    //     this.socket.send(JSON.stringify({
+                    //         type: 'system-command',
+                    //         message: 'prompt'
+                    //     }));
+                    // });
                 }
-                catch (e) {
+                catch (e: any) {
                     this.socket.send(JSON.stringify({ type: 'exec-stderr', message: `${e.name}: ${e.message}` }));
                     this.socket.send(JSON.stringify({
                         type: 'system-command',

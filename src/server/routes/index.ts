@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
+import moment from "moment";
 import { Context } from "../../lib/system/context";
 import { Trigger } from "../../lib/system/trigger";
 
@@ -27,7 +28,7 @@ router.get('/tempLog', (req: Request, res: Response, next: NextFunction) => {
     res.json(Object.keys(timeseriesData).map(sensor => {
         return {
             name: timeseriesData[sensor].name,
-            data: timeseriesData[sensor].log.map(d => {
+            data: timeseriesData[sensor].log.filter(d => moment(d.timestamp).isAfter(moment().subtract(1, 'week'))).map(d => {
                 return {
                     x: d.timestamp,
                     y: d.value

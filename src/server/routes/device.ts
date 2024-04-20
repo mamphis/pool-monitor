@@ -7,7 +7,7 @@ import { systemData } from "../../lib/utils";
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    return res.render('device', { state: Context.it.lastIOStates, system: JSON.stringify(systemData()) });
+    return res.render('device', { state: Context.it.lastIOStates, updateInterval: Context.it.updateInterval, system: JSON.stringify(systemData()) });
 });
 
 router.get('state', async (req: Request, res: Response, next: NextFunction) => {

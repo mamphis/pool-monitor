@@ -54,7 +54,7 @@ router.post('/update', async (req: Request, res: Response, next: NextFunction) =
             let result;
             try {
                 result = await iterator.next();
-            } catch (e) {
+            } catch (e: any) {
                 await sleep(100);
                 res.end(JSON.stringify({ ok: false, message: e.message }));
                 break;

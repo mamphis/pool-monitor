@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
+import { hostname } from 'os';
 import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { randomString } from '../utils';
@@ -62,7 +63,7 @@ export class Context extends EventEmitter {
 
     private constructor() {
         super();
-        this.database = new JsonDB(this.databasePath, true);
+        this.database = new JsonDB(this.databasePath, true, true, undefined, true);
     }
 
     private readonly configPath = './config.json';
@@ -107,46 +108,71 @@ export class Context extends EventEmitter {
     private async update() {
         this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-            this.logTemperature(s, t || 0);
-            // this.cleanTempLog(s);
+            if (t !== 0) {
+                this.logTemperature(s, t || 0);
+                this.cleanTempLog(s);
 
-            this.saveConfig();
+                this.saveConfig();
+            }
+
             return { sensor: s, name: this.getTempName(s), temperature: t ?? 0 };
         }));
     }
 
     private cleanTempLog(device: string) {
-        const logData = (this.database.getData(`/temp/${device}/log`) as Array<{ timestamp: number, value: number }>).sort((a, b) => a.timestamp - b.timestamp);
-        const cleanData = [];
-        let lastData: { timestamp: number, value: number, mom: Moment } | undefined = undefined;;
-        for (const data of logData) {
-            // Add the first event.
-            if (cleanData.length == 0) {
-                cleanData.push(data);
-                lastData = { ...data, mom: moment(new Date(data.timestamp)) };
-                continue;
-            }
+        type LogEntry = { timestamp: number, value: number };
+        type ExtendedLogEntry = LogEntry & { mom: Moment };
+        // Get the data from the database and sort them so the oldest is first
+        const logData = (this.database.getData(`/temp/${device}/log`) as Array<LogEntry>).sort((a, b) => a.timestamp - b.timestamp);
 
-            // if data is longer away then a week, only take every 10 minutes
-            const mom = moment(new Date(data.timestamp));
-            if (mom.isBefore(moment().subtract(1, 'week'))) {
-                if (lastData && lastData.mom.diff(mom, 'minute') >= 10) {
-                    cleanData.push(data);
-                    lastData = { ...data, mom };
+        // get all entries which are older than a day
+        const oldData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+
+            return (mom.isBefore(moment().subtract(6, 'hours')))
+        });
+
+        const middleData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+            return (mom.isAfter(moment().subtract(6, 'hours'))) && (mom.isBefore(moment().add(1, 'hour')))
+        });
+
+        const newData = logData.filter((d) => {
+            const mom = moment(d.timestamp);
+            return (mom.isAfter(moment().add(1, 'hour')))
+        });
+
+        const cleanData: Array<ExtendedLogEntry> = [];
+        let lastData: ExtendedLogEntry;
+        oldData.forEach((d) => {
+            const mom = moment(d.timestamp);
+            if (!lastData) {
+                lastData = { ...d, mom };
+                cleanData.push(lastData);
+            } else {
+
+                if (Math.abs(lastData.mom.diff(mom, 'minutes')) > 10) {
+                    lastData = { ...d, mom };
+                    cleanData.push(lastData);
                 }
             }
+        });
 
-
-            // if data is longer away then a day, only take every 1 minute
-            if (mom.isBefore(moment().subtract(1, 'day'))) {
-                if (lastData && lastData.mom.diff(mom, 'minute') >= 1) {
-                    cleanData.push(data);
-                    lastData = { ...data, mom };
+        middleData.forEach((d) => {
+            const mom = moment(d.timestamp);
+            if (!lastData) {
+                lastData = { ...d, mom };
+                cleanData.push(lastData);
+            } else {
+                if (Math.abs(lastData.mom.diff(mom, 'seconds')) > 30) {
+                    lastData = { ...d, mom };
+                    cleanData.push(lastData);
                 }
             }
-        }
-
-        this.database.push(`/temp/${device}/log`, cleanData);
+        });
+        // TODO: further remove old data older than a week
+        cleanData.push(...newData.map((d) => ({ ...d, mom: moment(d.timestamp) })));
+        this.database.push(`/temp/${device}/log`, cleanData, true);
     }
 
     private async saveConfig() {
@@ -161,6 +187,10 @@ export class Context extends EventEmitter {
 
     private async loadConfig() {
         const content = (await readFile(this.configPath)).toString()
+        if (content === '') {
+            await this.saveConfig();
+            return;
+        }
         Object.assign(this, JSON.parse(content));
     }
 
@@ -206,11 +236,20 @@ export class Context extends EventEmitter {
     private _saltState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<TempSensor> = [];
-    private _updateInterval: number = 2000;
+    private _updateInterval: number = 10000;
     private _updateIntervalHandle?: number;
     private _installedVersion: string = '0.0.0';
     private _versionInfo?: VersionInfo;
+    private _websocketUrl: string = `ws://${hostname()}:3001`;
     private database: JsonDB;
+
+    get websocketUrl() {
+        return this._websocketUrl;
+    }
+
+    set websocketUrl(value: string) {
+        this._websocketUrl = value;
+    }
 
     get users() {
         return this._users;
