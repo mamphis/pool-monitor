@@ -16,6 +16,7 @@ export class Display {
 
     private lcd;
     private printable: boolean = false;
+    private displayTime = true;
 
     private readonly cols: number = 16;
     private readonly rows: number = 2;
@@ -32,18 +33,29 @@ export class Display {
 
         this.lcd.on('ready', () => {
             console.log(`Display is ready to show something.`);
-
             this.printable = true;
             let cnt = 0;
             const refreshDisplay = async () => {
+                if (!this.displayTime) {
+                    return setTimeout(refreshDisplay, 500);
+                }
+
                 lcd.setCursor(0, 0);
                 const sensors = TemperatureSensorManager.it.sensors;
-                const sensor = TemperatureSensorManager.it.sensor[sensors[cnt++ % sensors.length]];
-                await this.setText(`  P: ${Context.it.pumpState ? 'x' : 'o'} | F: ${Context.it.filterState ? 'x' : 'o'}\n${(await sensor?.getTemperature())?.toFixed(2)}C  ${new Date().toLocaleTimeString()}`)
+                const sensorIndex = cnt++ % sensors.length;
+                const sensor = TemperatureSensorManager.it.sensor[sensors[sensorIndex]];
+                
+                const sensorText = `S${sensorIndex + 1} ${(await sensor?.getTemperature())?.toFixed(2)}C`;
+
+                lcd.print(`P: ${Context.it.pumpState ? 'x' : 'o'}  ${sensorText}`, async function () {
+                    lcd.setCursor(0, 1);
+                    lcd.print(`F: ${Context.it.filterState ? 'x' : 'o'}    ${new Date().toLocaleTimeString()}`);
+                });
 
                 setTimeout(refreshDisplay, 500);
             };
 
+            this.lcd.clear()
             refreshDisplay();
         });
     }
@@ -69,6 +81,11 @@ export class Display {
         if (!text) {
             return;
         }
+
+        this.displayTime = false;
+        setTimeout(() => {
+            this.displayTime = true;
+        }, 5000);
 
         const lcd = this.lcd;
         const lines = text.split('\n').map(l => l.substr(0, this.cols).trim());
