@@ -1,5 +1,6 @@
 import { access, readFile, writeFile } from "fs/promises";
 import { hash } from 'bcrypt';
+import { TemperatureSensorManager } from "./temperature";
 
 export class Context {
     private static instance?: Context;
@@ -35,6 +36,12 @@ export class Context {
         }
 
         await this.loadConfig();
+        setTimeout(async () => {
+            this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
+                const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
+                return { sensor: s, temperature: t ?? 0};
+            }));            
+        }, 2000);
     }
 
     private async saveConfig() {
@@ -46,13 +53,14 @@ export class Context {
     }
 
     private async loadConfig() {
-        const content =  (await readFile(this.configPath)).toString()
+        const content = (await readFile(this.configPath)).toString()
         Object.assign(this, JSON.parse(content));
     }
 
     private _users: { [username: string]: string } = {};
     private _filterState: boolean = false;
     private _pumpState: boolean = false;
+    private _sensors: Array<{ sensor: string, temperature: number }> = [];
 
     get users() {
         return this._users;
@@ -62,7 +70,7 @@ export class Context {
         this._users = users;
         this.saveConfig();
     }
-    
+
     get filterState() {
         return this._filterState;
     }
@@ -78,5 +86,13 @@ export class Context {
     set pumpState(state) {
         this._pumpState = state;
         this.saveConfig();
+    }
+
+    get lastIOStates(): { filter: boolean, pump: boolean, temperatures: Array<{ sensor: string, temperature: number }> } {
+        return {
+            filter: this._filterState,
+            pump: this._pumpState,
+            temperatures: this._sensors,
+        }
     }
 }
