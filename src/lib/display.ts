@@ -54,7 +54,7 @@ export class Display {
 
                 setTimeout(refreshDisplay, 500);
             };
-            
+
             setInterval(() => cnt++, 10000);
 
             this.lcd.clear()
@@ -70,9 +70,10 @@ export class Display {
             } catch (e) {
                 console.warn(`Error while closing the display: ${e.message}`);
             }
+            
+            Display.instance = undefined;
         });
 
-        Display.instance = undefined;
     }
 
     async setText(text: string) {
