@@ -3,7 +3,6 @@ import Lcd from 'lcd';
 export class Display {
     private static instance?: Display;
 
-
     static get it(): Display {
         if (!this.instance) {
             this.instance = new Display();

@@ -1,0 +1,25 @@
+import { NextFunction, Request, Response, Router } from "express";
+import moment from "moment";
+import { Display } from "../../lib/display";
+import { TemperatureSensorManager } from "../../lib/temperature";
+
+const router = Router();
+
+router.get('/', (req: Request, res: Response, next: NextFunction) => {
+
+    return res.render('temperature', { sensors: TemperatureSensorManager.it.sensors });
+});
+
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    const sensor = TemperatureSensorManager.it.sensor[req.params.id];
+    let returnObj: { sensors: string[], currentSensor?: { id: string, temperature: number } } = { sensors: TemperatureSensorManager.it.sensors, currentSensor: undefined };
+    if (sensor) {
+        const temp = await sensor.getTemperature();
+        returnObj.currentSensor = { id: req.params.id, temperature: temp }
+    }
+
+    return res.render('temperature',);
+    return res.render('index', { message: "Set Text: " });
+});
+
+export { router as indexRouter };
