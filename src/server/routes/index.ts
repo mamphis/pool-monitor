@@ -15,7 +15,7 @@ router.get('/tempLog', (req: Request, res: Response, next: NextFunction) => {
     res.json(Object.keys(timeseriesData).map(name => {
         return {
             name,
-            data: timeseriesData[name].map(d => {
+            data: timeseriesData[name].log.map(d => {
                 return {
                     x: d.timestamp,
                     y: d.value

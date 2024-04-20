@@ -8,6 +8,11 @@ export interface LogEntry {
     timestamp: number;
 }
 
+export interface Device {
+    log: Array<LogEntry>
+}
+
+
 export class Context {
     private static instance?: Context;
 
@@ -129,7 +134,7 @@ export class Context {
         }
     }
 
-    get temperatures(): { [name: string]: Array<LogEntry> } {
+    get temperatures(): { [name: string]: Device } {
         return this.database.getData('/temp');
     }
 
