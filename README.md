@@ -23,4 +23,4 @@
     - Action
 - [ ] Logging of temperature values
 - [x] Toggle state of devices manually over the website
-- [ ] Toggle Light of LCD Display when a button is pressed
+- [x] Toggle Light of LCD Display when a button is pressed
