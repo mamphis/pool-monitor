@@ -1,4 +1,3 @@
-import { Context } from "../../context";
 import { IO } from "../../io";
 import { ICondition } from "../condition/icondition";
 import { IAction } from "./iaction";

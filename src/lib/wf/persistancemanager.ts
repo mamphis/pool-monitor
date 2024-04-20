@@ -4,7 +4,6 @@ import { IAction } from "./action/iaction";
 import { DeviceStateCondition } from "./condition/devicestatecondition";
 import { ICondition } from "./condition/icondition";
 import { IntervalTrigger } from "./trigger/intervaltrigger";
-// import { IntervalTrigger } from "./trigger/intervaltrigger";
 import { ITrigger } from "./trigger/itrigger";
 import { RecurrentTrigger } from "./trigger/recurrenttrigger";
 import { TimestampTrigger } from "./trigger/timestamptrigger";
