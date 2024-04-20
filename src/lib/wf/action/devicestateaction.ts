@@ -11,4 +11,22 @@ export class DeviceStateAction extends IAction {
     async execute(): Promise<void> {
         // throw new Error("Method not implemented.");
     }
+
+    private getDeviceName(): string {
+        switch (this.device) {
+            case 'filter':
+                return 'Filter';
+            case 'pump':
+                return 'Pumpe';
+            default:
+                return '<unbekannt>';
+        }
+    }
+    private getState(): string {
+        return this.state ? 'An' : 'Aus';
+    }
+
+    getDescription(): string {
+        return `Setze den Status der ${this.getDeviceName()} auf "${this.getState()}"`
+    }
 }

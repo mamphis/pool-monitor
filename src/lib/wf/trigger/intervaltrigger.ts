@@ -12,4 +12,8 @@ export class IntervalTrigger extends ITrigger {
             await this.execute();
         }, this.interval)
     }
+
+    getDescription(): string{
+        return `Alle ${(this.interval / 1000).toFixed(1)} Sekunden`;
+    } 
 }

@@ -16,4 +16,8 @@ export class RecurrentTrigger extends ITrigger {
             await this.execute();
         });
     }
+
+    getDescription(): string {
+        return `Täglich um ${this.rule.hour}:${this.rule.minute}`;
+    }
 }

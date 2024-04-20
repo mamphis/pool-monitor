@@ -16,4 +16,22 @@ export class DeviceStateCondition extends ICondition {
                 return false;
         }
     }
+
+    private getDeviceName(): string {
+        switch (this.device) {
+            case 'filter':
+                return 'Filter';
+            case 'pump':
+                return 'Pumpe';
+            default:
+                return '<unbekannt>';
+        }
+    }
+    private getState(): string {
+        return this.state ? 'An' : 'Aus';
+    }
+
+    getDescription(): string {
+        return `wenn der Status der ${this.getDeviceName()} "${this.getState()}" ist.`
+    }
 }
