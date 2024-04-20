@@ -137,6 +137,9 @@
             console.log(newSensorName);
             const response = await fetch(`${location.origin + location.pathname}/rename/${sensor}`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({ name: newSensorName }),
             });
 
