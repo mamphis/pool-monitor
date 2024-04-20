@@ -4,7 +4,7 @@ import { IO } from '../peripherals/io';
 import { Context } from '../system/context';
 import { Trigger } from '../system/trigger';
 import localtunnel from 'localtunnel';
-import { isError } from 'util';
+import { hostname } from 'os';
 
 const keyboards: { [key: string]: InlineKeyboardMarkup } = {
     default: {
@@ -97,9 +97,15 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
         this.api.onText(/\/service/, async (msg, match) => {
             const user = Object.values(Context.it.users).find(u => u.telegram?.id === msg.from?.id);
             if (user) {
-                const tunnel = await localtunnel(3000);
+                const tunnel = await localtunnel({
+                    port: 3000,
+                    host: hostname(),
+                });
 
                 this.api.sendMessage(msg.from?.id ?? 0, tunnel.url);
+                tunnel.on('close', () => {
+                    this.api.sendMessage(msg.from?.id ?? 0, tunnel.url + ' wurde geschlossen.');
+                });
             }
         });
 
