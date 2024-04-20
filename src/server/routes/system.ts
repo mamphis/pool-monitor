@@ -10,7 +10,7 @@ const router = Router();
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     return res.render('system', {
         telegramLink: await Telegram.it.getTelegramLink(res.locals.user.name),
-        websocketHost: Context.it.websocketHost,
+        websocketUrl: Context.it.websocketUrl,
         versionInfo: Context.it.versionInfo,
         logEntries: Context.it.devices.reduce((prev, curr) => {
             prev.push(...curr.log.map(l => {

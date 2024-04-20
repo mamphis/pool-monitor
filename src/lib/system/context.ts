@@ -240,15 +240,15 @@ export class Context extends EventEmitter {
     private _updateIntervalHandle?: number;
     private _installedVersion: string = '0.0.0';
     private _versionInfo?: VersionInfo;
-    private _websocketHost: string = hostname();
+    private _websocketUrl: string = `ws://${hostname()}:3001`;
     private database: JsonDB;
 
-    get websocketHost() {
-        return this._websocketHost;
+    get websocketUrl() {
+        return this._websocketUrl;
     }
 
-    set websocketHost(value: string) {
-        this._websocketHost = value;
+    set websocketUrl(value: string) {
+        this._websocketUrl = value;
     }
 
     get users() {
