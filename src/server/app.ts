@@ -1,3 +1,4 @@
+import { Context } from "../lib/context";
 import { Display } from "../lib/display";
 import { IO } from "../lib/io";
 import { TemperatureSensorManager } from "../lib/temperature";
@@ -8,7 +9,7 @@ export async function start() {
     Display.it;
     TemperatureSensorManager.it;
     IO.it;
-    
+
     await server.config();
     await server.start();
 
@@ -17,5 +18,9 @@ export async function start() {
         process.exit(0);
     });
 
-    
+    setTimeout(() => {
+        console.log(`Setting states to match config.`);
+        IO.it.setFilterState(Context.it.filterState);
+        IO.it.setPumpState(Context.it.pumpState);
+    }, 10000);
 }
