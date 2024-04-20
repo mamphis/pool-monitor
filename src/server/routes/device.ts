@@ -16,15 +16,14 @@ router.get('state', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post('/toggle/:device', async (req: Request, res: Response, next: NextFunction) => {
-    const { filter, pump } = req.params;
-    console.log(filter, pump, req.params);
-    if (filter) {
-        await IO.it.toggleFilterState();
-        return res.json({ state: Context.it.filterState ? 'An' : 'Aus' });
-    }
-    if (pump) {
-        await IO.it.togglePumpState();
-        return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
+    const device = req.params.device;
+    switch (device) {
+        case 'filter':
+            await IO.it.toggleFilterState();
+            return res.json({ state: Context.it.filterState ? 'An' : 'Aus' });
+        case 'pump':
+            await IO.it.togglePumpState();
+            return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
     }
 
     res.end();
