@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { access, readFile, writeFile } from "fs/promises";
 import moment, { Moment } from 'moment';
 import { JsonDB } from 'node-json-db';
+import { hostname } from 'os';
 import { IO } from '../peripherals/io';
 import { TemperatureSensorManager } from "../peripherals/temperature";
 import { randomString } from '../utils';
@@ -239,7 +240,16 @@ export class Context extends EventEmitter {
     private _updateIntervalHandle?: number;
     private _installedVersion: string = '0.0.0';
     private _versionInfo?: VersionInfo;
+    private _websocketHost: string = hostname();
     private database: JsonDB;
+
+    get websocketHost() {
+        return this._websocketHost;
+    }
+
+    set websocketHost(value: string) {
+        this._websocketHost = value;
+    }
 
     get users() {
         return this._users;

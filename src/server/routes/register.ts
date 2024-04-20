@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Context } from "../../lib/system/context";
-import { userCount } from "../../lib/system/user";
 import { hash } from "../../lib/utils";
 import { isAuthed } from "../middleware/auth";
 
