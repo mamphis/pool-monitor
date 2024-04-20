@@ -1,0 +1,50 @@
+<%- include('includes/head.ejs') -%>
+    <div class="columns is-multiline is-mobile">
+        <div class="column is-full ">
+            <div id="chart"></div>
+
+        </div>
+    </div>
+    <script src="/static/js/apexcharts.js"></script>
+    <link rel="stylesheet" href="/static/css/apexcharts.css">
+    <script>
+        const options = {};
+        options.series = [];
+        options.xaxis = {
+            type: 'datetime'
+        };
+        options.chart = {
+            height: 350,
+            type: "line",
+            stacked: false,
+            animations: {
+                enabled: false,
+            }
+        };
+        options.stroke = {
+            curve: 'smooth'
+        };
+
+        options.tooltip = {
+            x: {
+                format: 'dd.MM.yy HH:mm:ss'
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+        chart.render();
+
+        const updateSeries = async () => {
+            const response = await fetch('/tempLog');
+            if (response.ok) {
+                const result = await response.json();
+
+                chart.updateSeries(result, false);
+            }
+        };
+
+        setInterval(updateSeries, 10000)
+        updateSeries();
+    </script>
+    <%- include('includes/foot.ejs') -%>
