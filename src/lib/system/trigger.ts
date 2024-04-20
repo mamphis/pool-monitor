@@ -1,7 +1,7 @@
 import { access, readFile, writeFile } from "fs/promises";
-import { PersistanceManager } from "./wf/persistancemanager";
-import { ITrigger } from "./wf/trigger/itrigger";
-import { TriggerJob } from "./wf/triggerjob";
+import { PersistanceManager } from "../wf/persistancemanager";
+import { ITrigger } from "../wf/trigger/itrigger";
+import { TriggerJob } from "../wf/triggerjob";
 
 export class Trigger {
     private static instance?: Trigger;

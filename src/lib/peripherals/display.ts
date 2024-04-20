@@ -1,6 +1,6 @@
 import Lcd from 'lcd';
-import CONST from '../consts';
-import { Context } from '../context';
+import CONST from '../system/consts';
+import { Context } from '../system/context';
 import { IO } from './io';
 import { sleep } from '../utils';
 

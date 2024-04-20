@@ -1,7 +1,7 @@
 import EventEmitter from "events";
 import { Gpio } from "onoff";
-import CONST from '../consts';
-import { Context } from "../context";
+import CONST from '../system/consts';
+import { Context } from "../system/context";
 import { sleep } from "../utils";
 
 export interface IO {

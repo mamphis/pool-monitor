@@ -1,4 +1,4 @@
-import { Context } from "../../context";
+import { Context } from "../../system/context";
 import { ICondition } from "./icondition";
 
 export class DeviceStateCondition extends ICondition {
