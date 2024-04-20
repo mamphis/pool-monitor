@@ -19,11 +19,11 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
     switch (device) {
         case 'salt':
             await IO.it.toggleSaltState();
-            Context.it.logIODevice('salt', Context.it.saltState ? 1 : 0, 'web');
+            Context.it.logIODevice('salt', Context.it.saltState ? 1 : 0, 'web', req.hostname);
             return res.json({ state: Context.it.saltState ? 'An' : 'Aus' });
         case 'pump':
             await IO.it.togglePumpState();
-            Context.it.logIODevice('pump', Context.it.pumpState ? 1 : 0, 'web');
+            Context.it.logIODevice('pump', Context.it.pumpState ? 1 : 0, 'web', req.hostname);
             return res.json({ state: Context.it.pumpState ? 'An' : 'Aus' });
     }
 

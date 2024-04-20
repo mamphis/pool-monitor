@@ -20,7 +20,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
         }, [] as (LogEntry & { name: string })[]).sort((a, b) => b.timestamp - a.timestamp).map(l => {
             return {
                 ...l,
-                timestamp: moment(new Date(l.timestamp)).format('DD.MM.YYYY HH:mm')
+                timestamp: moment(new Date(l.timestamp)).format('DD.MM.YYYY HH:mm:ss')
             }
         }),
     });

@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@nucleus/wf": "^0.1.4",
+    "@nucleus/wf": "^0.1.5",
     "@pcsmw/node-app-updater": "^1.0.1",
     "apexcharts": "^3.26.2",
     "bcrypt": "^5.0.1",

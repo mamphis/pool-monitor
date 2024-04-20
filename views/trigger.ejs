@@ -12,6 +12,7 @@
                 <thead>
                     <tr>
                         <th>Aktiv</th>
+                        <th>Name</th>
                         <th>Trigger</th>
                         <th>Aktion</th>
                         <th>Nächste Ausführung</th>
@@ -24,6 +25,9 @@
                             <td>
                                 <input type="checkbox" <%=t.enabled ? 'checked' :'' %>
                                 onclick="changeTriggerState(event, <%= i %>);">
+                            </td>
+                            <td>
+                                <%= t.name %>
                             </td>
                             <td>
                                 <%= t.trigger %>
