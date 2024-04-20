@@ -1,10 +1,9 @@
+import { JsonDB } from 'node-json-db';
 import { access, readFile, writeFile } from "fs/promises";
 import { hash } from 'bcrypt';
 import { TemperatureSensorManager } from "./temperature";
 
 export interface LogEntry {
-    device: 'temp' | 'filter' | 'pump';
-    deviceName: string;
     value: number;
     timestamp: number;
 }
@@ -22,10 +21,11 @@ export class Context {
     }
 
     private constructor() {
-
+        this.database = new JsonDB(this.databasePath, true);
     }
 
     private readonly configPath = './config.json';
+    private readonly databasePath = './database.json';
 
     private async existsConfig(): Promise<boolean> {
         try {
@@ -56,7 +56,7 @@ export class Context {
     private async update() {
         this._sensors = await Promise.all(TemperatureSensorManager.it.sensors.map(async (s) => {
             const t = await TemperatureSensorManager.it.sensor[s]?.getTemperature();
-            this._log.push({ device: 'temp', deviceName: s, value: t ?? 0, timestamp: new Date().getTime() });
+            this.log('temp', s, t ?? 0);
             this.saveConfig();
             return { sensor: s, temperature: t ?? 0 };
         }));
@@ -67,7 +67,6 @@ export class Context {
             _users: this._users,
             _filterState: this._filterState,
             _pumpState: this._pumpState,
-            _log: this._log,
             _updateInterval: this._updateInterval,
         }));
     }
@@ -77,13 +76,20 @@ export class Context {
         Object.assign(this, JSON.parse(content));
     }
 
+    private log(device: string, name: string, value: number) {
+        this.database.push(`/${device}${name != '' ? '/' + name : ''}/log[]`, {
+            timestamp: new Date().getTime(),
+            value: value
+        });
+    }
+
     private _users: { [username: string]: string } = {};
     private _filterState: boolean = false;
     private _pumpState: boolean = false;
     private _sensors: Array<{ sensor: string, temperature: number }> = [];
-    private _log: Array<LogEntry> = [];
     private _updateInterval: number = 2000;
     private _updateIntervalHandle?: number;
+    private database: JsonDB;
 
     get users() {
         return this._users;
@@ -100,7 +106,7 @@ export class Context {
 
     set filterState(state) {
         this._filterState = state;
-        this._log.push({ device: 'filter', deviceName: '', value: state ? 1 : 0, timestamp: new Date().getTime() });
+        this.log('filter', '', state ? 1 : 0);
         this.saveConfig();
     }
 
@@ -110,7 +116,7 @@ export class Context {
 
     set pumpState(state) {
         this._pumpState = state;
-        this._log.push({ device: 'pump', deviceName: '', value: state ? 1 : 0, timestamp: new Date().getTime() });
+        this.log('pump', '', state ? 1 : 0);
         this.saveConfig();
     }
 
@@ -123,8 +129,8 @@ export class Context {
         }
     }
 
-    get log(): Array<LogEntry> {
-        return this._log;
+    get temperatures(): { [name: string]: Array<LogEntry> } {
+        return this.database.getData('/temp');
     }
 
     get updateInterval(): number {
