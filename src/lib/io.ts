@@ -33,15 +33,13 @@ export class IO extends EventEmitter {
     private rlsFilter: Gpio;
 
     private async init() {
-        const timer = (ms: number) => new Promise(res => setTimeout(res, ms));
         this.btnPump.watch((err, value) => {
             if (err) {
                 return console.warn(err);
             }
 
             if (value == 1) {
-                Context.it.pumpState = !Context.it.pumpState;
-                this.rlsPump.write(Context.it.pumpState ? 1 : 0);
+                this.togglePumpState();
             }
         });
 
@@ -51,11 +49,36 @@ export class IO extends EventEmitter {
             }
 
             if (value == 1) {
-                Context.it.filterState = !Context.it.filterState;
-                await this.rlsFilter.write(1);
-                timer(500);
-                await this.rlsFilter.write(0);
+                this.toggleFilterState();
             }
         });
+    }
+
+    async setPumpState(state: boolean) {
+        this.rlsPump.write(Context.it.pumpState ? 1 : 0);
+        Context.it.pumpState = state;
+    }
+
+    async togglePumpState() {
+        this.setPumpState(!Context.it.pumpState);
+    }
+
+    async setFilterState(state: boolean) {
+        const timer = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+        if (Context.it.filterState === state) {
+            // State is already set to the correct state :^)
+            return;
+        }
+
+        // Immitade "Swiping Switch"
+        await this.rlsFilter.write(1);
+        await timer(500);
+        await this.rlsFilter.write(0);
+        Context.it.filterState = state;
+    }
+
+    async toggleFilterState() {
+        this.setFilterState(!Context.it.filterState);
     }
 }
