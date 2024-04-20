@@ -1,8 +1,8 @@
 import EventEmitter from "events";
 import { Gpio } from "onoff";
-import CONST from './consts';
-import { Context } from "./context";
-import { sleep } from "./utils";
+import CONST from '../consts';
+import { Context } from "../context";
+import { sleep } from "../utils";
 
 export interface IO {
     on(event: 'buttonPressed', listener: (which: 'salt' | 'pump', newState: boolean) => void): this;
