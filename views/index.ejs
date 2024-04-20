@@ -13,7 +13,12 @@
         options.xaxis = {
             type: 'datetime'
         };
-
+        options.chart = {
+            height: 350,
+            type: "line",
+            stacked: false
+        };
+        
         var chart = new ApexCharts(document.querySelector("#chart"), options);
 
         chart.render();
