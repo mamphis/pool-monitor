@@ -3,47 +3,52 @@
         <div class="panel-heading">Geräte Manager</div>
         <div class="panel-block is-active">
             <div class="control">
-                <div class="field">
-                    <label for="" class="label is-large">Temperatur Sensoren</label>
-                    <div class="control is-expanded">
+                <label for="" class="label is-large">Temperatur Sensoren</label>
+                <table class="table is-fullwidth">
+                    <tbody>
                         <% state.temperatures.forEach(sensor=> { %>
-                            <div class="columns is-fullwidth">
-                                <span>
+                            <tr>
+                                <td>
                                     <%= sensor.sensor %>
-                                </span>
-                                <span class="tag">
-                                    <%= sensor.temperature.toFixed(2) %> °C
-                                </span>
-                            </div>
+                                </td>
+                                <td>
+                                    <span class="tag">
+                                        <%= sensor.temperature.toFixed(2) %> °C
+                                    </span>
+                                </td>
+                            </tr>
+
                             <%});%>
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="panel-block">
             <div class="content">
-                <div class="field">
-                    <label for="" class="label is-large">Angeschlossende Geräte</label>
-                    <div class="control is-expanded">
-                        <div class="columns is-fullwidth">
-                            <span>
-                                Pumpe
-                            </span>
-                            <span class="tag">
-                                ---
-                            </span>
-                        </div>
-                        <div class="columns is-fullwidth">
-                            <span>
-                                Filter
-                            </span>
-                            <span class="tag">
-                                ---
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <label for="" class="label is-large">Angeschlossende Geräte</label>
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr>
+                            <td> Pumpe </td>
+                            <td>
+                                <span class="tag">
+                                    <%= state.pump ? 'An' : 'Aus' %>
+                                </span>
+                                <button class="button is-small">Umschalten</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> Filter </td>
+                            <td>
+                                <span class="tag">
+                                    <%= state.filter ? 'An' : 'Aus' %>
+                                </span>
+                                <button class="button is-small">Umschalten</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
