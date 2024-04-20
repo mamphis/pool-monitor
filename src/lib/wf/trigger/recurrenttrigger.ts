@@ -20,7 +20,7 @@ export class RecurrentTrigger extends ITrigger {
 
         return {
             cancel: job ? job.cancel.bind(job) : () => { },
-            nextInvocation: () => (job && job.nextInvocation()) ? moment(job.nextInvocation().toISOString()) : undefined
+            nextInvocation: () => (this.enabled && job && job.nextInvocation()) ? moment(job.nextInvocation().toISOString()) : undefined
         }
     }
 
