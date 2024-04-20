@@ -26,10 +26,15 @@ export async function pullLatestVersion() {
     console.log(resp.raw);
     const latestTag = await getLatestVersionTag();
 
+    const st = await git.stash();
+    console.log('stashed changes', st);
     const co = await git.checkout(`tags/${latestTag}`, { '-b': 'runtime' });
     console.log("Checkout:", co);
     const pu = await git.pull('origin', `tags/${latestTag}`);
     console.log(pu.summary);
+    
+    const sp = await git.stash(['pop']);
+    console.log('stash pop', sp);    
 
     console.log('latest tag checked out.');
     Context.it.installedVersion = latestTag
