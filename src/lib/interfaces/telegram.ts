@@ -1,5 +1,6 @@
 import moment from 'moment';
-import TelegramBot, { InlineKeyboardMarkup } from 'node-telegram-bot-api';
+import TelegramBot, { CallbackQuery, InlineKeyboardMarkup } from 'node-telegram-bot-api';
+import { IO } from '../peripherals/io';
 import { Context } from '../system/context';
 import { Trigger } from '../system/trigger';
 
@@ -7,7 +8,7 @@ const keyboards: { [key: string]: InlineKeyboardMarkup } = {
     default: {
         inline_keyboard: [
             [
-                { text: 'Status', callback_data: 'cmd-get-status' },
+                { text: 'Status', callback_data: 'cmd-get-new-status' },
             ]
         ]
     },
@@ -42,10 +43,20 @@ export class Telegram {
             polling: true
         });
 
+        Context.it.on('stateToggled', (which, state, source) => {
+            const users = Object.keys(Context.it.users);
+            users.forEach(username => {
+                const user = Context.it.users[username];
+                this.api.sendMessage(user.telegramId, `
+Hallo ${user.name}!
+Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der neue Status ist ${state ? 'an ✅' : 'aus ❌'}.`, {
+                    reply_markup: keyboards.default
+                });
+            });
+        });
+
         this.api.onText(/\/start(.*)/, (msg, match) => {
-            console.log(msg);
             const startToken = (match && match[1].trim()) ?? '';
-            console.log(match, match?.[1]);
             if (startToken === '') {
                 return;
             }
@@ -84,28 +95,64 @@ export class Telegram {
                 return;
             }
 
-            if (data === 'cmd-get-status') {
-                const messageId = query.message?.message_id;
-                const chatId = query.from.id;
-
-                if (messageId) {
-                    this.api.editMessageText(await this.getPoolStatusText(),
-                        {
-                            chat_id: chatId,
-                            message_id: messageId,
-                            parse_mode: 'MarkdownV2',
-                            reply_markup: keyboards.status
-                        });
-                } else {
-                    this.api.sendMessage(query.from.id, await this.getPoolStatusText(), {
-                        reply_markup: keyboards.status,
-                        parse_mode: 'MarkdownV2'
-                    });
-                }
-
-                this.api.answerCallbackQuery(query.id);
+            if (data === 'cmd-get-new-status') {
+                this.api.sendMessage(query.from.id, await this.getPoolStatusText(), {
+                    reply_markup: keyboards.status,
+                    parse_mode: 'MarkdownV2'
+                });
             }
+
+            if (data === 'cmd-get-status') {
+                this.updateStatus(query);
+            }
+
+            if (data === 'cmd-toggle-salt') {
+                await IO.it.toggleSaltState();
+                Context.it.logIODevice('salt', Context.it.saltState ? 1 : 0, 'telegram', query.from.username ? `@${query.from.username}` : query.from.first_name);
+                
+                this.updateStatus(query);
+            }
+
+            if (data === 'cmd-toggle-pump') {
+                await IO.it.togglePumpState();
+                Context.it.logIODevice('pump', Context.it.pumpState ? 1 : 0, 'telegram', query.from.username ? `@${query.from.username}` : query.from.first_name);
+                
+                this.updateStatus(query);
+            }
+
+            this.api.answerCallbackQuery(query.id);
         });
+    }
+
+    private async updateStatus(query: CallbackQuery) {
+        const messageId = query.message?.message_id;
+        const chatId = query.from.id;
+
+        if (messageId) {
+            this.api.editMessageText(await this.getPoolStatusText(),
+                {
+                    chat_id: chatId,
+                    message_id: messageId,
+                    parse_mode: 'MarkdownV2',
+                    reply_markup: keyboards.status
+                }).catch(e => { });
+        } else {
+            this.api.sendMessage(query.from.id, await this.getPoolStatusText(), {
+                reply_markup: keyboards.status,
+                parse_mode: 'MarkdownV2'
+            });
+        }
+    }
+
+    getDevice(which: string) {
+        switch (which) {
+            case 'salt':
+                return '🧂 Salzanlage';
+            case 'pump':
+                return '💧 Pumpe';
+            default:
+                return which;
+        }
     }
 
     private async getPoolStatusText(): Promise<string> {
@@ -118,21 +165,19 @@ Die Aktuellen Temperaturen betragen:
 ${Context.it.lastIOStates.temperatures.map(ts => {
             return `🌡 ${ts.name}: ${ts.temperature}°C`;
         }).join('\n')}
-
-Aktuell ist die 💧 Pumpe ${Context.it.lastIOStates.pump ? 'an' : 'aus'}
-Aktuell ist die 🧂 Salzanlage ${Context.it.lastIOStates.salt ? 'an' : 'aus'}
-
+Aktuell ist die 💧 Pumpe ${Context.it.lastIOStates.pump ? 'an ✅' : 'aus ❌'}
+Aktuell ist die 🧂 Salzanlage ${Context.it.lastIOStates.salt ? 'an ✅' : 'aus ❌'}
 
 Gespeicherte Trigger:
 ${Trigger.it.all.map(t => {
-            return `**${t.name}**
-    aktiv: ${t.trigger.enabled ? '✔' : '❌'}
+            return `__${t.name}__: ${t.trigger.getDescription()}
+${t.trigger.actions.map(a => a.getDescription()).join()}
+    aktiv: ${t.trigger.enabled ? '✅' : '❌'}
     nächste Ausführung: ${t.job.nextInvocation()?.format('DD.MM.YYYY HH:mm') ?? '---'}
 `
         }).join('\n')}
 `.replace(/[\.\(\)\-]/g, (val) => `\\${val}`);;
 
-        console.log(text);
         return text;
     }
 
