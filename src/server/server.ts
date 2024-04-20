@@ -13,7 +13,7 @@ export class Server {
     }
 
     async config() {
-        this.app.use(urlencoded({ inflate: true }));
+        this.app.use(express.json());
         this.app.use(cors());
 
         this.app.use('/static', staticImport('./static'));
