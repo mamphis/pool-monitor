@@ -29,4 +29,14 @@ router.post('/toggle/:device', async (req: Request, res: Response, next: NextFun
     res.end();
 });
 
+router.post('/interval/:value', async (req: Request, res: Response, next: NextFunction) => {
+    const newUpdateInterval = parseInt(req.params.value);
+    if (isNaN(newUpdateInterval)) {
+        res.end;
+    } else {
+        Context.it.updateInterval = newUpdateInterval;
+        return res.json({ interval: Context.it.updateInterval });
+    }
+});
+
 export { router as temperatureRouter };
