@@ -1,4 +1,6 @@
+import moment, { Moment } from "moment";
 import { IAction } from "../action/iaction";
+import { TriggerJob } from "../triggerjob";
 import { ITrigger } from "./itrigger";
 
 export class IntervalTrigger extends ITrigger {
@@ -6,11 +8,19 @@ export class IntervalTrigger extends ITrigger {
         super(actions);
     }
 
-    async register(name: string): Promise<void> {
-        // TODO: Use node-schedule to have a consistent way of handling jobs
-        setInterval(async () => {
+    private lastInvocation?: Moment;
+
+    async register(name: string): Promise<TriggerJob> {
+        const interval = setInterval(async () => {
+            this.lastInvocation = moment();
             await this.execute();
-        }, this.interval)
+
+        }, this.interval);
+
+        return {
+            cancel: () => clearInterval(interval),
+            nextInvocation: () => this.lastInvocation?.add(this.interval, 'milliseconds')
+        };
     }
 
     getDescription(): string {

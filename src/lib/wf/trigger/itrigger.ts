@@ -1,4 +1,5 @@
 import { IAction } from "../action/iaction";
+import { TriggerJob } from "../triggerjob";
 
 export abstract class ITrigger {
     constructor(public actions: IAction[]) {
@@ -18,5 +19,5 @@ export abstract class ITrigger {
     }
 
     abstract getDescription(): string;
-    abstract register(name: string): Promise<void>;
+    abstract register(name: string): Promise<TriggerJob>;
 }
