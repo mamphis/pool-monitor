@@ -4,6 +4,21 @@
         <div class="panel-block is-active">
             <div class="control">
                 <label for="" class="label is-large">Temperatur Sensoren</label>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label for="" class="label">Aktualisierungsintervall</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input type="number" class="input is-small" id="update-interval" value="10000">
+                            </div>
+                            <div class="control">
+                                <button class="button is-small" onclick="updateInterval();">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <table class="table is-fullwidth">
                     <tbody>
                         <% state.temperatures.forEach(sensor=> { %>
@@ -15,17 +30,6 @@
                                     <span class="tag">
                                         <%= sensor.temperature.toFixed(2) %> °C
                                     </span>
-                                </td>
-                                <td>
-                                    <div class="field has-addons">
-                                        <div class="control">
-                                            <input type="number" class="input is-small" id="update-interval"
-                                                value="<%= state.interval %>">
-                                        </div>
-                                        <div class="control">
-                                            <button class="button is-small" onclick="updateInterval();">Update</button>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
 
