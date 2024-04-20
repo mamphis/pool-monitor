@@ -16,6 +16,11 @@
     - At 00:00
         - If Pump = 'on'
             - Pump := 'off'
+    
+    - Trigger
+        - Time
+    - Condition
+    - Action
 - [ ] Logging of temperature values
 - [ ] Toggle state of devices manually over the website
 - [ ] Toggle Light of LCD Display when a button is pressed
