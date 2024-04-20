@@ -2,6 +2,7 @@ import { Context } from "../lib/context";
 import { Display } from "../lib/display";
 import { IO } from "../lib/io";
 import { TemperatureSensorManager } from "../lib/temperature";
+import { Trigger } from "../lib/trigger";
 import { Server } from "./server";
 
 export async function start() {
@@ -9,6 +10,7 @@ export async function start() {
     Display.it;
     TemperatureSensorManager.it;
     IO.it;
+    Trigger.it;
 
     await server.config();
     await server.start();
