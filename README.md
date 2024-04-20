@@ -26,6 +26,10 @@
 - [x] Toggle Light of LCD Display when a button is pressed
 
 ## Changelog
+**v0.0.3** - __19.05.2021__
+- Log the source of a device state change.
+    - Logs weather the device was triggered from a button, the web or a trigger
+    - Display the log with timestamps in the web interface.
 
 **v0.0.3-rc3** - __18.05.2021__
 - Added Weekdays to Recurrent Trigger

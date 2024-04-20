@@ -1,4 +1,5 @@
 import { IO } from "../../peripherals/io";
+import { Context } from "../../system/context";
 import { ICondition } from "../condition/icondition";
 import { IAction } from "./iaction";
 
@@ -7,13 +8,25 @@ export class DeviceStateAction extends IAction {
         super(conditions);
     }
 
-    async execute(): Promise<void> {
+    async execute(): Promise<boolean> {
         switch (this.device) {
             case 'salt':
-                return await IO.it.setSaltState(this.state);
+                if (Context.it.saltState === this.state) {
+                    return false;
+                }
+
+                await IO.it.setSaltState(this.state);
+                break;
             case 'pump':
-                return await IO.it.setPumpState(this.state);
+                if (Context.it.pumpState === this.state) {
+                    return false;
+                }
+
+                await IO.it.setPumpState(this.state);
+                break;
         }
+
+        return true;
     }
 
     private getDeviceName(): string {

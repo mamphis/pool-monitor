@@ -30,6 +30,38 @@
             </div>
         </div>
     </section>
+    <section style="max-height: 300px; overflow-y: auto;">
+        <table class="table is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Gerät</th>
+                    <th>Status</th>
+                    <th>Auslöser</th>
+                    <th>Uhrzeit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% logEntries.forEach(logEntry=> { %>
+                    <tr>
+                        <td>
+                            <%= logEntry.name %>
+                        </td>
+                        <td>
+                            <span class="tag is-<%= logEntry.value? 'success' : 'danger' %>">
+                                <%= logEntry.value ? 'An' : 'Aus' %>
+                            </span>
+                        </td>
+                        <td>
+                            <%= logEntry.from %>
+                        </td>
+                        <td>
+                            <%= logEntry.timestamp %>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </section>
     <script>
         const $status = $('#status');
         $status.hide();
@@ -83,7 +115,7 @@
             });
 
             const { installedVersion, latestVersion, lastChecked } = await response.json();
-            
+
             $('#installed-version').text(installedVersion);
             $('#latest-version').text(latestVersion);
             $('#last-checked').text(lastChecked);
