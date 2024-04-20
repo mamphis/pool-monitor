@@ -55,6 +55,7 @@ export class Context {
 
         await this.loadConfig();
         this.reScheduleUpdate();
+        this.update();
     }
 
     private reScheduleUpdate() {
