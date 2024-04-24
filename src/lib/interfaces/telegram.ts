@@ -3,7 +3,6 @@ import TelegramBot, { CallbackQuery, InlineKeyboardMarkup } from 'node-telegram-
 import { IO } from '../peripherals/io';
 import { Context } from '../system/context';
 import { Trigger } from '../system/trigger';
-import localtunnel from 'localtunnel';
 import { hostname } from 'os';
 
 const keyboards: { [key: string]: InlineKeyboardMarkup } = {
@@ -89,47 +88,6 @@ Gerade wurde das Gerät ${this.getDevice(which)} von ${source} umgeschaltet. Der
                 reply_markup: keyboards.status,
                 parse_mode: 'MarkdownV2'
             });
-        });
-
-        this.api.onText(/\/service/, async (msg, match) => {
-            const user = Object.values(Context.it.users).find(u => u.telegram?.id === msg.from?.id);
-            if (user) {
-                const message = await this.api.sendMessage(msg.from?.id ?? 0, 'Der Tunnel wird vorbereitet. Bitte warte einen Moment.');
-                const tunnel = await localtunnel({
-                    port: 3000,
-                });
-                const websocketTunnel = await localtunnel({
-                    port: 3001,
-                });
-
-                const url = new URL(websocketTunnel.url);
-                Context.it.websocketUrl = `wss://${url.host}`;
-
-                let websocketAlive = true;
-                let tunnelAlive = true;
-                this.api.editMessageText(tunnel.url, {
-                    chat_id: msg.from?.id ?? 0,
-                    message_id: message.message_id,
-                })
-
-                tunnel.on('close', () => {
-                    if (websocketTunnel && websocketAlive) {
-                        websocketTunnel.close();
-                    }
-
-                    tunnelAlive = false;
-                    Context.it.websocketUrl = `ws://${hostname()}:3001`;
-                    this.api.sendMessage(msg.from?.id ?? 0, tunnel.url + ' wurde geschlossen.');
-
-                });
-
-                websocketTunnel.on('close', () => {
-                    if (tunnel && tunnelAlive) {
-                        tunnel.close();
-                    }
-                    websocketAlive = false;
-                });
-            }
         });
 
         this.api.on('callback_query', async (query) => {
