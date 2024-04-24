@@ -10,6 +10,7 @@ const keys = [
     'PIN_BUTTON_PUMP',
     'PIN_RELAIS_SALT',
     'PIN_RELAIS_PUMP',
+    'PIN_BUTTON_LIGHT',
 ]
 
 const config = {
@@ -23,11 +24,12 @@ const config = {
     PIN_BUTTON_SALT: 14,
     PIN_BUTTON_PUMP: 15,
     PIN_RELAIS_SALT: 3,
-    PIN_RELAIS_PUMP: 4
+    PIN_RELAIS_PUMP: 4,
+    PIN_BUTTON_LIGHT: 11,
 };
 
 for (const key of keys) {
-    if (!key in process.env) {
+    if (!(key in process.env)) {
         throw new Error(key + ' is missing in environment variables');
     }
 

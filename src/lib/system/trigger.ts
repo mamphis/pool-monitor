@@ -1,5 +1,7 @@
-import { PersistanceManager, Trigger as WfTrigger, TriggerJob } from "@nucleus/wf";
-import { IAction } from "@nucleus/wf/out/wf/action/iaction";
+import { PersistanceManager } from "../wf/persistancemanager";
+import { TriggerJob } from '../wf/triggerjob';
+import { IAction } from "../wf/action/iaction";
+import { ITrigger } from "../wf/trigger/itrigger";
 import EventEmitter from "events";
 import { access, readFile, writeFile } from "fs/promises";
 import { DeviceStateAction } from "../wf/action/devicestateaction";
@@ -71,7 +73,7 @@ export class Trigger extends EventEmitter {
 
             const trigger = PersistanceManager.fromString(triggerDef);
 
-            trigger.on('actionExecuted', (t: WfTrigger.ITrigger, a: IAction) => {
+            trigger.on('actionExecuted', (t: ITrigger, a: IAction) => {
                 if (a instanceof DeviceStateAction) {
                     this.emit('deviceStateChanged', a.device, a.state, `${name}`);
                 }
@@ -98,7 +100,7 @@ export class Trigger extends EventEmitter {
         }
     }
 
-    get all(): Array<{ name: string, job: TriggerJob, trigger: WfTrigger.ITrigger }> {
+    get all(): Array<{ name: string, job: TriggerJob, trigger: ITrigger }> {
         return Object.keys(this._triggers).map(name => {
             return { name, job: this._job[name], trigger: PersistanceManager.fromString(this._triggers[name]) };
         })
