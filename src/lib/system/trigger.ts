@@ -18,9 +18,9 @@ export class Trigger extends EventEmitter {
     static get it(): Trigger {
         if (!this.instance) {
             this.instance = new Trigger();
-            PersistanceManager.registerAction(DeviceStateAction);
-            PersistanceManager.registerAction(TelegramAction);
-            PersistanceManager.registerCondition(DeviceStateCondition);
+            //PersistanceManager.registerAction(DeviceStateAction);
+            //PersistanceManager.registerAction(TelegramAction);
+            //PersistanceManager.registerCondition(DeviceStateCondition);
 
             this.instance.init();
         }
