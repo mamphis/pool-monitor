@@ -133,16 +133,18 @@
             </div>
         </div>
 
+        <% if (typeof websocketUrl !== 'undefined') { %> 
         <div class="panel-block">
             <div class="control">
                 <div id="xterm"></div>
             </div>
-        </div>
+        </div> 
+        <script>
+            const websocketUrl = '<%= websocketUrl %>/?' + document.cookie;
+        </script>
+        <script src="/static/js/terminal.js"></script>
+        <%} %>
     </div>
-    <script>
-        const websocketUrl = '<%= websocketUrl %>/?' + document.cookie;
-    </script>
-    <script src="/static/js/terminal.js"></script>
     <script>
         const $status = $('#status');
         $status.hide();
