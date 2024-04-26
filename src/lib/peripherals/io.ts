@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { Gpio } from "onoff";
+import { BinaryValue, Gpio } from "onoff";
 import CONST from '../system/consts';
 import { Context } from "../system/context";
 import { sleep } from "../utils";
@@ -45,11 +45,28 @@ export class IO extends EventEmitter {
     private pinDisplayLight?: Gpio;
 
     private async init() {
+        let darkenTimer: any;
+
+        const turnOnLight = (buttonSate: BinaryValue) => {
+            if (buttonSate !== 1) { return; }
+
+            this.setDisplayLightState(true);
+            if (darkenTimer !== undefined) {
+                clearTimeout(darkenTimer);
+            }
+
+            darkenTimer = setTimeout(() => {
+                this.setDisplayLightState(false);
+                darkenTimer = undefined;
+            }, 10000);
+        }
+
         this.btnPump?.watch(async (err, value) => {
             if (err) {
                 return console.warn(err);
             }
 
+            turnOnLight(value);
             await this.togglePumpState();
             this.emit('buttonPressed', 'pump', Context.it.pumpState);
         });
@@ -59,6 +76,7 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
+            turnOnLight(value);
             await this.toggleSaltState();
             this.emit('buttonPressed', 'salt', Context.it.saltState);
         });
@@ -105,6 +123,7 @@ export class IO extends EventEmitter {
         if (currentState === desiredState) {
             return;
         }
-        await this.pinDisplayLight?.write(state ? 1 : 0);
+
+        await this.pinDisplayLight?.write(desiredState);
     }
 }

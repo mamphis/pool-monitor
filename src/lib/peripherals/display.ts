@@ -68,21 +68,6 @@ export class Display {
             this.lcd?.clear()
             refreshDisplay();
         });
-
-        let darkenTimer: any;
-        IO.it.on('buttonPressed', async (_, newState) => {
-            if (!newState) { return; }
-            
-            this.illuminateDisplay();
-            if (darkenTimer !== undefined) {
-                clearTimeout(darkenTimer);
-            }
-
-            darkenTimer = setTimeout(() => {
-                this.darkenDisplay();
-                darkenTimer = undefined;
-            }, 10000)
-        });
     }
 
     killDisplay() {
@@ -128,15 +113,5 @@ export class Display {
                 console.log(`printend: [0]: ${lines[0]}; [1]: ${lines[1]}`)
             });
         });
-    }
-
-    illuminateDisplay() {
-        Context.it.logIODevice('displaylight', 1, 'button', new Date().toISOString());
-        IO.it.setDisplayLightState(true);
-    }
-
-    darkenDisplay() {
-        Context.it.logIODevice('displaylight', 0, 'button', new Date().toISOString());
-        IO.it.setDisplayLightState(false);
     }
 }
