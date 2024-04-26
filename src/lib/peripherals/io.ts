@@ -3,6 +3,7 @@ import { BinaryValue, Gpio } from "onoff";
 import CONST from '../system/consts';
 import { Context } from "../system/context";
 import { sleep } from "../utils";
+import { Display } from "./display";
 
 export interface IO {
     on(event: 'buttonPressed', listener: (which: 'salt' | 'pump', newState: boolean) => void): this;
@@ -51,12 +52,14 @@ export class IO extends EventEmitter {
             if (buttonSate !== 1) { return; }
 
             this.setDisplayLightState(true);
+            Display.it.displayTime = false;
             if (darkenTimer !== undefined) {
                 clearTimeout(darkenTimer);
             }
 
             darkenTimer = setTimeout(() => {
                 this.setDisplayLightState(false);
+                Display.it.displayTime = true;
                 darkenTimer = undefined;
             }, 10000);
         }

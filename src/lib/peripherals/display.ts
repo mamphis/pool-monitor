@@ -17,7 +17,7 @@ export class Display {
 
     private lcd;
     private printable: boolean = false;
-    private displayTime = true;
+    displayTime = true;
 
     private readonly cols: number = 16;
     private readonly rows: number = 2;
