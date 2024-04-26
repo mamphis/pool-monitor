@@ -61,7 +61,7 @@ export class PersistanceManager {
 
     static fromString(value: string): ITrigger {
         const triggerObj = JSON.parse(value);
-        let trigger: ITrigger;
+        let trigger;
         let actions = this.fromStringActions(triggerObj.actions);
 
         switch (triggerObj.name) {
@@ -87,7 +87,7 @@ export class PersistanceManager {
 
     private static fromStringActions(actionsObj: any): IAction[] {
         const actions: IAction[] = actionsObj.map((actionObj: any) => {
-            let action: IAction;
+            let action;
             let conditions = this.fromStringConditions(actionObj.conditions);
 
             switch (actionObj.name) {
@@ -108,7 +108,7 @@ export class PersistanceManager {
 
     private static fromStringConditions(conditionsObj: any): ICondition[] {
         const conditions: ICondition[] = conditionsObj.map((conditionObj: any) => {
-            let condition: ICondition;
+            let condition;
             switch (conditionObj.name) {
                 case 'DeviceStateCondition':
                     condition = new DeviceStateCondition();
