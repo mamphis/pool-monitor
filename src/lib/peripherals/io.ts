@@ -52,7 +52,6 @@ export class IO extends EventEmitter {
             if (buttonSate !== 1) { return; }
 
             this.setDisplayLightState(true);
-            Display.it.displayTime = false;
             if (darkenTimer !== undefined) {
                 clearTimeout(darkenTimer);
             }
@@ -66,7 +65,6 @@ export class IO extends EventEmitter {
 
             darkenTimer = setTimeout(() => {
                 this.setDisplayLightState(false);
-                Display.it.displayTime = true;
                 darkenTimer = undefined;
             }, 10000);
         }
