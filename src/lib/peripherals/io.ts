@@ -6,7 +6,7 @@ import { sleep } from "../utils";
 import { Display } from "./display";
 
 export interface IO {
-    on(event: 'buttonPressed', listener: (which: 'salt' | 'pump', newState: boolean) => void): this;
+    on(event: 'buttonPressed', listener: (which: 'salt' | 'pump' | 'light', newState: boolean) => void): this;
 }
 
 export class IO extends EventEmitter {
@@ -57,6 +57,13 @@ export class IO extends EventEmitter {
                 clearTimeout(darkenTimer);
             }
 
+            setImmediate(async () => {
+                while (darkenTimer !== undefined) {
+                    this.setDisplayLightState(true);
+                    await sleep(500);
+                }
+            });
+
             darkenTimer = setTimeout(() => {
                 this.setDisplayLightState(false);
                 Display.it.displayTime = true;
@@ -89,6 +96,7 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
+            this.emit('buttonPressed', 'light', value === 1);
             this.setDisplayLightState(value === 1);
         });
     }
