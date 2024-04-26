@@ -99,6 +99,12 @@ export class IO extends EventEmitter {
     }
 
     async setDisplayLightState(state: boolean) {
+        const currentState = await this.pinDisplayLight?.read();
+        const desiredState = state ? 1 : 0;
+
+        if (currentState === desiredState) {
+            return;
+        }
         await this.pinDisplayLight?.write(state ? 1 : 0);
     }
 }
