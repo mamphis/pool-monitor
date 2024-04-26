@@ -74,9 +74,9 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
-            turnOnLight(value);
             await this.togglePumpState();
             this.emit('buttonPressed', 'pump', Context.it.pumpState);
+            turnOnLight(value);
         });
 
         this.btnSalt?.watch(async (err, value) => {
@@ -84,9 +84,9 @@ export class IO extends EventEmitter {
                 return console.warn(err);
             }
 
-            turnOnLight(value);
             await this.toggleSaltState();
             this.emit('buttonPressed', 'salt', Context.it.saltState);
+            turnOnLight(value);
         });
 
         this.btnLight?.watch(async (err, value) => {
