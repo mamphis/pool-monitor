@@ -1,7 +1,33 @@
 import { access, readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
-class TemperatureSensor {
+interface Sensor {
+    readonly id: string;
+    getTemperature(): Promise<number>;
+    getTemperatureFormatted(temp?: number): Promise<string>;
+}
+
+class CPUTempSensor implements Sensor {
+    constructor(private manager: TemperatureSensorManager, public readonly id: string) {
+    }
+
+    async getTemperature(): Promise<number> {
+        const data = await readFile('/sys/class/thermal/thermal_zone0/temp');
+        const millidegrees = parseInt(data.toString());
+
+        return millidegrees / 1000;
+    }
+
+    async getTemperatureFormatted(temp?: number): Promise<string> {
+        if (!temp) {
+            temp = await this.getTemperature();
+        }
+
+        return `${temp.toFixed(3)} °C`;
+    }
+}
+
+class TemperatureSensor implements Sensor {
     private notified = false;
     constructor(private manager: TemperatureSensorManager, public readonly id: string) {
     }
@@ -46,7 +72,7 @@ export class TemperatureSensorManager {
         return this.instance;
     }
 
-    private _sensors: TemperatureSensor[] = [];
+    private _sensors: Sensor[] = [];
     readonly devicePath = `/sys/bus/w1/devices`;
 
     private ready: boolean = false;
@@ -68,6 +94,11 @@ export class TemperatureSensorManager {
 
         this._sensors = sensors.map(s => new TemperatureSensor(this, s));
         this._sensors.forEach(s => this.sensor[s.id] = s);
+
+        const cpuSensor = new CPUTempSensor(this, 'cpu');
+        this._sensors.push(cpuSensor);
+        this.sensor['cpu'] = cpuSensor;
+        
         this.ready = true;
     }
 
@@ -75,5 +106,5 @@ export class TemperatureSensorManager {
         return [...this._sensors.map(s => s.id)];
     }
 
-    sensor: { [id: string]: TemperatureSensor | undefined } = {};
+    sensor: { [id: string]: Sensor | undefined } = {};
 }
