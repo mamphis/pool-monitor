@@ -129,10 +129,12 @@ export class Display {
     }
 
     illuminateDisplay() {
+        Context.it.logIODevice('displaylight', 1, 'button', new Date().toISOString());
         IO.it.setDisplayLightState(true);
     }
 
     darkenDisplay() {
+        Context.it.logIODevice('displaylight', 0, 'button', new Date().toISOString());
         IO.it.setDisplayLightState(false);
     }
 }
