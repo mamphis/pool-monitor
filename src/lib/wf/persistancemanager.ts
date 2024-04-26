@@ -93,7 +93,8 @@ export class PersistanceManager {
             switch (actionObj.name) {
                 case 'DeviceStateAction':
                     action = new DeviceStateAction(conditions);
-                    Object.apply(action, actionObj);
+                    action.device = actionObj.device;
+                    action.state = actionObj.state;
                     break;
                 default:
                     throw new Error(`Invalid action constructor: ${actionObj.name}`);
@@ -108,11 +109,11 @@ export class PersistanceManager {
     private static fromStringConditions(conditionsObj: any): ICondition[] {
         const conditions: ICondition[] = conditionsObj.map((conditionObj: any) => {
             let condition: ICondition;
-
             switch (conditionObj.name) {
                 case 'DeviceStateCondition':
                     condition = new DeviceStateCondition();
-                    Object.apply(condition, conditionObj);
+                    condition.device = conditionObj.device;
+                    condition.state = conditionObj.state;
                     break;
                 default:
                     throw new Error(`Invalid condition constructor: ${conditionObj.name}`);
