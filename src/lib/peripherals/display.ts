@@ -70,7 +70,9 @@ export class Display {
         });
 
         let darkenTimer: any;
-        IO.it.on('buttonPressed', async () => {
+        IO.it.on('buttonPressed', async (_, newState) => {
+            if (!newState) { return; }
+            
             this.illuminateDisplay();
             if (darkenTimer !== undefined) {
                 clearTimeout(darkenTimer);
