@@ -69,10 +69,17 @@ export class Display {
             refreshDisplay();
         });
 
+        let darkenTimer: number;
         IO.it.on('buttonPressed', async () => {
             this.illuminateDisplay();
-            await sleep(10000);
-            this.darkenDisplay();
+            if (darkenTimer !== undefined) {
+                clearTimeout(darkenTimer);
+            }
+
+            darkenTimer = setTimeout(() => {
+                this.darkenDisplay();
+                darkenTimer = undefined;
+            }, 10000)
         });
     }
 
