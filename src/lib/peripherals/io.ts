@@ -27,9 +27,9 @@ export class IO extends EventEmitter {
             return;
         }
 
-        this.btnSalt = new Gpio(CONST.PIN_BUTTON_SALT, 'in', 'rising', { debounceTimeout: 50 });
-        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { debounceTimeout: 50 });
-        this.btnLight = new Gpio(CONST.PIN_BUTTON_LIGHT, 'in', 'both', { debounceTimeout: 50 });
+        this.btnSalt = new Gpio(CONST.PIN_BUTTON_SALT, 'in', 'rising', { debounceTimeout: 500 });
+        this.btnPump = new Gpio(CONST.PIN_BUTTON_PUMP, 'in', 'rising', { debounceTimeout: 500 });
+        this.btnLight = new Gpio(CONST.PIN_BUTTON_LIGHT, 'in', 'both', { debounceTimeout: 500 });
         this.rlsSalt = new Gpio(CONST.PIN_RELAIS_SALT, 'out');
         this.rlsPump = new Gpio(CONST.PIN_RELAIS_PUMP, 'out');
 
