@@ -69,7 +69,7 @@ export class Display {
             refreshDisplay();
         });
 
-        let darkenTimer: number | undefined;
+        let darkenTimer: any;
         IO.it.on('buttonPressed', async () => {
             this.illuminateDisplay();
             if (darkenTimer !== undefined) {
